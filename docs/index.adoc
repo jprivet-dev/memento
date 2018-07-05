@@ -1,16 +1,7 @@
-:numbered:
-:toc: macro
-:sectanchors:
+:INCLUDEDIR: _includes
+:MAIN_TITLE: Hello
 
-= Hello
-
-'''
-
-:toc-title: Table of contents
-:toclevels: 3
-toc::[]
-
-'''
+include::_includes/adoc-config.adoc[]
 
 == Titre 1
 

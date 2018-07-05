@@ -1,0 +1,9 @@
+:numbered:
+:toc: left
+:sectanchors:
+
+= {MAIN_TITLE}
+
+:toc-title: Table of contents
+:toclevels: 3
+toc::[]
