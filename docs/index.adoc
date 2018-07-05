@@ -1,4 +1,3 @@
-:INCLUDEDIR: _includes
 :MAIN_TITLE: Hello
 
 include::_includes/adoc-config.adoc[]
