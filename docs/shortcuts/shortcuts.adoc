@@ -1,6 +1,7 @@
 :MAIN_TITLE: Shortcuts
 
 include::_partials/adoc-config.adoc[]
+include::_partials/adoc-head.adoc[]
 
 == PHPStorm 2017
 

@@ -1,5 +1,6 @@
 :MAIN_TITLE: List of all memento cards
 
 include::_partials/adoc-config.adoc[]
+include::_partials/adoc-head.adoc[]
 
 link:shortcuts/shortcuts.html[Shortcuts]
