@@ -2,4 +2,4 @@
 
 include::_partials/adoc-config.adoc[]
 
-link:shortcuts.html[]
+link:shortcuts/shortcuts.html[Shortcuts]
