@@ -1,6 +1,7 @@
 :numbered:
 :toc: left
 :sectanchors:
+:experimental:
 
 :BACK_TO_TOP_TARGET: top-of-page
 :BACK_TO_TOP_LABEL: ⬆ Back to top

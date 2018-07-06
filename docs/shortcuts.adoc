@@ -1,0 +1,76 @@
+:MAIN_TITLE: Shortcuts
+
+include::_partials/adoc-config.adoc[]
+
+== PHPStorm 2017
+
+=== General
+
+|===
+|Comment or uncomment a fragment            |kbd:[Ctrl + Shift + /]
+|Comment or uncomment a line                |kbd:[Ctrl + /]
+|Invoke code completion	                    |kbd:[Ctrl + Space]
+|Switch between tabs                        |kbd:[Ctrl + TAB]
+|Switch between windows and files opened    |kbd:[Ctrl + Tab]    	
+|Switch method                              |kbd:[Alt + ▲ ou ▼]
+|Toggle case                                |kbd:[Ctrl + Maj + U]
+|===
+
+=== Reformat / Refactor
+
+|===
+|Reformat Code                              |kbd:[Ctrl + Alt + L]
+|Refactor This                              |kbd:[Ctrl + Alt + Maj + T]
+|===
+
+=== Selection
+
+|===
+|Extend Selection                           |kbd:[Ctrl + W]
+|Shrink Selection                           |kbd:[Ctrl + Maj + W]
+|Duplicate Selection                        |kbd:[Ctrl + D]
+|===
+
+=== Find / Replace
+
+|===
+|Find                                           |kbd:[Ctrl + F]
+|Find Next / Move to Next Occurrence            |kbd:[Ctrl + L]
+|Find Previous / Move to Previous Occurrence    |kbd:[Ctrl + Maj + F]
+|Find in Path                                   |kbd:[Ctrl + Maj + F]
+|Find Usages                                    |kbd:[Alt + F7]
+|Find Usages in File                            |kbd:[Ctrl + F7]
+|Find class by name                             |kbd:[Ctrl + N]
+|Find file by name                              |kbd:[Ctrl + Shift + N]
+|Replace                                        |kbd:[Ctrl + R]
+|Replace in Path                                |kbd:[Ctrl + Maj + R]
+|===
+
+=== Line
+
+|===
+|Go to Line	                                |kbd:[Ctrl + G]
+|Delete	Line                                |kbd:[Ctrl + Y]
+|Duplicate Line                             |kbd:[Ctrl + D]
+|Split Line	                                |kbd:[Ctrl + ENTER]
+|Join Lines	                                |kbd:[Ctrl + Maj + J]
+|Start New line	                            |kbd:[Maj + ENTER]
+|Start New Line Before Current              |kbd:[Ctrl + Alt + ENTER]
+|===
+
+{BACK_TO_TOP}
+
+== Chrome
+
+|===
+|Open new tab                       |kbd:[Ctrl + N]
+|Reopen last tab and access then    |kbd:[Ctrl + Shift + N]
+|Go to next open tab                |kbd:[Ctrl + NextPage]
+|Go to previous open tab            |kbd:[Ctrl + PreviousPage]
+|Menu                               |kbd:[Alt]
+|Adress bar                         |kbd:[F6]
+|Refresh                            |kbd:[Ctrl + R]
+|Refresh without cache              |kbd:[Ctrl + Maj + R]
+|===
+
+{BACK_TO_TOP}
