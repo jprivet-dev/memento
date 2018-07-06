@@ -1,0 +1,14 @@
+:numbered:
+:toc: left
+:sectanchors:
+
+:BACK_TO_TOP_TARGET: top-of-page
+:BACK_TO_TOP_LABEL: ⬆ Back to top
+:BACK_TO_TOP: <<{BACK_TO_TOP_TARGET},{BACK_TO_TOP_LABEL}>>
+
+[#{BACK_TO_TOP_TARGET}]
+= {MAIN_TITLE}
+
+:toc-title: Table of contents
+:toclevels: 3
+toc::[]
