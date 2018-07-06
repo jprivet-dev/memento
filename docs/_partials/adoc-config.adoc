@@ -3,6 +3,11 @@
 :sectanchors:
 :experimental:
 
+:MEMENTO_TITLE: Memento
+:MEMENTO_ALL_CARDS_TITLE: List of all memento cards
+
+
+:URI_INDEX: index.html
 :URI_GITHUB_NAME: jprivet-dev
 :URI_GITHUB: https://github.com/{URI_GITHUB_NAME}
 :URI_TWITTER_NAME: jprivet_dev
@@ -13,9 +18,13 @@
 :BACK_TO_TOP: <<{BACK_TO_TOP_TARGET},{BACK_TO_TOP_LABEL}>>
 
 [#{BACK_TO_TOP_TARGET}]
-= {MAIN_TITLE}
+= {MEMENTO_TITLE} :: {MAIN_TITLE}
 
-Github : link:{URI_GITHUB}[{URI_GITHUB_NAME}] / Twitter : link:{URI_TWITTER}[@{URI_TWITTER_NAME}]
+link:{URI_INDEX}[{MEMENTO_ALL_CARDS_TITLE}]
+/ Github : link:{URI_GITHUB}[{URI_GITHUB_NAME}]
+/ Twitter : link:{URI_TWITTER}[@{URI_TWITTER_NAME}]
+
+''''
 
 :toc-title: Table of contents
 :toclevels: 3

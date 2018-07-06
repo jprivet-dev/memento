@@ -4,23 +4,11 @@ include::_partials/adoc-config.adoc[]
 
 == PHPStorm 2017
 
-=== General
+=== Miscellaneous
 
 |===
-|Comment or uncomment a fragment            |kbd:[Ctrl + Shift + /]
-|Comment or uncomment a line                |kbd:[Ctrl + /]
-|Invoke code completion	                    |kbd:[Ctrl + Space]
-|Switch between tabs                        |kbd:[Ctrl + TAB]
-|Switch between windows and files opened    |kbd:[Ctrl + Tab]    	
-|Switch method                              |kbd:[Alt + ▲ ou ▼]
-|Toggle case                                |kbd:[Ctrl + Maj + U]
-|===
-
-=== Reformat / Refactor
-
-|===
-|Reformat Code                              |kbd:[Ctrl + Alt + L]
-|Refactor This                              |kbd:[Ctrl + Alt + Maj + T]
+|Invoke Code Completion	                    |kbd:[Ctrl + Space]
+|Toggle Case                                |kbd:[Ctrl + Maj + U]
 |===
 
 === Selection
@@ -40,10 +28,18 @@ include::_partials/adoc-config.adoc[]
 |Find in Path                                   |kbd:[Ctrl + Maj + F]
 |Find Usages                                    |kbd:[Alt + F7]
 |Find Usages in File                            |kbd:[Ctrl + F7]
-|Find class by name                             |kbd:[Ctrl + N]
-|Find file by name                              |kbd:[Ctrl + Shift + N]
+|Find Class by Name                             |kbd:[Ctrl + N]
+|Find File by Name                              |kbd:[Ctrl + Shift + N]
 |Replace                                        |kbd:[Ctrl + R]
 |Replace in Path                                |kbd:[Ctrl + Maj + R]
+|===
+
+=== Reformat / Refactor
+
+|===
+|Reformat Code                              |kbd:[Ctrl + Alt + L]
+|Refactor This                              |kbd:[Ctrl + Alt + Maj + T]
+|Switch Method                              |kbd:[Alt + ▲ ou ▼]
 |===
 
 === Line
@@ -56,6 +52,20 @@ include::_partials/adoc-config.adoc[]
 |Join Lines	                                |kbd:[Ctrl + Maj + J]
 |Start New line	                            |kbd:[Maj + ENTER]
 |Start New Line Before Current              |kbd:[Ctrl + Alt + ENTER]
+|===
+
+=== Comment / Uncomment
+
+|===
+|Comment or Uncomment a Fragment            |kbd:[Ctrl + Shift + /]
+|Comment or Uncomment a Line                |kbd:[Ctrl + /]
+|===
+
+=== Tabs / Windows
+
+|===
+|Switch Between Tabs                        |kbd:[Ctrl + TAB]
+|Switch Between Windows and Files Opened    |kbd:[Ctrl + Tab]  
 |===
 
 {BACK_TO_TOP}
