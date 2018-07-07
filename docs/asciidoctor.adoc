@@ -1,0 +1,167 @@
+:MAIN_TITLE: Git
+
+include::_partials/adoc-config.adoc[]
+
+* http://asciidoctor.org/docs/asciidoc-syntax-quick-reference/
+* https://github.com/asciidoctor/asciidoctor.org/blob/master/docs/asciidoc-syntax-quick-reference.adoc
+* http://asciidoctor.org/docs/user-manual/
+* http://asciidoctor.org/docs/asciidoc-recommended-practices/
+* http://asciidoctor.org/docs/asciidoc-writers-guide/
+
+== AsciiDoc recommended practices
+
+=== Document extension
+
+`.adoc` seems to be the most often used extension and the one we prefer. 
+
+=== One Sentence Per Line
+
+The technique was also recommended in 2009 by Brandon Rhodes in a blog post about Semantic Linefeeds.
+
+=== Code
+
+[listing]
+....
+[[app-listing]]
+[source,ruby]
+.app.rb
+----
+require 'sinatra'
+
+get '/hi' do
+  "Hello World!"
+end
+----
+....
+
+[.result]
+====
+[[app-listing]]
+[source,ruby]
+.app.rb
+----
+require 'sinatra'
+
+get '/hi' do
+  "Hello World!"
+end
+----
+====
+
+=== Attributes
+
+[listing]
+....
+:myname: Bob
+Hello {myname}
+....
+
+[.result]
+====
+:myname: Bob
+Hello {myname}
+====
+
+=== Table of contents
+
+----
+:toc: macro
+toc::[]
+----
+
+=== Structure
+
+----
+.
+└── app/Resources/fixtures/orm/
+    ├── environmentless-fixture1.yml
+    ├── ...
+    ├── inte
+    |   ├── prod-fixture1.yml
+    |   ├── ...
+    └─── dev
+            ├── dev-fixture1.yml
+            └── ...
+----
+
+=== Blocks
+
+////
+Comment
+////
+
+[example]
+====
+*Example*
+Example
+====
+
+```
+*Fenced*
+Fenced
+```
+
+----
+*Listing*
+Listing
+----
+
+....
+*Literal*
+Literal
+....
+
+--
+Open
+Open
+--
+
+++++
+*Passthrough*
+Passthrough
+++++
+
+____
+*Quote*
+Quote
+____
+
+****
+*Sidebar*
+Sidebar
+****
+
+----
+*Source*
+Source
+----
+
+++++
+*Stem*
+Stem
+++++
+
+|===
+*Table*
+Table
+|===
+
+____
+*Verse*
+Verse
+____
+
+[red]#Obvious# and [big red yellow-background]*very obvious*.
+[underline]#Underline text#, [overline]#overline text# and
+[blue line-through]*bold blue and line-through*.
+
+=== Summury & Accordion
+
+<details>
+<summary>View contents</summary>
+
+* [`all`](#all)
+* [`any`](#any)
+* [`chunk`](#chunk)
+
+</details>
