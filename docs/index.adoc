@@ -3,3 +3,7 @@
 include::_partials/adoc-config.adoc[]
 
 link:shortcuts.html[Shortcuts]
+
+link:git.html[Git]
+
+link:asciidoctor.html[Asciidoctor]
