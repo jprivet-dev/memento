@@ -1,0 +1,14 @@
+:MAIN_TITLE: Git
+
+include::_partials/adoc-config.adoc[]
+
+== Clear cache du `.gitignore`
+
+Supprimer des fichiers, inscrits dans le .gitignore, qui sont encore suivi et qui apparaîssent dans mes status
+
+[source,bash]
+----
+git rm -r --cached .
+git add .
+git commit -m ".gitignore is now working"
+----
