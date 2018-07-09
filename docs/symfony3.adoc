@@ -2,6 +2,18 @@
 
 include::_partials/adoc-config.adoc[]
 
+== Présentation
+
+Symfony est un framework PHP créé par Fabien Potentier et éditer par la sotiété SensioLabs.
+
+|===
+|Version maintenue de Sf |Date de sortie |Version min de PHP requis
+|Symfony 1      |2005 |
+|Symfony 2.8    |2011 |PHP 5.3.9
+|Symfony 3.4    |2015 |PHP 5.5.9
+|Symfony 4.0    |2018 |PHP 7.1.3
+|===
+
 == Ressources
 
 - https://openclassrooms.com/fr/courses/3619856-developpez-votre-site-web-avec-le-framework-symfony
