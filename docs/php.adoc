@@ -1,0 +1,67 @@
+:MAIN_TITLE: PHP
+
+include::_partials/adoc-config.adoc[]
+
+== Les namespaces
+
+=== Présentation
+
+Les namespaces permettent de séparer constantes, fonctions et classes dans différents espaces afin d'éviter tout conflit.
+
+Il est ainsi possible d'avoir plusieurs constantes, fonctions ou classes du même nom dans la même application !
+
+IMPORTANT: les *namespaces* ne sont disponibles que depuis *PHP 5.3*
+
+=== Déclarer un namespace
+
+Il faut utiliser la commande namespace suivu du nom du namespace à créer. Rien ne doit être placé avant, que ce soit du HTML ou un simple retour à la ligne.
+
+[source,php]
+----
+namespace MyNamespace;
+
+function strlen()
+{
+    return 'Hello!';
+}
+
+echo strlen();          // Hello!
+
+echo \strlen('Hello!')  // 6
+----
+
+TIP: utiliser le backslash `\` pour appeler une fonction de manière globale
+
+Dans le cas précédent, le premier `strlen()` fait appel à la fonction déclarée dans le namespace MyNamespace. Le deuxième `\strlen()` fait appel à la fonction fournie par PHP.
+
+=== Déclarer plusieurs namespaces
+
+WARNING: Il est possible de déclarer plusieurs namespaces dans un fichier. C'est possible mais déconseillé.
+
+[source,php]
+----
+namespace MyNamespaceA;
+
+function printMyNamespace()
+{
+    echo 'A';
+}
+
+printMyNamespace(); // Agit 
+
+namespace MyNamespaceB;
+
+function printMyNamespace()
+{
+    echo 'B';
+}
+
+printMyNamespace(); // B
+----
+
+== Ressources
+
+- https://openclassrooms.com/fr/courses/1217456-les-espaces-de-noms-en-php
+
+
+{BACK_TO_TOP}
