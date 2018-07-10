@@ -6,6 +6,8 @@ include::_partials/adoc-config.adoc[]
 
 Symfony est un framework PHP créé par Fabien Potentier et éditer par la sotiété SensioLabs.
 
+NOTE: Un framework sert à améliorer la productivité des développeurs
+
 |===
 |Version maintenue de Sf |Date de sortie |Version min de PHP requis
 |Symfony 1      |2005 |
@@ -14,9 +16,42 @@ Symfony est un framework PHP créé par Fabien Potentier et éditer par la soti�
 |Symfony 4.0    |2018 |PHP 7.1.3
 |===
 
+== Création d'un nouveau projet
+
+[source,shell]
+----
+$ symfony new my_project_name 3.4
+
+# Use the most recent 'lts' version (Long Term Support version)
+$ symfony new my_project_name lts
+----
+
+== L'architecture de Symfony
+
+----
+.
+|-- app/        # Configuration & Templates
+|-- bin/        # Exécutables (commandes PHP, bin\console, ...)
+|-- src/        # Code source (bundles, ...)
+|-- tests/      # Tests unitaires
+|-- var/        # Logs, cache, ...
+|-- vendor/     # Libs externes
+`-- web/        # Fichiers destinés aux visiteurs (img, css, js)
+                # Contrôleurs frontaux `app.php` & `app_dev.php`
+----
+
+=== Mode dev & debug
+
+TIP: Vous pouvez avoir accès à l'outils profiler en allant sur  http://localhost/my_new_project/web/app_dev.php/_profiler
+
+TIP: En production, les erreurs sont loggées dans le fichier `var/logs/prod.log`
+
+== L'architecture basique conceptuelle MVC
+
 == Ressources
 
 - https://openclassrooms.com/fr/courses/3619856-developpez-votre-site-web-avec-le-framework-symfony
+- https://symfony.com/doc/3.4/setup.html
 
 
 {BACK_TO_TOP}
