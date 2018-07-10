@@ -18,7 +18,7 @@ NOTE: Un framework sert à améliorer la productivité des développeurs
 
 == Création d'un nouveau projet
 
-[source,shell]
+[source,bash]
 ----
 $ symfony new my_project_name 3.4
 
@@ -80,23 +80,22 @@ TIP: http://knpbundles.com regroupe persque tous les bundles de la communauté S
 
 WARNING: Il y a une différence de commande entre la version 2 et 3 de Symfony pour l'exécutable.
 
-[source,shell]
+[source,bash]
 ----
-$ php bin/console my_command  # Symfony 3
-$ php app/console my_command  # Symfony 2
+$ php bin/console generate:bundle
+$ php app/console generate:bundle
 ----
 
 ==== Génération du bundle
 
-[source,shell]
+[source,bash]
 ----
 $ php bin/console generate:bundle
-...
 ----
 
 Le générateur va poser plusieurs questions :
 
-[source,shell]
+[source,bash]
 ----
 # 1 - Cadre de réutilisation du bundle
 Are you planning on sharing this bundle across multiple applications? [no]:yes
@@ -116,22 +115,23 @@ Configuration format (annotation, yml, xml, php) [xml]:_
 
 Symfony a généré la structure du bundle dans le répertoire `src/OC/PlatformBundle`.
 
+TIP: Le seul fichier obligatoire pour la création du bundle est la classe à la racine `OCPlatformBundle.php`
+
 Il a aussi enregistré le bundle auprès du Kernel `app/AppKernel.php`.
 
 Le bundle dispose de ses propres routes :
 
-.src/OC/PlatformFormBundle/Resources/config/routing.yml
-[source,yaml]
+.src/OC/PlatformBundle/Resources/config/routing.yml
 ----
 oc_platform_homepage:
     path:       /
-    defaults:   { _controller: OCPlatformBundle:Default:index }
+    defaults:   { _controller: OCPlatformBundle:Default:index } <1>
 ----
+<1> `OCPlatformBundle:Default:index` pointe le controlleur `src/OC/PlatformBundle/Controller/DefaultController.php`.
 
 Ce fichier est ensuite importé dans le fichier de routing global de l'application. Symfony a aussi généré ces lignes de configuration.
 
 .app/config/routing.yml
-[source,yaml]
 ----
 oc_platform :
     resource:   "@OCPlatformBundle/Resources/config/routing.yml"
