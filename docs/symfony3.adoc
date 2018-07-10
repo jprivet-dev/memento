@@ -48,6 +48,96 @@ TIP: En production, les erreurs sont loggées dans le fichier `var/logs/prod.log
 
 == L'architecture basique conceptuelle MVC
 
+- `M` pour `Model` : Gestion des données et des contenus.
+- `V` pour `View` : Affichage des pages.
+- `C` pour `Controller` : Analyse et traitement de la requête HTTP.
+
+=== Parcours d'une requête dans Symfony
+
+image::symfony3/img/parcours-requete.png[]
+
+== Les bundles
+
+NOTE: Un bundle est un brique de l'application. Il contient tout ce qui concerne une même fonctionnalité (contrôleurs, modèles, vues, css, js, ...).
+
+TIP: http://knpbundles.com regroupe persque tous les bundles de la communauté Symfony.
+
+=== Structure d'un bundle
+
+----
+.
+|-- Controller/                 # Contrôleurs de l'application
+|-- DependencyInjection/        # Information du bundle
+|-- Entity/                     # Modèles
+|-- Form/                       # Formulaires
+`-- Resources/
+    |-- config/                 # Configuration du bundle (ex: routes)
+    |-- public/                 # Fichiers publics (css, js, images, ...)
+    `-- views/                  # Vues du bundles (Twig)
+----
+
+=== Création d'un bundle avec la console
+
+WARNING: Il y a une différence de commande entre la version 2 et 3 de Symfony pour l'exécutable.
+
+[source,shell]
+----
+$ php bin/console my_command  # Symfony 3
+$ php app/console my_command  # Symfony 2
+----
+
+==== Génération du bundle
+
+[source,shell]
+----
+$ php bin/console generate:bundle
+...
+----
+
+Le générateur va poser plusieurs questions :
+
+[source,shell]
+----
+# 1 - Cadre de réutilisation du bundle
+Are you planning on sharing this bundle across multiple applications? [no]:yes
+
+# 2 - Choix du namespace
+Bundle namespace: OC/PlatformBundle
+
+# 3 - Choix du nom
+Bundle name [OCPlatformBundle]:_
+
+# 4 - Choix de la destination
+Target Directory [src/]:_
+
+# 5 - Choix du format de configuration
+Configuration format (annotation, yml, xml, php) [xml]:_
+----
+
+Symfony a généré la structure du bundle dans le répertoire `src/OC/PlatformBundle`.
+
+Il a aussi enregistré le bundle auprès du Kernel `app/AppKernel.php`.
+
+Le bundle dispose de ses propres routes :
+
+.src/OC/PlatformFormBundle/Resources/config/routing.yml
+[source,yaml]
+----
+oc_platform_homepage:
+    path:       /
+    defaults:   { _controller: OCPlatformBundle:Default:index }
+----
+
+Ce fichier est ensuite importé dans le fichier de routing global de l'application. Symfony a aussi généré ces lignes de configuration.
+
+.app/config/routing.yml
+[source,yaml]
+----
+oc_platform :
+    resource:   "@OCPlatformBundle/Resources/config/routing.yml"
+    prefix:     /
+----
+
 == Ressources
 
 - https://openclassrooms.com/fr/courses/3619856-developpez-votre-site-web-avec-le-framework-symfony
