@@ -58,7 +58,7 @@ image::symfony3/img/parcours-requete.png[]
 
 == Les bundles
 
-NOTE: Un bundle est un brique de l'application. Il contient tout ce qui concerne une même fonctionnalité (contrôleurs, modèles, vues, css, js, ...).
+NOTE: Un bundle est une brique de l'application. Il contient tout ce qui concerne une même fonctionnalité (contrôleurs, modèles, vues, css, js, ...).
 
 TIP: http://knpbundles.com regroupe persque tous les bundles de la communauté Symfony.
 
@@ -82,8 +82,8 @@ WARNING: Il y a une différence de commande entre la version 2 et 3 de Symfony p
 
 [source,bash]
 ----
-$ php bin/console generate:bundle
-$ php app/console generate:bundle
+$ php bin/console generate:bundle   # Symfony 3
+$ php app/console generate:bundle   # Symfony 2
 ----
 
 ==== Génération du bundle
