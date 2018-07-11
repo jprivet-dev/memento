@@ -442,7 +442,9 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#truecr-ation-d-un-bundle-avec-la-console">5.2. Création d&#8217;un bundle avec la console</a></li>
 </ul>
 </li>
-<li><a href="#trueressources">6. Ressources</a></li>
+<li><a href="#trueactivation-de-la-toobar">6. Activation de la toobar</a></li>
+<li><a href="#trueinterview">7. Interview</a></li>
+<li><a href="#trueressources">8. Ressources</a></li>
 </ul>
 </div>
 </div>
@@ -606,7 +608,7 @@ En production, les erreurs sont loggées dans le fichier <code>var/logs/prod.log
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-Un bundle est un brique de l&#8217;application. Il contient tout ce qui concerne une même fonctionnalité (contrôleurs, modèles, vues, css, js, &#8230;&#8203;).
+Un bundle est une brique de l&#8217;application. Il contient tout ce qui concerne une même fonctionnalité (contrôleurs, modèles, vues, css, js, &#8230;&#8203;).
 </td>
 </tr>
 </table>
@@ -655,8 +657,8 @@ Il y a une différence de commande entre la version 2 et 3 de Symfony pour l&#82
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">$ php bin/console generate:bundle
-$ php app/console generate:bundle</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">$ php bin/console generate:bundle   # Symfony 3
+$ php app/console generate:bundle   # Symfony 2</code></pre>
 </div>
 </div>
 <div class="sect3">
@@ -702,6 +704,18 @@ Le seul fichier obligatoire pour la création du bundle est la classe à la raci
 </tr>
 </table>
 </div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-php" data-lang="php">&lt;?php
+namespace OC\PlatformBundle;
+
+use Symfony\Component\HttpKernel\Bundle\Bundle;
+
+class OCPlatformBundle extends Bundle
+{
+}</code></pre>
+</div>
+</div>
 <div class="paragraph">
 <p>Il a aussi enregistré le bundle auprès du Kernel <code>app/AppKernel.php</code>.</p>
 </div>
@@ -740,7 +754,65 @@ Le seul fichier obligatoire pour la création du bundle est la classe à la raci
 </div>
 </div>
 <div class="sect1">
-<h2 id="trueressources"><a class="anchor" href="#trueressources"></a>6. Ressources</h2>
+<h2 id="trueactivation-de-la-toobar"><a class="anchor" href="#trueactivation-de-la-toobar"></a>6. Activation de la toobar</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>La toolbar est un bout de code HTML que rajoute Symfony à chaque page&#8230;&#8203; contenant la balise <code>&lt;/body&gt;</code>. Insérer cette balise dans le template du bundle fraîchement créé :</p>
+</div>
+<div class="listingblock">
+<div class="title">src/OC/PlatformBundle/Resources/vews/Default/index.html.twig</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-html" data-lang="html">&lt;html&gt;
+    &lt;body&gt;
+        Hello World!
+    &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Actualisez la page : la toobar apparaît en bas de page.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="trueinterview"><a class="anchor" href="#trueinterview"></a>7. Interview</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Premier développement de symfony à la sortie de PHP 5 en 2003.</p>
+</div>
+<div class="paragraph">
+<p>Symfony 2 est basé sur HTTP et les bonnes pratiques autour de l&#8217;injection de dépendance.</p>
+</div>
+<div class="paragraph">
+<p>Il y a un business model double autour :</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>du service</p>
+</li>
+<li>
+<p>des produits en Saas</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Exemples de produits :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://insight.sensiolabs.com">SensioLabs Insight</a> permet de vérifer que les bonnes pratiques soient bien implémentées. Permet de mesurer la qualité et la dette technique d&#8217;un projet.</p>
+</li>
+<li>
+<p><a href="https://blackfire.io/">Blackfire</a> permet de gérer la performance d&#8217;un site web.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="trueressources"><a class="anchor" href="#trueressources"></a>8. Ressources</h2>
 <div class="sectionbody">
 <div class="ulist">
 <ul>
@@ -760,7 +832,7 @@ Le seul fichier obligatoire pour la création du bundle est la classe à la raci
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-07-10 23:15:09 PM
+Last updated 2018-07-11 14:24:19 PM
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.9.1/styles/github.min.css">

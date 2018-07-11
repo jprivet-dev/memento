@@ -117,6 +117,18 @@ Symfony a généré la structure du bundle dans le répertoire `src/OC/PlatformB
 
 TIP: Le seul fichier obligatoire pour la création du bundle est la classe à la racine `OCPlatformBundle.php`
 
+[source,php]
+----
+<?php
+namespace OC\PlatformBundle;
+
+use Symfony\Component\HttpKernel\Bundle\Bundle;
+
+class OCPlatformBundle extends Bundle
+{
+}
+----
+
 Il a aussi enregistré le bundle auprès du Kernel `app/AppKernel.php`.
 
 Le bundle dispose de ses propres routes :
@@ -137,6 +149,38 @@ oc_platform :
     resource:   "@OCPlatformBundle/Resources/config/routing.yml"
     prefix:     /
 ----
+
+== Activation de la toobar
+
+La toolbar est un bout de code HTML que rajoute Symfony à chaque page... contenant la balise `</body>`. Insérer cette balise dans le template du bundle fraîchement créé :
+
+.src/OC/PlatformBundle/Resources/vews/Default/index.html.twig
+[source,html]
+----
+<html>
+    <body>
+        Hello World!
+    </body>
+</html>
+----
+
+Actualisez la page : la toobar apparaît en bas de page.
+
+== Interview
+
+Premier développement de symfony à la sortie de PHP 5 en 2003.
+
+Symfony 2 est basé sur HTTP et les bonnes pratiques autour de l'injection de dépendance.
+
+Il y a un business model double autour :
+
+. du service
+. des produits en Saas
+
+Exemples de produits :
+
+- https://insight.sensiolabs.com[SensioLabs Insight] permet de vérifer que les bonnes pratiques soient bien implémentées. Permet de mesurer la qualité et la dette technique d'un projet.
+- https://blackfire.io/[Blackfire] permet de gérer la performance d'un site web.
 
 == Ressources
 
