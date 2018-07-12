@@ -182,6 +182,107 @@ Exemples de produits :
 - https://insight.sensiolabs.com[SensioLabs Insight] permet de vérifer que les bonnes pratiques soient bien implémentées. Permet de mesurer la qualité et la dette technique d'un projet.
 - https://blackfire.io/[Blackfire] permet de gérer la performance d'un site web.
 
+== Hello World! (les bases)
+
+=== Le routeur
+
+==== Qu'est-ce un routeur ?
+
+NOTE: l'objectif du routeur est de faire la correspondance entre une URL et des paramètres.
+
+Figure synthétique du routeur :
+
+image::symfony3/img/routeur.png[]
+
+==== Création du routeur
+
+NOTE: l'exemple est réalisé dans le cadre du bundle `src/OC/PlatformBundle`
+
+.src/OC/PlatformBundle/Resources/config/routing.yml
+----
+hello_the_world:
+    path:       /hello-word
+    defaults:   { _controller: OCPlatformBundle:Advert:index }
+----
+
+- `OCPlatformBundle:Advert:index` => `Bundle:Controller:Action` 
+
+=== Le contrôleur
+
+Création de base du contrôleur :
+
+.src/OC/PlatformBundle/Controller/AdvertController.php
+[source,php]
+----
+namespace OC\PlatformBundle\Controller;
+
+use Symfony\Component\HttpFoundation\Response;
+
+class AdvertController
+{
+    public function indexAction()
+    {
+        return new Response("Hello World!");
+    }
+}
+----
+
+=== Le template Twig
+
+NOTE: Twig est un moteur de template. Il permet d'afficher le contenu des pages HTML de façon dynamique, mais sans PHP.
+
+Création de base du template Twig :
+
+.src/OC/PlatformBundle/Resources/views/Advert/index.html.twig
+[source,html]
+----
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Message d'accueil</title>
+  </head>
+  <body>
+    <h1>Hello {{ nom }}</h1>
+  </body>
+</html>
+----
+
+Il faut faire hériter notre premier contrôlleur du contrôleur de base Symfony :
+
+.src/OC/PlatformBundle/Controller/AdvertController.php
+[source,php]
+----
+namespace OC\PlatformBundle\Controller;
+
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Response;
+
+class AdvertController extends Controller
+{
+    public function indexAction()
+    {
+        $content = $this
+            ->get('template')
+            ->render('OCPlatformBundle:Advert:index.html.twig', ['nom' => 'JP']);
+        return new Response($content); // Hello JP
+    }
+}
+----
+
+NOTE: Pour voir le résultat, il suffit d'afficher dans le navigateur la page `http://localhost/my_projetc/web/app_dev.php/hello-word`
+
+== Le cache
+
+IMPORTANT: Penser à vider le cache
+
+[source,bash]
+----
+$ php bin/console cache:clear               # dev
+$ php bin/console cache:clear --env=prod    # prod
+----
+
+TIP: Si nécessaire, il est possible de supprimer directement les fichiers dans le dossier `var/cache/dev` ou `var/cache/prod`
+
 == Ressources
 
 - https://openclassrooms.com/fr/courses/3619856-developpez-votre-site-web-avec-le-framework-symfony
