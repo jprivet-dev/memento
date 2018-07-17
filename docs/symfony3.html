@@ -452,7 +452,13 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </ul>
 </li>
 <li><a href="#truele-cache">9. Le cache</a></li>
-<li><a href="#trueressources">10. Ressources</a></li>
+<li><a href="#truele-routeur-2">10. Le routeur</a>
+<ul class="sectlevel2">
+<li><a href="#trueexemples-simples">10.1. Exemples simples</a></li>
+<li><a href="#trueexemples-avec-des-routes-plus-complexes">10.2. Exemples avec des routes plus complexes</a></li>
+</ul>
+</li>
+<li><a href="#trueressources">11. Ressources</a></li>
 </ul>
 </div>
 </div>
@@ -1005,7 +1011,104 @@ Si nécessaire, il est possible de supprimer directement les fichiers dans le do
 </div>
 </div>
 <div class="sect1">
-<h2 id="trueressources"><a class="anchor" href="#trueressources"></a>10. Ressources</h2>
+<h2 id="truele-routeur-2"><a class="anchor" href="#truele-routeur-2"></a>10. Le routeur</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="trueexemples-simples"><a class="anchor" href="#trueexemples-simples"></a>10.1. Exemples simples</h3>
+<div class="listingblock">
+<div class="title">src/OC/PlatformBundle/Resources/config/routing.yml</div>
+<div class="content">
+<pre>oc_platform_home:
+    path:   /platform
+    defaults: { _controller: OCPlatformBundle:Advert:index }
+
+oc_platform_view:
+    path:   /platform/advert/{id}
+    defaults: { _controller: OCPlatformBundle:Advert:view }
+
+oc_platform_add:
+    path:   /platform/add
+    defaults: { _controller: OCPlatformBundle:Advert:add }</pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Si le routeur ne trouve aucune route correspondantes, le noyau de Symfony déclenche une erreur 404.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="trueexemples-avec-des-routes-plus-complexes"><a class="anchor" href="#trueexemples-avec-des-routes-plus-complexes"></a>10.2. Exemples avec des routes plus complexes</h3>
+<div class="listingblock">
+<div class="title">src/OC/PlatformBundle/Resources/config/routing.yml</div>
+<div class="content">
+<pre>oc_platform_view_slug:
+    path: /platform/{year}/{slug}.{format} <i class="conum" data-value="1"></i><b>(1)</b>
+    defaults:
+        _controller: OCPlatformBunlde:Advert:viewSlug
+        format: html <i class="conum" data-value="2"></i><b>(2)</b>
+    requirements:
+        year:   \d{4} <i class="conum" data-value="3"></i><b>(3)</b>
+        format: html|xml <i class="conum" data-value="4"></i><b>(4)</b></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>La route fait la correcpondance à partir du nom des variables utilisées, et non à partir de l&#8217;ordre des arguments de <code>viewSlugAction</code> (Voir AdvertController.php)</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>l&#8217;URL interceptée sera au format <code>html</code> par défault : <code>/platform/2011/webmaster</code> &#8658; <code>/platform/2011/webmaster.html</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td><code>year</code> ne peut avoir que 4 chiffres à la suite</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Seules les URLs de type <code>/platform/2011/webmaster.html</code> ou <code>/platform/2011/webmaster.xml</code> seront acceptées</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="title">src/OC/PlatformBundle/Controller/AdversController.php</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-php" data-lang="php">namespace OC\PlatformBundle\Controller;
+
+use Symfony\Bundle\FrameworkBunlde\Controller\Controller;
+use Symfony\Component\HttpFoundation\Response;
+
+class AdvertController extends Controller
+{
+    public function viewSlugAction($slug, $year, $format) <i class="conum" data-value="1"></i><b>(1)</b>
+    {
+        return new Response($slug . ' - ' . $year . ' - ' . $format);
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>La route fait la correcpondance à partir du nom des variables utilisées, et non à partir de l&#8217;ordre des arguments de <code>viewSlugAction</code> (Voir routing.yml)</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="trueressources"><a class="anchor" href="#trueressources"></a>11. Ressources</h2>
 <div class="sectionbody">
 <div class="ulist">
 <ul>
@@ -1025,7 +1128,7 @@ Si nécessaire, il est possible de supprimer directement les fichiers dans le do
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-07-12 14:08:36 PM
+Last updated 2018-07-17 14:02:35 PM
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.9.1/styles/github.min.css">
