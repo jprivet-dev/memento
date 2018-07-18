@@ -341,6 +341,117 @@ class AdvertController extends Controller
 ----
 <1> La route fait la correcpondance à partir du nom des variables utilisées, et non à partir de l'ordre des arguments de `viewSlugAction` (Voir routing.yml)
 
+=== Ajustement du `Content-type` avec le paramètre `{_format}`
+
+NOTE: En modifiant le nom du paramètre de la route à `{_format}`, le `Content-type` correspondant est ajouté à la réponse retournée
+
+.src/OC/PlatformBundle/Resources/config/routing.yml
+----
+oc_platform_view_slug:
+    path: /platform/{year}/{slug}.{_format} <1>
+    defaults:
+        _controller: OCPlatformBunlde:Advert:viewSlug
+        ...
+----
+<1> Ajout de l'underscore `_` au format
+
+.src/OC/PlatformBundle/Controller/AdversController.php
+[source,php]
+----
+...
+
+class AdvertController extends Controller
+{
+    public function viewSlugAction($slug, $year, $_format) <1>
+    {
+        return new Response($slug . ' - ' . $year . ' - ' . $format);
+    }
+}
+----
+<1> Ajout de l'underscore `_` au format
+
+=== D'autres paramètres : `{_locale}`, `{_controller}`
+
+|===
+|`{_locale}` |Définit la lanque dans laquelle l'utilisateur souhaite obtenir la page. Penser à mettre un `requirements` pour filtrer les langues autorisées
+|`{_controller}` |Est aussi un paramètre de route. Le tableau `default` correspond juste aux valeurs par défaut de nos paramètres, qu'ils soient ou non présents dans le `path` de la route
+|===
+
+=== Définir un préfix lors de l'import des routes
+
+TIP: Au lieu d'écrire `/platform` au début du `path` de chacune des routes, il est possible de le définir en tant que préfixe lors de l'import du fichier de route
+
+.app/config/routing.yml
+----
+oc_platform:
+    resource: "@OCPlatformBundle/Resources/config/routing.yml"
+    prefix: /platform
+----
+
+.src/OC/PlatformBundle/Resources/config/routing.yml
+----
+oc_platform_home:
+    path:   /
+    defaults: { _controller: OCPlatformBundle:Advert:index }
+
+oc_platform_view:
+    path:   /advert/{id}
+    defaults: { _controller: OCPlatformBundle:Advert:view }
+
+oc_platform_add:
+    path:   /add
+    defaults: { _controller: OCPlatformBundle:Advert:add }
+----
+
+=== Générer des URLs
+
+==== Depuis le contrôleur
+
+Méthode longue :
+[source,php]
+----
+$this->get('router')->generate(
+    'oc_plarform_view',     // nom de la route
+    ['id' => 5]             // paramètres de la route
+); // retourne «/platform/advert/5»
+----
+
+Méthode courte:
+[source,php]
+----
+$this->generateUrl(
+    'oc_platform_view',
+    ['id' => 5]
+);
+----
+
+Gérérer une URL absolue :
+[source,php]
+----
+$url = $this->get('router')->generate(
+    'oc_plarform_view',
+    ['id' => 5],
+    UrlGeneratorInterface::ABSOLUTE_URL
+); // retourne «http://www.monsite.fr/platform/advert/5»
+----
+
+==== Depuis une vue Twig
+
+Générer une URL relative :
+[source,html]
+----
+<a href="{{ path('oc_platform_view', { 'id': advert_id }) }}">
+    Liens vers l'annonce d'id {{ advert_id }}
+</a>
+----
+
+Générer une URL absolue :
+[source,html]
+----
+<a href="{{ url('oc_platform_view', { 'id': advert_id }) }}">
+    Liens vers l'annonce d'id {{ advert_id }}
+</a>
+----
 
 == Ressources
 

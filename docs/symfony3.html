@@ -456,6 +456,10 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <ul class="sectlevel2">
 <li><a href="#trueexemples-simples">10.1. Exemples simples</a></li>
 <li><a href="#trueexemples-avec-des-routes-plus-complexes">10.2. Exemples avec des routes plus complexes</a></li>
+<li><a href="#trueajustement-du-code-content-type-code-avec-le-param-tre-code-_format-code">10.3. Ajustement du <code>Content-type</code> avec le paramètre <code>{_format}</code></a></li>
+<li><a href="#trued-autres-param-tres-code-_locale-code-code-_controller-code">10.4. D&#8217;autres paramètres : <code>{_locale}</code>, <code>{_controller}</code></a></li>
+<li><a href="#trued-finir-un-pr-fix-lors-de-l-import-des-routes">10.5. Définir un préfix lors de l&#8217;import des routes</a></li>
+<li><a href="#trueg-n-rer-des-urls">10.6. Générer des URLs</a></li>
 </ul>
 </li>
 <li><a href="#trueressources">11. Ressources</a></li>
@@ -1105,6 +1109,182 @@ class AdvertController extends Controller
 </table>
 </div>
 </div>
+<div class="sect2">
+<h3 id="trueajustement-du-code-content-type-code-avec-le-param-tre-code-_format-code"><a class="anchor" href="#trueajustement-du-code-content-type-code-avec-le-param-tre-code-_format-code"></a>10.3. Ajustement du <code>Content-type</code> avec le paramètre <code>{_format}</code></h3>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+En modifiant le nom du paramètre de la route à <code>{_format}</code>, le <code>Content-type</code> correspondant est ajouté à la réponse retournée
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="title">src/OC/PlatformBundle/Resources/config/routing.yml</div>
+<div class="content">
+<pre>oc_platform_view_slug:
+    path: /platform/{year}/{slug}.{_format} <i class="conum" data-value="1"></i><b>(1)</b>
+    defaults:
+        _controller: OCPlatformBunlde:Advert:viewSlug
+        ...</pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Ajout de l&#8217;underscore <code>_</code> au format</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="title">src/OC/PlatformBundle/Controller/AdversController.php</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-php" data-lang="php">...
+
+class AdvertController extends Controller
+{
+    public function viewSlugAction($slug, $year, $_format) <i class="conum" data-value="1"></i><b>(1)</b>
+    {
+        return new Response($slug . ' - ' . $year . ' - ' . $format);
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Ajout de l&#8217;underscore <code>_</code> au format</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="trued-autres-param-tres-code-_locale-code-code-_controller-code"><a class="anchor" href="#trued-autres-param-tres-code-_locale-code-code-_controller-code"></a>10.4. D&#8217;autres paramètres : <code>{_locale}</code>, <code>{_controller}</code></h3>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>{_locale}</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Définit la lanque dans laquelle l&#8217;utilisateur souhaite obtenir la page. Penser à mettre un <code>requirements</code> pour filtrer les langues autorisées</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>{_controller}</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Est aussi un paramètre de route. Le tableau <code>default</code> correspond juste aux valeurs par défaut de nos paramètres, qu&#8217;ils soient ou non présents dans le <code>path</code> de la route</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="trued-finir-un-pr-fix-lors-de-l-import-des-routes"><a class="anchor" href="#trued-finir-un-pr-fix-lors-de-l-import-des-routes"></a>10.5. Définir un préfix lors de l&#8217;import des routes</h3>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Au lieu d'écrire <code>/platform</code> au début du <code>path</code> de chacune des routes, il est possible de le définir en tant que préfixe lors de l&#8217;import du fichier de route
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="title">app/config/routing.yml</div>
+<div class="content">
+<pre>oc_platform:
+    resource: "@OCPlatformBundle/Resources/config/routing.yml"
+    prefix: /platform</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">src/OC/PlatformBundle/Resources/config/routing.yml</div>
+<div class="content">
+<pre>oc_platform_home:
+    path:   /
+    defaults: { _controller: OCPlatformBundle:Advert:index }
+
+oc_platform_view:
+    path:   /advert/{id}
+    defaults: { _controller: OCPlatformBundle:Advert:view }
+
+oc_platform_add:
+    path:   /add
+    defaults: { _controller: OCPlatformBundle:Advert:add }</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="trueg-n-rer-des-urls"><a class="anchor" href="#trueg-n-rer-des-urls"></a>10.6. Générer des URLs</h3>
+<div class="sect3">
+<h4 id="truedepuis-le-contr-leur"><a class="anchor" href="#truedepuis-le-contr-leur"></a>10.6.1. Depuis le contrôleur</h4>
+<div class="paragraph">
+<p>Méthode longue :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-php" data-lang="php">$this-&gt;get('router')-&gt;generate(
+    'oc_plarform_view',     // nom de la route
+    ['id' =&gt; 5]             // paramètres de la route
+); // retourne «/platform/advert/5»</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Méthode courte:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-php" data-lang="php">$this-&gt;generateUrl(
+    'oc_platform_view',
+    ['id' =&gt; 5]
+);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Gérérer une URL absolue :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-php" data-lang="php">$url = $this-&gt;get('router')-&gt;generate(
+    'oc_plarform_view',
+    ['id' =&gt; 5],
+    UrlGeneratorInterface::ABSOLUTE_URL
+); // retourne «http://www.monsite.fr/platform/advert/5»</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="truedepuis-une-vue-twig"><a class="anchor" href="#truedepuis-une-vue-twig"></a>10.6.2. Depuis une vue Twig</h4>
+<div class="paragraph">
+<p>Générer une URL relative :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-html" data-lang="html">&lt;a href="{{ path('oc_platform_view', { 'id': advert_id }) }}"&gt;
+    Liens vers l'annonce d'id {{ advert_id }}
+&lt;/a&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Générer une URL absolue :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-html" data-lang="html">&lt;a href="{{ url('oc_platform_view', { 'id': advert_id }) }}"&gt;
+    Liens vers l'annonce d'id {{ advert_id }}
+&lt;/a&gt;</code></pre>
+</div>
+</div>
+</div>
+</div>
 </div>
 </div>
 <div class="sect1">
@@ -1128,7 +1308,7 @@ class AdvertController extends Controller
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-07-17 14:02:35 PM
+Last updated 2018-07-18 13:57:30 PM
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.9.1/styles/github.min.css">
