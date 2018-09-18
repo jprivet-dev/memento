@@ -1,0 +1,280 @@
+NOTE: ECMASCRIPT 6 = ECMASCRIPT 2015
+
+=== Transpileur
+
+- https://github.com/google/traceur-compiler de Google
+- https://babeljs.io/ de Sebastian McKenzie
+
+=== TypeScript
+
+TypeScript est un sur-ensemble typé de JavaScript qui compile vers du JavaScript standard.
+
+=== Let
+
+L'instruction `let` permet de déclarer une variable dont la portée est celle du bloc courant (elle n'est pas _remontée_ / _hoisted_) :
+
+[source,javascript]
+----
+let x = 1;
+
+if (x === 1) {
+    let x = 2;
+    console.log(x); // 2
+}
+
+console.log(x); // 1
+----
+
+=== Constantes
+
+La déclaration `const` premet de créer une constante nommée accessible uniquement en lecture. Une constante ne peut pas être déclarée à nouveau, et la valeur d'une constante ne peut pas être modifiée par des réaffectations ultérieures.
+
+Tout comme l'instruction `let`, sa portée est celle du bloc courant.
+
+[source,javascript]
+----
+const NUMBER = 42;
+
+try {
+    NUMBER = 99;
+} catch(err) {
+    console.log(err); // TypeError: invalid assignment to const `NUMBER`
+}
+
+console.log(NUMBER); // 42
+----
+
+TIP: Il est possible d'initaliser une constante avec un objet et modifier par la suite le contenu de l'objet
+
+[source,javascript]
+----
+const QUESTION = {univers: 0};
+
+try {
+    QUESTION = {intergalatic: 99};
+} catch(err) {
+    console.log(err); // TypeError: invalid assignment to const `QUESTION`
+}
+
+QUESTION.univers = 42;
+
+console.log(QUESTION.univers); // 42
+----
+
+=== Raccourci pour la création d'objets
+
+[source,javascript]
+----
+function myObjet() {
+    const name = "Myname";
+    const color = "pink";
+    return { name, color } // équivaut à { name: name, color: color }
+}
+----
+
+=== Affectations déstructurées
+
+En ES6, il est possible d'affecter des valeurs à des variables à partir d'objets ou de tableaux.
+
+[source,javascript]
+----
+let options = { name: "Myname", color: "pink" };
+let { name: userName, color: userColor } = options;
+
+console.log(userName); // Myname
+console.log(userColor); // pink
+----
+
+[source,javascript]
+----
+const milliseconds = [100, 800];
+const [fast, slow] = milliseconds;
+
+console.log(fast); // 100
+console.log(slow); // 800
+----
+
+Dans le cas où les variables ont le même nom que les propriétés de l'objet à lire, il est possible d'écrire :
+
+[source,javascript]
+----
+// ...
+
+let { name, color } = options;
+
+console.log(name); // Myname
+console.log(color); // pin;
+----
+
+=== Paramètres optionnels et valeurs par défaut
+
+Anciennement :
+
+[source,js]
+----
+function setUser(name, color) {
+    const name = name || "Nemo";
+    const color = color || "pink";
+    // ...
+}
+
+setUser("Brad","yellow");   // name = Brad, color = yellow
+setUser();                  // name = Nemo, color = pink
+----
+
+L'opérateur `OR` (`||`) va retourner l'opérande de droite si celui de gauche est `undefined` (`falsy`)
+
+NOTE: Les valeurs fausses (`falsy`) sont des valeurs évaluées comme fausses dans un contexte booléen : `false`, `null`, `undefined`, `0`, `NaN`, `' '`, `""`
+
+Aujourd'hui :
+
+[source,js]
+----
+function setUser(name = "Nemo", color = "pink") {
+    // ...
+}
+
+setUser("Brad","yellow");   // name = Brad, color = yellow
+setUser();                  // name = Nemo, color = pink
+----
+
+=== Rest opérator
+
+Anciennement :
+
+[source,js]
+----
+function addUsers() {
+    for (var i = 0; i < arguments.length; i++) {
+        // ...
+    }
+}
+
+addUsers("Armstrong", "Aldrin", "Collins");
+----
+
+Aujourd'hui :
+
+[source,js]
+----
+function addUsers(...users) {
+    for (let user of users) {
+        // ...
+    }
+}
+
+addUsers("Armstrong", "Aldrin", "Collins");
+----
+
+=== Classes
+
+[source,js]
+----
+class User {
+    constructor(name) {
+        this.name = name;
+    }
+    
+    toString() {
+        return `My name is ${this.name}.`;
+    }
+}
+
+const user = new User("Joe");
+console.log(user.toString()); // My name is Joe
+----
+
+Une classe peut avoir des attributs et des méthodes statiques. Ces méthodes statiques ne peuvent être appelées qu'à partir de la classe directement :
+
+[source,js]
+----
+class Human {
+    static getType() {
+        return "mammalian"
+    }
+}
+
+const type = Human.getType();
+----
+
+Il est possible d'utiliser les accesseurs `getters` et `setters` pour implémenter du code sur ces opérations :
+
+[source,js]
+----
+class User {
+    get name() {
+        console.log("get name");
+        return this.name;
+    }
+    
+    set name(name) {
+        console.log("set name");
+        this.name = name;
+    }
+}
+
+const me = new User();
+me.name = "Joe";
+// set name
+
+console.log(me.name);
+// get name
+// Joe
+----
+
+Avec les classes, il est possible d'exploiter l'héritage :
+
+[source,]
+----
+class Car {
+    getSpeedMax() {
+        return 90;
+    }
+}
+
+class F1 extends Car {
+    getSpeedMax() {
+        return super.getSpeedMax() * 3;
+    }
+}
+
+const twingo = new Car();
+console.log(twingo.getSpeedMax()); // 90
+
+const redbull = new F1();
+console.log(redbull.getSpeedMax()); // 270
+----
+
+NOTE: le mot clé `super` permet d'invoquer la méthode de la classe de base.
+
+[source,js]
+----
+class Car {
+    constructor(speedMax) {
+        this.speedMax = speedMax;
+    }
+}
+
+class F1 extends Car {
+    getSpeedMax(speedMax, color) {
+        super(speedMax);
+        this.color = color;
+    }
+}
+
+const twingo = new Car(90);
+console.log(twingo.speedMax); // 90
+
+const ferrari = new F1(270, "red");
+console.log(ferrari.speedMax); // 270
+----
+
+=== `Promises`
+
+Une `promise` a trois états :
+
+|===
+| pending       | "en cour"     |
+| fulfilled     | "réalisée"    | réalise le callback de succès 
+| rejected      | "rejetée"     | réalise le callback d'erreur
+|===
