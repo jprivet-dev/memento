@@ -110,7 +110,7 @@ console.log(color); // pin;
 
 Anciennement :
 
-[source,js]
+[source,javascript]
 ----
 function setUser(name, color) {
     const name = name || "Nemo";
@@ -128,7 +128,7 @@ NOTE: Les valeurs fausses (`falsy`) sont des valeurs évaluées comme fausses da
 
 Aujourd'hui :
 
-[source,js]
+[source,javascript]
 ----
 function setUser(name = "Nemo", color = "pink") {
     // ...
@@ -142,7 +142,7 @@ setUser();                  // name = Nemo, color = pink
 
 Anciennement :
 
-[source,js]
+[source,javascript]
 ----
 function addUsers() {
     for (var i = 0; i < arguments.length; i++) {
@@ -155,7 +155,7 @@ addUsers("Armstrong", "Aldrin", "Collins");
 
 Aujourd'hui :
 
-[source,js]
+[source,javascript]
 ----
 function addUsers(...users) {
     for (let user of users) {
@@ -168,7 +168,7 @@ addUsers("Armstrong", "Aldrin", "Collins");
 
 === Classes
 
-[source,js]
+[source,javascript]
 ----
 class User {
     constructor(name) {
@@ -186,7 +186,7 @@ console.log(user.toString()); // My name is Joe
 
 Une classe peut avoir des attributs et des méthodes statiques. Ces méthodes statiques ne peuvent être appelées qu'à partir de la classe directement :
 
-[source,js]
+[source,javascript]
 ----
 class Human {
     static getType() {
@@ -199,7 +199,7 @@ const type = Human.getType();
 
 Il est possible d'utiliser les accesseurs `getters` et `setters` pour implémenter du code sur ces opérations :
 
-[source,js]
+[source,javascript]
 ----
 class User {
     get name() {
@@ -247,7 +247,7 @@ console.log(redbull.getSpeedMax()); // 270
 
 NOTE: le mot clé `super` permet d'invoquer la méthode de la classe de base.
 
-[source,js]
+[source,javascript]
 ----
 class Car {
     constructor(speedMax) {
@@ -278,3 +278,230 @@ Une `promise` a trois états :
 | fulfilled     | "réalisée"    | réalise le callback de succès 
 | rejected      | "rejetée"     | réalise le callback d'erreur
 |===
+
+Exemple :
+
+[source,javascript]
+----
+const getUser = function(login) {
+    return new Promise(function(resolve, reject){
+        if(response.status === 200) {
+            const user = response.data;
+            resolve(user);
+        } else {
+            reject("No user");
+        }
+    });
+};
+
+getUser(login)
+    .then(function(user) {
+        console.log(user);
+    });
+----
+
+Si les `promises` retournent elles mêmes des `promises`, il sera possible de les écrire à plat. Ainsi :
+
+[source,javascript]
+----
+getUser(login)
+    .then(function(user) {
+        return getRights(user)
+            .then(function(rights) {
+                return updateMenu(rights);
+            });
+    });
+----
+
+Equivaut à :
+
+[source,javascript]
+----
+getUser(login)
+    .then(function(user) {
+        return getRights(user);
+    })
+    .then(function(rights) {
+        return updateMenu(rights);
+    });
+----
+
+Il est possible d'avoir une gestion des erreurs par `promises`, ou de façon globale à toute la chaîne :
+
+[source,javascript]
+----
+getUser(login)
+    .then(function(user) {
+        return getRights(user);
+    }, function(error) {
+        return Promise.reject(error); // if getUser fails
+    })
+    .then(function(rights) {
+        return updateMenu(rights);
+    }, function(error) {
+        return Promise.reject(error); // if updateMenu fails
+    });
+----
+
+[source,javascript]
+----
+getUser(login)
+    .then(function(user) {
+        return getRights(user);
+    })
+    .then(function(rights) {
+        return updateMenu(rights);
+    })
+    .catch(function(error) {
+        console.log(error); // if getRights or updateMenu fails
+    });
+----
+
+=== Arrow functions
+
+Une **arrow function** permet d'avoir une syntaxe plus courte que les expressions de fonction. Elle est idéale pour les fonctions anonymes en `callback`.
+
+IMPORTANT: Une **arrow function** partagent les mêmes valeurs lexicales (`this`, `arguments`, `super` ou `new.target`) que leur scope parent. 
+
+En ES5, le code suivant ne fonctionne pas :
+
+[source,javascript]
+----
+var maxFinder = {
+    max: 0,
+    find: function(numbers) {
+        numbers.forEach(
+            function(number) {
+                if(number > this.max) { <1>
+                    this.max = number;
+                }
+            });
+    }
+};
+
+maxFinder.find([1, 2, 3, 5, 8, 13]);
+console.log(maxFinder.max);
+----
+<1> Ce `this` n'est lié à aucun objet, ce n'est donc pas le `max` de l'objet `maxFinder` qui est utilisé.
+
+Dans ce cas il faudrait utilisé un alias :
+
+[source,javascript]
+----
+// ...
+        var self = this;
+        numbers.forEach(
+            function(number) {
+                if(number > self.max) {
+                    self.max = number;
+                }
+            });
+// ...
+----
+
+Ou alors `binder` le `this` à la fonction anonyme :
+
+[source,javascript]
+----
+// ...
+        numbers.forEach(
+            function(number) {
+                // ...
+            }.bind(this));
+// ...
+----
+
+Ou bien passer le `this` en second paramètre de la fonction `forEach` :
+
+[source,javascript]
+----
+// ...
+        numbers.forEach(
+            function(number) {
+                // ...
+            }, this);
+// ...
+----
+
+Avec les `arrow functions` nous aurons la solution élégante suivante :
+
+[source,javascript]
+----
+var maxFinder = {
+    max: 0,
+    find: function(numbers) {
+        numbers.forEach(number => {
+            if(number > this.max) {
+                this.max = number;
+            }
+        });
+    }
+};
+----
+
+=== `Map` et `Set`
+
+NOTE: ES6 permet d'exploiter les collections
+
+Exemple avec `Map` :
+
+[source,javascript]
+----
+const users = new Map();
+const me = { id: 1, name: "Joe" };
+
+users.set(me.id, me);           // add user "me"
+
+console.log(users.has(me.id));  // true
+console.log(users.size);        // 1
+
+users.delete(me.id);            // delete user "me"
+----
+
+Exemple avec `Set` :
+
+[source,javascript]
+----
+const users = new Set();
+const me = { id: 1, name: "Joe" };
+
+users.add(me);                  // add user "me"
+
+console.log(users.has(me));     // true
+console.log(users.size);        // 1
+
+users.delete(me);               // delete user "me"
+----
+
+On peut itérer sur une collection avec `for ... of` :
+
+[source,javascript]
+----
+for (let user of users) {
+    // ...
+}
+----
+
+=== Template de string
+
+NOTE: On peut utiliser des templates de string avec le `backticks ``
+
+[source,javascript]
+----
+const fullname = `My name is ${firstname} ${lastname}`;
+----
+
+Il est aussi possible d'écrire des morceaux de HTML :
+
+[source,javascript]
+----
+const template = `<div>
+    <h1>Title</h1>
+</div>`;
+----
+
+=== Modules
+
+=== Resources
+
+- http://speakingjs.com/ : Speaking JavaScript: An In-Depth Guide for Programmers

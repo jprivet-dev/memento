@@ -435,6 +435,12 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#trueparam-tres-optionnels-et-valeurs-par-d-faut">1.7. Paramètres optionnels et valeurs par défaut</a></li>
 <li><a href="#truerest-op-rator">1.8. Rest opérator</a></li>
 <li><a href="#trueclasses">1.9. Classes</a></li>
+<li><a href="#true-code-promises-code">1.10. <code>Promises</code></a></li>
+<li><a href="#truearrow-functions">1.11. Arrow functions</a></li>
+<li><a href="#true-code-map-code-et-code-set-code">1.12. <code>Map</code> et <code>Set</code></a></li>
+<li><a href="#truetemplate-de-string">1.13. Template de string</a></li>
+<li><a href="#truemodules">1.14. Modules</a></li>
+<li><a href="#trueresources">1.15. Resources</a></li>
 </ul>
 </li>
 <li><a href="#truetypescript-2">2. TypeScript</a></li>
@@ -628,7 +634,7 @@ console.log(color); // pin;</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-js" data-lang="js">function setUser(name, color) {
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">function setUser(name, color) {
     const name = name || "Nemo";
     const color = color || "pink";
     // ...
@@ -658,7 +664,7 @@ Les valeurs fausses (<code>falsy</code>) sont des valeurs évaluées comme fauss
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-js" data-lang="js">function setUser(name = "Nemo", color = "pink") {
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">function setUser(name = "Nemo", color = "pink") {
     // ...
 }
 
@@ -674,7 +680,7 @@ setUser();                  // name = Nemo, color = pink</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-js" data-lang="js">function addUsers() {
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">function addUsers() {
     for (var i = 0; i &lt; arguments.length; i++) {
         // ...
     }
@@ -688,7 +694,7 @@ addUsers("Armstrong", "Aldrin", "Collins");</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-js" data-lang="js">function addUsers(...users) {
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">function addUsers(...users) {
     for (let user of users) {
         // ...
     }
@@ -702,7 +708,7 @@ addUsers("Armstrong", "Aldrin", "Collins");</code></pre>
 <h3 id="trueclasses"><a class="anchor" href="#trueclasses"></a>1.9. Classes</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-js" data-lang="js">class User {
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">class User {
     constructor(name) {
         this.name = name;
     }
@@ -721,7 +727,7 @@ console.log(user.toString()); // My name is Joe</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-js" data-lang="js">class Human {
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">class Human {
     static getType() {
         return "mammalian"
     }
@@ -729,6 +735,409 @@ console.log(user.toString()); // My name is Joe</code></pre>
 
 const type = Human.getType();</code></pre>
 </div>
+</div>
+<div class="paragraph">
+<p>Il est possible d&#8217;utiliser les accesseurs <code>getters</code> et <code>setters</code> pour implémenter du code sur ces opérations :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">class User {
+    get name() {
+        console.log("get name");
+        return this.name;
+    }
+
+    set name(name) {
+        console.log("set name");
+        this.name = name;
+    }
+}
+
+const me = new User();
+me.name = "Joe";
+// set name
+
+console.log(me.name);
+// get name
+// Joe</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Avec les classes, il est possible d&#8217;exploiter l&#8217;héritage :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code>class Car {
+    getSpeedMax() {
+        return 90;
+    }
+}
+
+class F1 extends Car {
+    getSpeedMax() {
+        return super.getSpeedMax() * 3;
+    }
+}
+
+const twingo = new Car();
+console.log(twingo.getSpeedMax()); // 90
+
+const redbull = new F1();
+console.log(redbull.getSpeedMax()); // 270</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+le mot clé <code>super</code> permet d&#8217;invoquer la méthode de la classe de base.
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">class Car {
+    constructor(speedMax) {
+        this.speedMax = speedMax;
+    }
+}
+
+class F1 extends Car {
+    getSpeedMax(speedMax, color) {
+        super(speedMax);
+        this.color = color;
+    }
+}
+
+const twingo = new Car(90);
+console.log(twingo.speedMax); // 90
+
+const ferrari = new F1(270, "red");
+console.log(ferrari.speedMax); // 270</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="true-code-promises-code"><a class="anchor" href="#true-code-promises-code"></a>1.10. <code>Promises</code></h3>
+<div class="paragraph">
+<p>Une <code>promise</code> a trois états :</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">pending</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">"en cour"</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">fulfilled</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">"réalisée"</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">réalise le callback de succès</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">rejected</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">"rejetée"</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">réalise le callback d&#8217;erreur</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Exemple :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">const getUser = function(login) {
+    return new Promise(function(resolve, reject){
+        if(response.status === 200) {
+            const user = response.data;
+            resolve(user);
+        } else {
+            reject("No user");
+        }
+    });
+};
+
+getUser(login)
+    .then(function(user) {
+        console.log(user);
+    });</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Si les <code>promises</code> retournent elles mêmes des <code>promises</code>, il sera possible de les écrire à plat. Ainsi :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">getUser(login)
+    .then(function(user) {
+        return getRights(user)
+            .then(function(rights) {
+                return updateMenu(rights);
+            });
+    });</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Equivaut à :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">getUser(login)
+    .then(function(user) {
+        return getRights(user);
+    })
+    .then(function(rights) {
+        return updateMenu(rights);
+    });</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Il est possible d&#8217;avoir une gestion des erreurs par <code>promises</code>, ou de façon globale à toute la chaîne :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">getUser(login)
+    .then(function(user) {
+        return getRights(user);
+    }, function(error) {
+        return Promise.reject(error); // if getUser fails
+    })
+    .then(function(rights) {
+        return updateMenu(rights);
+    }, function(error) {
+        return Promise.reject(error); // if updateMenu fails
+    });</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">getUser(login)
+    .then(function(user) {
+        return getRights(user);
+    })
+    .then(function(rights) {
+        return updateMenu(rights);
+    })
+    .catch(function(error) {
+        console.log(error); // if getRights or updateMenu fails
+    });</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="truearrow-functions"><a class="anchor" href="#truearrow-functions"></a>1.11. Arrow functions</h3>
+<div class="paragraph">
+<p>Une <strong>arrow function</strong> permet d&#8217;avoir une syntaxe plus courte que les expressions de fonction. Elle est idéale pour les fonctions anonymes en <code>callback</code>.</p>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+Une <strong>arrow function</strong> partagent les mêmes valeurs lexicales (<code>this</code>, <code>arguments</code>, <code>super</code> ou <code>new.target</code>) que leur scope parent.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>En ES5, le code suivant ne fonctionne pas :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">var maxFinder = {
+    max: 0,
+    find: function(numbers) {
+        numbers.forEach(
+            function(number) {
+                if(number &gt; this.max) { <i class="conum" data-value="1"></i><b>(1)</b>
+                    this.max = number;
+                }
+            });
+    }
+};
+
+maxFinder.find([1, 2, 3, 5, 8, 13]);
+console.log(maxFinder.max);</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Ce <code>this</code> n&#8217;est lié à aucun objet, ce n&#8217;est donc pas le <code>max</code> de l&#8217;objet <code>maxFinder</code> qui est utilisé.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Dans ce cas il faudrait utilisé un alias :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">// ...
+        var self = this;
+        numbers.forEach(
+            function(number) {
+                if(number &gt; self.max) {
+                    self.max = number;
+                }
+            });
+// ...</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Ou alors <code>binder</code> le <code>this</code> à la fonction anonyme :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">// ...
+        numbers.forEach(
+            function(number) {
+                // ...
+            }.bind(this));
+// ...</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Ou bien passer le <code>this</code> en second paramètre de la fonction <code>forEach</code> :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">// ...
+        numbers.forEach(
+            function(number) {
+                // ...
+            }, this);
+// ...</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Avec les <code>arrow functions</code> nous aurons la solution élégante suivante :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">var maxFinder = {
+    max: 0,
+    find: function(numbers) {
+        numbers.forEach(number =&gt; {
+            if(number &gt; this.max) {
+                this.max = number;
+            }
+        });
+    }
+};</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="true-code-map-code-et-code-set-code"><a class="anchor" href="#true-code-map-code-et-code-set-code"></a>1.12. <code>Map</code> et <code>Set</code></h3>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+ES6 permet d&#8217;exploiter les collections
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Exemple avec <code>Map</code> :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">const users = new Map();
+const me = { id: 1, name: "Joe" };
+
+users.set(me.id, me);           // add user "me"
+
+console.log(users.has(me.id));  // true
+console.log(users.size);        // 1
+
+users.delete(me.id);            // delete user "me"</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exemple avec <code>Set</code> :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">const users = new Set();
+const me = { id: 1, name: "Joe" };
+
+users.add(me);                  // add user "me"
+
+console.log(users.has(me));     // true
+console.log(users.size);        // 1
+
+users.delete(me);               // delete user "me"</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>On peut itérer sur une collection avec <code>for &#8230;&#8203; of</code> :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">for (let user of users) {
+    // ...
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="truetemplate-de-string"><a class="anchor" href="#truetemplate-de-string"></a>1.13. Template de string</h3>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+On peut utiliser des templates de string avec le <code>backticks `</code>
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">const fullname = `My name is ${firstname} ${lastname}`;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Il est aussi possible d'écrire des morceaux de HTML :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">const template = `&lt;div&gt;
+    &lt;h1&gt;Title&lt;/h1&gt;
+&lt;/div&gt;`;</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="truemodules"><a class="anchor" href="#truemodules"></a>1.14. Modules</h3>
+
+</div>
+<div class="sect2">
+<h3 id="trueresources"><a class="anchor" href="#trueresources"></a>1.15. Resources</h3>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="http://speakingjs.com/" class="bare">http://speakingjs.com/</a> : Speaking JavaScript: An In-Depth Guide for Programmers</p>
+</li>
+</ul>
 </div>
 </div>
 </div>
@@ -865,7 +1274,7 @@ const type = Human.getType();</code></pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-09-18 10:02:40 PM
+Last updated 2018-09-18 17:52:07 PM
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.9.1/styles/github.min.css">
