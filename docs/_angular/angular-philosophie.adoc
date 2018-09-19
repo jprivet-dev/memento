@@ -1,0 +1,1 @@
+NOTE: Angular est un framework orienté composant.
