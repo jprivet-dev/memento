@@ -479,7 +479,12 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#trued-marrage-de-l-application">5.7. Démarrage de l&#8217;application</a></li>
 </ul>
 </li>
-<li><a href="#truetemplates">6. Templates</a></li>
+<li><a href="#truetemplates">6. Templates</a>
+<ul class="sectlevel2">
+<li><a href="#trueinterpolation">6.1. Interpolation</a></li>
+<li><a href="#truecr-er-et-int-grer-un-nouveau-composant">6.2. Créer et intégrer un nouveau composant</a></li>
+</ul>
+</li>
 <li><a href="#trueinjection-de-d-pendances">7. Injection de dépendances</a></li>
 <li><a href="#trueservices">8. Services</a></li>
 <li><a href="#truepipes">9. Pipes</a></li>
@@ -1852,8 +1857,160 @@ platformBrowserDynamic().bootstrapModule(AppModule) <i class="conum" data-value=
 <div class="sect1">
 <h2 id="truetemplates"><a class="anchor" href="#truetemplates"></a>6. Templates</h2>
 <div class="sectionbody">
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Pour <strong>définir une vue</strong>, il est possible de définir un <strong>template inline</strong> (directement dans le composant), ou dans un <strong>fichier séparé</strong>.
+</td>
+</tr>
+</table>
+</div>
+<div class="sect2">
+<h3 id="trueinterpolation"><a class="anchor" href="#trueinterpolation"></a>6.1. Interpolation</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">@Component({
+  selector: 'ns-root', <i class="conum" data-value="1"></i><b>(1)</b>
+  template: `
+    &lt;h1&gt;PonyRacer&lt;/h1&gt;
+    &lt;h2&gt;{{ numberOfUsers }} users&lt;/h2&gt; <i class="conum" data-value="2"></i><b>(2)</b>
+    &lt;p&gt;Welcome {{ user.name }}&lt;/p&gt; <i class="conum" data-value="3"></i><b>(3)</b>
+    &lt;p&gt;My pony is {{ pony?.color }}&lt;/p&gt; <i class="conum" data-value="4"></i><b>(4)</b>
+  `
+})
+export class AppComponent {
+  numberOfUsers = 146;
+  user: any = { name: 'Cédric' };
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>A chaque fois que Angular trouve un élément <code>ns-root</code> dans le HTML, il créé une nouvelle instance de <code>AppComponent</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td><code>{{ numberOfUsers }}</code> doit être remplacé par sa valeur (par interpolation), avec la propriété <code>numberOfUsers</code> de <code>AppComponent</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Il est possible d&#8217;interpoler des expressions plus complexes, y compris accéder à des propriétés dans des objets.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>L&#8217;opérateur <code>?</code> permet de ne pas avoir d&#8217;erreur si une propriété n&#8217;existe pas dans la classe.</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+Si on essaye d&#8217;afficher une variable qui n&#8217;existe pas, Angular affichera une chaîne vide (et non <code>undefined</code>)
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="truecr-er-et-int-grer-un-nouveau-composant"><a class="anchor" href="#truecr-er-et-int-grer-un-nouveau-composant"></a>6.2. Créer et intégrer un nouveau composant</h3>
+<div class="sect3">
+<h4 id="truecr-ation-du-composant-code-racescomponent-code"><a class="anchor" href="#truecr-ation-du-composant-code-racescomponent-code"></a>6.2.1. Création du composant <code>RacesComponent</code></h4>
+<div class="listingblock">
+<div class="title">races.component.ts</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">import { Component } from '@angular/core';
+
+@Component({
+  selector: 'ns-races',
+  template: `&lt;h2&gt;Races&lt;/h2&gt;`
+})
+export class RacesComponent { <i class="conum" data-value="1"></i><b>(1)</b>
+
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Bien indiquer, avec le mot clé <code>export</code>, que la classe <code>RacesComponent</code> est exportable.</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect3">
+<h4 id="trued-claration-du-composant-code-racescomponent-code-dans-code-appmodule-code"><a class="anchor" href="#trued-claration-du-composant-code-racescomponent-code-dans-code-appmodule-code"></a>6.2.2. Déclaration du composant <code>RacesComponent</code> dans <code>AppModule</code></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">import { NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+
+import { AppComponent } from './app.component';
+import { RacesComponent } from './races.component'; <i class="conum" data-value="1"></i><b>(1)</b>
+
+@NgModule({
+  imports: [BrowserModule],
+  declarations: [AppComponent, RacesComponent], <i class="conum" data-value="2"></i><b>(2)</b>
+  bootstrap: [AppComponent]
+})
+export class AppModule {
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Le composant <code>RacesComponent</code> est importé</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Le composant <code>RacesComponent</code> est ensuite déclaré</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect3">
+<h4 id="trueutilisation-du-composant-code-racescomponent-code-dans-code-appcomponent-code"><a class="anchor" href="#trueutilisation-du-composant-code-racescomponent-code-dans-code-appcomponent-code"></a>6.2.3. Utilisation du composant <code>RacesComponent</code> dans <code>AppComponent</code></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">import { Component } from '@angular/core';
+
+@Component({
+  selector: 'ns-root',
+  // added the RacesComponent component
+  template: `
+    &lt;h1&gt;PonyRacer&lt;/h1&gt;
+    &lt;ns-races&gt;&lt;/ns-races&gt; <i class="conum" data-value="1"></i><b>(1)</b>
+  `
+})
+export class AppComponent {
+
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>On insert <code>&lt;ns-races&gt;</code> dans le template de <code>AppComponent</code> pour utiliser <code>RacesComponent</code>.</td>
+</tr>
+</table>
+</div>
 <div class="paragraph">
 <p><a href="#top-of-page">⬆ Back to top</a></p>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -1991,7 +2148,7 @@ platformBrowserDynamic().bootstrapModule(AppModule) <i class="conum" data-value=
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-09-19 18:57:28 PM
+Last updated 2018-09-19 19:37:27 PM
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.9.1/styles/github.min.css">

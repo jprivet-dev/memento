@@ -1,0 +1,86 @@
+NOTE: Pour *définir une vue*, il est possible de définir un *template inline* (directement dans le composant), ou dans un *fichier séparé*.
+
+=== Interpolation
+
+[source,javascript]
+----
+@Component({
+  selector: 'ns-root', <1>
+  template: `
+    <h1>PonyRacer</h1>
+    <h2>{{ numberOfUsers }} users</h2> <2>
+    <p>Welcome {{ user.name }}</p> <3>
+    <p>My pony is {{ pony?.color }}</p> <4>
+  `
+})
+export class AppComponent {
+  numberOfUsers = 146;
+  user: any = { name: 'Cédric' };
+}
+----
+<1> A chaque fois que Angular trouve un élément `ns-root` dans le HTML, il créé une nouvelle instance de `AppComponent`.
+<2> `{{ numberOfUsers }}` doit être remplacé par sa valeur (par interpolation), avec la propriété `numberOfUsers` de `AppComponent`.
+<3> Il est possible d'interpoler des expressions plus complexes, y compris accéder à des propriétés dans des objets.
+<4> L'opérateur `?` permet de ne pas avoir d'erreur si une propriété n'existe pas dans la classe.
+
+
+IMPORTANT: Si on essaye d'afficher une variable qui n'existe pas, Angular affichera une chaîne vide (et non `undefined`)
+
+=== Créer et intégrer un nouveau composant
+
+==== Création du composant `RacesComponent`
+.races.component.ts
+[source,javascript]
+----
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'ns-races',
+  template: `<h2>Races</h2>`
+})
+export class RacesComponent { <1>
+
+}
+----
+<1> Bien indiquer, avec le mot clé `export`, que la classe `RacesComponent` est exportable.
+
+==== Déclaration du composant `RacesComponent` dans `AppModule`
+
+[source,javascript]
+----
+import { NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+
+import { AppComponent } from './app.component';
+import { RacesComponent } from './races.component'; <1>
+
+@NgModule({
+  imports: [BrowserModule],
+  declarations: [AppComponent, RacesComponent], <2>
+  bootstrap: [AppComponent]
+})
+export class AppModule {
+}
+----
+<1> Le composant `RacesComponent` est importé
+<2> Le composant `RacesComponent` est ensuite déclaré
+
+==== Utilisation du composant `RacesComponent` dans `AppComponent`
+
+[source,javascript]
+----
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'ns-root',
+  // added the RacesComponent component
+  template: `
+    <h1>PonyRacer</h1>
+    <ns-races></ns-races> <1>
+  `
+})
+export class AppComponent {
+
+}
+----
+<1> On insert `<ns-races>` dans le template de `AppComponent` pour utiliser `RacesComponent`.
