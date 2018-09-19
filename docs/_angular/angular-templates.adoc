@@ -62,8 +62,8 @@ import { RacesComponent } from './races.component'; <1>
 export class AppModule {
 }
 ----
-<1> Le composant `RacesComponent` est importé
-<2> Le composant `RacesComponent` est ensuite déclaré
+<1> Le composant `RacesComponent` est importé.
+<2> Le composant `RacesComponent` est ensuite déclaré.
 
 ==== Utilisation du composant `RacesComponent` dans `AppComponent`
 
