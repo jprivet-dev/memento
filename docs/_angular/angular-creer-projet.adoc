@@ -1,8 +1,8 @@
-=== Node & NPM
+=== Installer NodeJS & NPM
 
 Installer node : https://nodejs.org/en/
 
-=== Angular CLI
+=== Installer Angular CLI
 
 [source,bash]
 ----
@@ -10,9 +10,90 @@ npm install -g @angular/cli
 ng --version # vérifier la version
 ----
 
-=== Créer un projet
+=== Créer un nouveau projet
 
 [source,bash]
 ----
-
+ng new ponyracer --prefix ns
 ----
+
+=== Lancement du serveur
+
+[source,bash]
+----
+cd ponyracer
+ng serve
+----
+
+=== Découverte d'un composant
+
+.src/app/app.component.ts
+[source,javascript]
+----
+import { Component } from '@angular/core';
+
+@Component({ <1>
+  selector: 'ns-root', <2>
+  templateUrl: './app.component.html', <3>
+  styleUrls: ['./app.component.css']
+})
+export class AppComponent {
+  title = 'ponyracer';
+}
+----
+
+<1> `@Component` indique à Angular que c'est un composant. Bien l'importer auparavant.
+<2> A chaque fois que Angular trouve un élément `ns-root` dans le HTML, il créé une nouvelle instance de `AppComponent`.
+<3> Un composant doit avoir un template.
+
+=== Découverte du module racine
+
+NOTE: Un application aura toujours au moins un module racine.
+
+[source,javascript]
+----
+import { BrowserModule } from '@angular/platform-browser'; <1>
+import { NgModule } from '@angular/core';
+
+import { AppComponent } from './app.component';
+
+@NgModule({ <2>
+    declarations: [ <3>
+        AppComponent
+    ],
+    imports: [
+        BrowserModule
+    ],
+    providers: [],
+    bootstrap: [AppComponent] <4>
+})
+export class AppModule {
+}
+----
+<1> `BrowserModule` permet de construire une application pour le navigateur (Il est possible de rendre l'application sur un serveur. Pour cela il faudrat importer un autre module).
+<2> `@NgModule` indique à Angular que c'est un module. Bien l'importer auparavant.
+<3> Sont déclarés ici tous les composants qui appartiennent au module racine `AppModule`
+<4> On indique ici le composant qui doit être instancier quand l'application démarre
+
+Un module peut exporter des composants, directives et pipes. Ce module racine `AppModule` ne sera pas importé dans d'autres modules, donc il n'y a pas d'export, mais plusieurs imports à la fin.
+
+=== Démarrage de l'application
+
+.src/main.ts
+[source,javascript]
+----
+import { enableProdMode } from '@angular/core';
+import { platformBrowserDynamic } from '@angular/platform-browser-dynamic'; <1>
+
+import { AppModule } from './app/app.module';
+import { environment } from './environments/environment';
+
+if (environment.production) {
+  enableProdMode();
+}
+
+platformBrowserDynamic().bootstrapModule(AppModule) <2>
+  .catch(err => console.error(err));
+----
+<1> `platformBrowserDynamic` va permettre d'utiliser après la méthode `bootstrapModule`.
+<2> L'application est démarrée avec la méthode `bootstrapModule`.
