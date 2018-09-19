@@ -1,0 +1,83 @@
+=== Présentation
+
+NOTE: Les Web Components sont un ensemble de composants réutilisables et encapsulés.
+
+Le standard émergent est défini en quatre spécifications :
+
+- Custom elements
+- Shadow DOM
+- Template
+- HTML imports
+
+=== Custom elements
+
+NOTE: Ce standard permet de créer ses propres éléments du DOM. Ex : ce tag `<ns-pony></ns-pony>` devient un élément HTML parfaitement valide.
+
+Déclarer un élément custom :
+
+[source,javascript]
+----
+var PonyComponent = document.registerElement("ns-pony");
+document.body.appendChild(new PonyComponent());
+----
+
+IMPORTANT: Le nom doit contenir un tiret `-` pour indiquer au navigateur que c'est un élément custom
+
+=== Shadow DOM
+
+NOTE: Le Shadow DOM est une façon d'encapsuler le DOM de son composant. Cela permet de dissimuler le fonctionnement interne de son composant.
+
+[source,javascript]
+----
+var PonyComponentProto = Object.create(HTMLElement.prototype);
+
+PonyComponentProto.createCallback = function() {
+    var shadow =  this.createShadowRoot();
+    shadow.innerHTML = "<h1>My pony</h1>";
+};
+
+var PonyComponent = document.registerElement(
+    "ns-pony",
+    { prototype: PonyComponentProto }
+);
+
+document.body.appendChild(PonyComponent);
+----
+
+=== Template
+
+NOTE: Un template est un élément spécifié par le tag `<template>`, mais qui n'est pas affiché par le navigateur. Son but est d'être cloné dans un autre élément.
+
+Son contenu peut être requêté par le reste de la page avec la méthode classique `getElementById()`.
+
+=== HTML imports
+
+NOTE: Cette spécification permet d'importer du HTML dans du HTML.
+
+[source,html]
+----
+<link rel="import" href="ns-pony.html"> <1>
+----
+<1> Le fichier `ns-pony.html` contient tout ce qui est requis : template, scripts, styles, ...
+
+=== Polymer et X-tag
+
+NOTE: Comme les Web Components ne sont pas complètement supportés par tous les navigateurs, il existe un _polyfill_, appelé `webcomponents.js`, à include dans son application.
+
+`webcomponents.js` est le fruit d'un effort commun entre Google, Mozilla et Microsoft entre autres.
+
+Exemples d'initiatives :
+
+- `Polymer` de Google
+- `X-tag` de Mozilla et Microsoft
+
+Exemple d'utilisation d'un composant Polymer :
+
+[source,html]
+----
+<script src="webcomponents.js"></script>
+<link rel="import" href="google-map.html">
+<body>
+    <google-map latitude="45.780" longitude="4.842"></google-map>
+</body>
+----
