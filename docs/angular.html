@@ -443,8 +443,30 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#truetypes-dynamiques-statiques-et-optionnels">1.15. Types dynamiques, statiques et optionnels</a></li>
 </ul>
 </li>
-<li><a href="#truetypescript-2">2. TypeScript</a></li>
-<li><a href="#trueweb-components">3. Web Components</a></li>
+<li><a href="#truetypescript-2">2. TypeScript</a>
+<ul class="sectlevel2">
+<li><a href="#truepr-sentation">2.1. Présentation</a></li>
+<li><a href="#trueinstallation">2.2. Installation</a></li>
+<li><a href="#trueles-types">2.3. Les types</a></li>
+<li><a href="#trueles-valeurs-num-r-es">2.4. Les valeurs énumérées</a></li>
+<li><a href="#truereturn-types">2.5. Return types</a></li>
+<li><a href="#trueinterfaces">2.6. Interfaces</a></li>
+<li><a href="#trueparam-tres-optionnel">2.7. Paramètres optionnel</a></li>
+<li><a href="#trueclasses-interfaces">2.8. Classes &amp; Interfaces</a></li>
+<li><a href="#truebiblioth-ques-d-interfaces">2.9. Bibliothèques d&#8217;interfaces</a></li>
+<li><a href="#trued-corateurs">2.10. Décorateurs</a></li>
+</ul>
+</li>
+<li><a href="#trueweb-components">3. Web Components</a>
+<ul class="sectlevel2">
+<li><a href="#truepr-sentation-2">3.1. Présentation</a></li>
+<li><a href="#truecustom-elements">3.2. Custom elements</a></li>
+<li><a href="#trueshadow-dom">3.3. Shadow DOM</a></li>
+<li><a href="#truetemplate">3.4. Template</a></li>
+<li><a href="#truehtml-imports">3.5. HTML imports</a></li>
+<li><a href="#truepolymer-et-x-tag">3.6. Polymer et X-tag</a></li>
+</ul>
+</li>
 <li><a href="#truephilosophie-d-angular">4. Philosophie d’Angular</a></li>
 <li><a href="#truecr-er-un-projet">5. Créer un projet</a></li>
 <li><a href="#truetemplates">6. Templates</a></li>
@@ -1233,22 +1255,420 @@ user = 42;</code></pre>
 <div class="sect1">
 <h2 id="truetypescript-2"><a class="anchor" href="#truetypescript-2"></a>2. TypeScript</h2>
 <div class="sectionbody">
+<div class="sect2">
+<h3 id="truepr-sentation"><a class="anchor" href="#truepr-sentation"></a>2.1. Présentation</h3>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+TypeScript est un sur-ensembre de JavaScript, créé par Microsoft en 2012.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="trueinstallation"><a class="anchor" href="#trueinstallation"></a>2.2. Installation</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">npm install -b typescript</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="trueles-types"><a class="anchor" href="#trueles-types"></a>2.3. Les types</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">// Typage simple
+const response: number = 42;
+const name: string = "Joe";
+
+// Typage générique
+const cars: Array&lt;Car&gt; = [new Car()];
+
+// Typage `any`
+let changeMe: any = 2;
+changeMe = "Joe";
+
+// Union de types
+let changeMe: number|boolean = 2;
+changeMe = true;</code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Les types peuvent être falcutatifs : le compilateur TS peut deviner leur valeur avec l&#8217;inférence de type.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="trueles-valeurs-num-r-es"><a class="anchor" href="#trueles-valeurs-num-r-es"></a>2.4. Les valeurs énumérées</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">enum Issue {
+    Up,
+    Down,
+    Left,
+    Right,
+}
+
+enum Response {
+    No = 0,
+    Yes = 1,
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="truereturn-types"><a class="anchor" href="#truereturn-types"></a>2.5. Return types</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">function startRace(race: Race): Race {
+    race.status = RaceStatus.Started;
+    return race;
+}
+
+function respond(message: Response): void {
+    // ...
+}
+
+respond(Response.Yes);</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="trueinterfaces"><a class="anchor" href="#trueinterfaces"></a>2.6. Interfaces</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">function addPoinsToScore(player: { score: number }, points: number): void { <i class="conum" data-value="1"></i><b>(1)</b>
+    player.score += points;
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Le paramètre <code>player</code> doit avoir une propriété nommée <code>score</code> de type <code>number</code></td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Exemple en créant une interface :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">interface HasScore {
+    score: number;
+}
+
+function addPoinsToScore(player: HasScore, points: number): void {
+    player.score += points;
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="trueparam-tres-optionnel"><a class="anchor" href="#trueparam-tres-optionnel"></a>2.7. Paramètres optionnel</h3>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Ajouter <code>?</code> juste après le nom d&#8217;un paramètre pour le rendre optionel
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">function addPointsToScore(player: HasScore, points?: number): void {
+    points = points || 0;
+    player.score += points;
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="trueclasses-interfaces"><a class="anchor" href="#trueclasses-interfaces"></a>2.8. Classes &amp; Interfaces</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">interface ClockInterface {
+    currentTime: Date;
+    setTime(d: Date);
+}
+
+class Clock implements ClockInterface {
+    currentTime: Date;
+    setTime(d: Date) {
+        this.currentTime = d;
+    }
+    constructor(h: number, m: number) { }
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="truebiblioth-ques-d-interfaces"><a class="anchor" href="#truebiblioth-ques-d-interfaces"></a>2.9. Bibliothèques d&#8217;interfaces</h3>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+les fichiers contenant des interfaces ont l&#8217;extension <code>.d.ts</code>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="trued-corateurs"><a class="anchor" href="#trued-corateurs"></a>2.10. Décorateurs</h3>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Un décorateur permet de faire de la méta-programmation. Ces annotations sont préfixées par <code>@</code>
+</td>
+</tr>
+</table>
+</div>
 <div class="paragraph">
 <p><a href="#top-of-page">⬆ Back to top</a></p>
+</div>
 </div>
 </div>
 </div>
 <div class="sect1">
 <h2 id="trueweb-components"><a class="anchor" href="#trueweb-components"></a>3. Web Components</h2>
 <div class="sectionbody">
+<div class="sect2">
+<h3 id="truepr-sentation-2"><a class="anchor" href="#truepr-sentation-2"></a>3.1. Présentation</h3>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Les Web Components sont un ensemble de composants réutilisables et encapsulés.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Le standard émergent est défini en quatre spécifications :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Custom elements</p>
+</li>
+<li>
+<p>Shadow DOM</p>
+</li>
+<li>
+<p>Template</p>
+</li>
+<li>
+<p>HTML imports</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="truecustom-elements"><a class="anchor" href="#truecustom-elements"></a>3.2. Custom elements</h3>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Ce standard permet de créer ses propres éléments du DOM. Ex : ce tag <code>&lt;ns-pony&gt;&lt;/ns-pony&gt;</code> devient un élément HTML parfaitement valide.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Déclarer un élément custom :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">var PonyComponent = document.registerElement("ns-pony");
+document.body.appendChild(new PonyComponent());</code></pre>
+</div>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+Le nom doit contenir un tiret <code>-</code> pour indiquer au navigateur que c&#8217;est un élément custom
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="trueshadow-dom"><a class="anchor" href="#trueshadow-dom"></a>3.3. Shadow DOM</h3>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Le Shadow DOM est une façon d&#8217;encapsuler le DOM de son composant. Cela permet de dissimuler le fonctionnement interne de son composant.
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">var PonyComponentProto = Object.create(HTMLElement.prototype);
+
+PonyComponentProto.createCallback = function() {
+    var shadow =  this.createShadowRoot();
+    shadow.innerHTML = "&lt;h1&gt;My pony&lt;/h1&gt;";
+};
+
+var PonyComponent = document.registerElement(
+    "ns-pony",
+    { prototype: PonyComponentProto }
+);
+
+document.body.appendChild(PonyComponent);</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="truetemplate"><a class="anchor" href="#truetemplate"></a>3.4. Template</h3>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Un template est un élément spécifié par le tag <code>&lt;template&gt;</code>, mais qui n&#8217;est pas affiché par le navigateur. Son but est d'être cloné dans un autre élément.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Son contenu peut être requêté par le reste de la page avec la méthode classique <code>getElementById()</code>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="truehtml-imports"><a class="anchor" href="#truehtml-imports"></a>3.5. HTML imports</h3>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Cette spécification permet d&#8217;importer du HTML dans du HTML.
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-html" data-lang="html">&lt;link rel="import" href="ns-pony.html"&gt; <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Le fichier <code>ns-pony.html</code> contient tout ce qui est requis : template, scripts, styles, &#8230;&#8203;</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="truepolymer-et-x-tag"><a class="anchor" href="#truepolymer-et-x-tag"></a>3.6. Polymer et X-tag</h3>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Comme les Web Components ne sont pas complètement supportés par tous les navigateurs, il existe un <em>polyfill</em>, appelé <code>webcomponents.js</code>, à include dans son application.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p><code>webcomponents.js</code> est le fruit d&#8217;un effort commun entre Google, Mozilla et Microsoft entre autres.</p>
+</div>
+<div class="paragraph">
+<p>Exemples d&#8217;initiatives :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>Polymer</code> de Google</p>
+</li>
+<li>
+<p><code>X-tag</code> de Mozilla et Microsoft</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Exemple d&#8217;utilisation d&#8217;un composant Polymer :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-html" data-lang="html">&lt;script src="webcomponents.js"&gt;&lt;/script&gt;
+&lt;link rel="import" href="google-map.html"&gt;
+&lt;body&gt;
+    &lt;google-map latitude="45.780" longitude="4.842"&gt;&lt;/google-map&gt;
+&lt;/body&gt;</code></pre>
+</div>
+</div>
 <div class="paragraph">
 <p><a href="#top-of-page">⬆ Back to top</a></p>
+</div>
 </div>
 </div>
 </div>
 <div class="sect1">
 <h2 id="truephilosophie-d-angular"><a class="anchor" href="#truephilosophie-d-angular"></a>4. Philosophie d’Angular</h2>
 <div class="sectionbody">
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Angular est un framework orienté composant.
+</td>
+</tr>
+</table>
+</div>
 <div class="paragraph">
 <p><a href="#top-of-page">⬆ Back to top</a></p>
 </div>
@@ -1391,6 +1811,9 @@ user = 42;</code></pre>
 <li>
 <p><a href="http://speakingjs.com/" class="bare">http://speakingjs.com/</a> : Speaking JavaScript: An In-Depth Guide for Programmers</p>
 </li>
+<li>
+<p><a href="https://www.typescriptlang.org" class="bare">https://www.typescriptlang.org</a></p>
+</li>
 </ul>
 </div>
 <div class="paragraph">
@@ -1401,7 +1824,7 @@ user = 42;</code></pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-09-19 14:35:13 PM
+Last updated 2018-09-19 17:01:49 PM
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.9.1/styles/github.min.css">

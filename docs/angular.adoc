@@ -10,17 +10,25 @@ include::_angular/angular-ecmascript.adoc[]
 
 == TypeScript
 
+include::_angular/angular-typescript.adoc[]
+
 {BACK_TO_TOP}
 
 == Web Components
+
+include::_angular/angular-web-components.adoc[]
 
 {BACK_TO_TOP}
 
 == Philosophie d’Angular
 
+include::_angular/angular-philosophie.adoc[]
+
 {BACK_TO_TOP}
 
 == Créer un projet
+
+include::_angular/angular-creer-projet.adoc[]
 
 {BACK_TO_TOP}
 
@@ -86,5 +94,6 @@ include::_angular/angular-ecmascript.adoc[]
 - https://angular-exercises.ninja-squad.com
 - https://developer.mozilla.org/fr/docs/Web/JavaScript
 - http://speakingjs.com/ : Speaking JavaScript: An In-Depth Guide for Programmers
+- https://www.typescriptlang.org
 
 {BACK_TO_TOP}
