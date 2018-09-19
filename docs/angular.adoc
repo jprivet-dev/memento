@@ -4,48 +4,87 @@ include::_partials/adoc-config.adoc[]
 
 == ECMASCRIPT 6
 
-include::_angular/ecmascript.adoc[]
+include::_angular/angular-ecmascript.adoc[]
+
+{BACK_TO_TOP}
 
 == TypeScript
 
+{BACK_TO_TOP}
+
 == Web Components
+
+{BACK_TO_TOP}
 
 == Philosophie d’Angular
 
+{BACK_TO_TOP}
+
 == Créer un projet
+
+{BACK_TO_TOP}
 
 == Templates
 
+{BACK_TO_TOP}
+
 == Injection de dépendances
+
+{BACK_TO_TOP}
 
 == Services
 
+{BACK_TO_TOP}
+
 == Pipes
+
+{BACK_TO_TOP}
 
 == Programmation réactive
 
+{BACK_TO_TOP}
+
 == Composants et directives
+
+{BACK_TO_TOP}
 
 == Tester son application
 
+{BACK_TO_TOP}
+
 == Envoyer et recevoir des données par HTTP
+
+{BACK_TO_TOP}
 
 == Routeur
 
+{BACK_TO_TOP}
+
 == Formulaires
+
+{BACK_TO_TOP}
 
 == Zones
 
+{BACK_TO_TOP}
+
 == Compilation : JiT (Just in Time) & AoT (Ahead of Time)
+
+{BACK_TO_TOP}
 
 == Observables
 
+{BACK_TO_TOP}
+
 == Performances
+
+{BACK_TO_TOP}
 
 == Ressources
 
 - https://books.ninja-squad.com/angular#propack
 - https://angular-exercises.ninja-squad.com
 - https://developer.mozilla.org/fr/docs/Web/JavaScript
+- http://speakingjs.com/ : Speaking JavaScript: An In-Depth Guide for Programmers
 
 {BACK_TO_TOP}

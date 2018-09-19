@@ -440,7 +440,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#true-code-map-code-et-code-set-code">1.12. <code>Map</code> et <code>Set</code></a></li>
 <li><a href="#truetemplate-de-string">1.13. Template de string</a></li>
 <li><a href="#truemodules">1.14. Modules</a></li>
-<li><a href="#trueresources">1.15. Resources</a></li>
+<li><a href="#truetypes-dynamiques-statiques-et-optionnels">1.15. Types dynamiques, statiques et optionnels</a></li>
 </ul>
 </li>
 <li><a href="#truetypescript-2">2. TypeScript</a></li>
@@ -1128,16 +1128,104 @@ On peut utiliser des templates de string avec le <code>backticks `</code>
 </div>
 <div class="sect2">
 <h3 id="truemodules"><a class="anchor" href="#truemodules"></a>1.14. Modules</h3>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+utiliser le mot clé <code>export</code> pour exposer ses fonctions
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="title">my_modules.js</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">export function myFunctionA() {
+    // ...
+}
 
+export function myFunctionB() {
+    // ...
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exemple de <em>named export</em> :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">import { myFunctionA, myFunctionB } from "./my_modules.js";
+
+myFunctionA("hello", 42);
+const result = myFunctionB();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exemple avec un alias</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">import { myFunctionA as module } from "./my_modules.js";
+
+module("hello", 42); // uses myFunctionA()</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Exemple d&#8217;import de tous les modules</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">import * as myModules from "./my_modules.js";
+
+myModules.myFunctionA("hello", 42);
+const result = myModules.myFunctionB();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Importation d&#8217;une classe :</p>
+</div>
+<div class="listingblock">
+<div class="title">my_class.js</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">export default class MyClass {
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">script.js</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">import MyClass fromt "./my_class.js";</code></pre>
+</div>
+</div>
 </div>
 <div class="sect2">
-<h3 id="trueresources"><a class="anchor" href="#trueresources"></a>1.15. Resources</h3>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="http://speakingjs.com/" class="bare">http://speakingjs.com/</a> : Speaking JavaScript: An In-Depth Guide for Programmers</p>
-</li>
-</ul>
+<h3 id="truetypes-dynamiques-statiques-et-optionnels"><a class="anchor" href="#truetypes-dynamiques-statiques-et-optionnels"></a>1.15. Types dynamiques, statiques et optionnels</h3>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+JavaScript est dynamiquement typé !
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Il est donc possible de faire cela :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">let user = "Joe";
+user = 42;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><a href="#top-of-page">⬆ Back to top</a></p>
 </div>
 </div>
 </div>
@@ -1145,109 +1233,145 @@ On peut utiliser des templates de string avec le <code>backticks `</code>
 <div class="sect1">
 <h2 id="truetypescript-2"><a class="anchor" href="#truetypescript-2"></a>2. TypeScript</h2>
 <div class="sectionbody">
-
+<div class="paragraph">
+<p><a href="#top-of-page">⬆ Back to top</a></p>
+</div>
 </div>
 </div>
 <div class="sect1">
 <h2 id="trueweb-components"><a class="anchor" href="#trueweb-components"></a>3. Web Components</h2>
 <div class="sectionbody">
-
+<div class="paragraph">
+<p><a href="#top-of-page">⬆ Back to top</a></p>
+</div>
 </div>
 </div>
 <div class="sect1">
 <h2 id="truephilosophie-d-angular"><a class="anchor" href="#truephilosophie-d-angular"></a>4. Philosophie d’Angular</h2>
 <div class="sectionbody">
-
+<div class="paragraph">
+<p><a href="#top-of-page">⬆ Back to top</a></p>
+</div>
 </div>
 </div>
 <div class="sect1">
 <h2 id="truecr-er-un-projet"><a class="anchor" href="#truecr-er-un-projet"></a>5. Créer un projet</h2>
 <div class="sectionbody">
-
+<div class="paragraph">
+<p><a href="#top-of-page">⬆ Back to top</a></p>
+</div>
 </div>
 </div>
 <div class="sect1">
 <h2 id="truetemplates"><a class="anchor" href="#truetemplates"></a>6. Templates</h2>
 <div class="sectionbody">
-
+<div class="paragraph">
+<p><a href="#top-of-page">⬆ Back to top</a></p>
+</div>
 </div>
 </div>
 <div class="sect1">
 <h2 id="trueinjection-de-d-pendances"><a class="anchor" href="#trueinjection-de-d-pendances"></a>7. Injection de dépendances</h2>
 <div class="sectionbody">
-
+<div class="paragraph">
+<p><a href="#top-of-page">⬆ Back to top</a></p>
+</div>
 </div>
 </div>
 <div class="sect1">
 <h2 id="trueservices"><a class="anchor" href="#trueservices"></a>8. Services</h2>
 <div class="sectionbody">
-
+<div class="paragraph">
+<p><a href="#top-of-page">⬆ Back to top</a></p>
+</div>
 </div>
 </div>
 <div class="sect1">
 <h2 id="truepipes"><a class="anchor" href="#truepipes"></a>9. Pipes</h2>
 <div class="sectionbody">
-
+<div class="paragraph">
+<p><a href="#top-of-page">⬆ Back to top</a></p>
+</div>
 </div>
 </div>
 <div class="sect1">
 <h2 id="trueprogrammation-r-active"><a class="anchor" href="#trueprogrammation-r-active"></a>10. Programmation réactive</h2>
 <div class="sectionbody">
-
+<div class="paragraph">
+<p><a href="#top-of-page">⬆ Back to top</a></p>
+</div>
 </div>
 </div>
 <div class="sect1">
 <h2 id="truecomposants-et-directives"><a class="anchor" href="#truecomposants-et-directives"></a>11. Composants et directives</h2>
 <div class="sectionbody">
-
+<div class="paragraph">
+<p><a href="#top-of-page">⬆ Back to top</a></p>
+</div>
 </div>
 </div>
 <div class="sect1">
 <h2 id="truetester-son-application"><a class="anchor" href="#truetester-son-application"></a>12. Tester son application</h2>
 <div class="sectionbody">
-
+<div class="paragraph">
+<p><a href="#top-of-page">⬆ Back to top</a></p>
+</div>
 </div>
 </div>
 <div class="sect1">
 <h2 id="trueenvoyer-et-recevoir-des-donn-es-par-http"><a class="anchor" href="#trueenvoyer-et-recevoir-des-donn-es-par-http"></a>13. Envoyer et recevoir des données par HTTP</h2>
 <div class="sectionbody">
-
+<div class="paragraph">
+<p><a href="#top-of-page">⬆ Back to top</a></p>
+</div>
 </div>
 </div>
 <div class="sect1">
 <h2 id="truerouteur"><a class="anchor" href="#truerouteur"></a>14. Routeur</h2>
 <div class="sectionbody">
-
+<div class="paragraph">
+<p><a href="#top-of-page">⬆ Back to top</a></p>
+</div>
 </div>
 </div>
 <div class="sect1">
 <h2 id="trueformulaires"><a class="anchor" href="#trueformulaires"></a>15. Formulaires</h2>
 <div class="sectionbody">
-
+<div class="paragraph">
+<p><a href="#top-of-page">⬆ Back to top</a></p>
+</div>
 </div>
 </div>
 <div class="sect1">
 <h2 id="truezones"><a class="anchor" href="#truezones"></a>16. Zones</h2>
 <div class="sectionbody">
-
+<div class="paragraph">
+<p><a href="#top-of-page">⬆ Back to top</a></p>
+</div>
 </div>
 </div>
 <div class="sect1">
 <h2 id="truecompilation-jit-just-in-time-aot-ahead-of-time"><a class="anchor" href="#truecompilation-jit-just-in-time-aot-ahead-of-time"></a>17. Compilation : JiT (Just in Time) &amp; AoT (Ahead of Time)</h2>
 <div class="sectionbody">
-
+<div class="paragraph">
+<p><a href="#top-of-page">⬆ Back to top</a></p>
+</div>
 </div>
 </div>
 <div class="sect1">
 <h2 id="trueobservables"><a class="anchor" href="#trueobservables"></a>18. Observables</h2>
 <div class="sectionbody">
-
+<div class="paragraph">
+<p><a href="#top-of-page">⬆ Back to top</a></p>
+</div>
 </div>
 </div>
 <div class="sect1">
 <h2 id="trueperformances"><a class="anchor" href="#trueperformances"></a>19. Performances</h2>
 <div class="sectionbody">
-
+<div class="paragraph">
+<p><a href="#top-of-page">⬆ Back to top</a></p>
+</div>
 </div>
 </div>
 <div class="sect1">
@@ -1264,6 +1388,9 @@ On peut utiliser des templates de string avec le <code>backticks `</code>
 <li>
 <p><a href="https://developer.mozilla.org/fr/docs/Web/JavaScript" class="bare">https://developer.mozilla.org/fr/docs/Web/JavaScript</a></p>
 </li>
+<li>
+<p><a href="http://speakingjs.com/" class="bare">http://speakingjs.com/</a> : Speaking JavaScript: An In-Depth Guide for Programmers</p>
+</li>
 </ul>
 </div>
 <div class="paragraph">
@@ -1274,7 +1401,7 @@ On peut utiliser des templates de string avec le <code>backticks `</code>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-09-18 17:52:07 PM
+Last updated 2018-09-19 14:35:13 PM
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.9.1/styles/github.min.css">
