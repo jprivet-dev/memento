@@ -502,6 +502,72 @@ const template = `<div>
 
 === Modules
 
-=== Resources
+NOTE: utiliser le mot clé `export` pour exposer ses fonctions
 
-- http://speakingjs.com/ : Speaking JavaScript: An In-Depth Guide for Programmers
+.my_modules.js
+[source,javascript]
+----
+export function myFunctionA() {
+    // ...
+}
+
+export function myFunctionB() {
+    // ...
+}
+----
+
+Exemple de _named export_ :
+
+[source,javascript]
+----
+import { myFunctionA, myFunctionB } from "./my_modules.js";
+
+myFunctionA("hello", 42);
+const result = myFunctionB();
+----
+
+Exemple avec un alias
+
+[source,javascript]
+----
+import { myFunctionA as module } from "./my_modules.js";
+
+module("hello", 42); // uses myFunctionA()
+----
+
+Exemple d'import de tous les modules
+
+[source,javascript]
+----
+import * as myModules from "./my_modules.js";
+
+myModules.myFunctionA("hello", 42);
+const result = myModules.myFunctionB();
+----
+
+Importation d'une classe :
+
+.my_class.js
+[source,javascript]
+----
+export default class MyClass {
+}
+----
+
+.script.js
+[source,javascript]
+----
+import MyClass fromt "./my_class.js";
+----
+
+=== Types dynamiques, statiques et optionnels
+
+WARNING: JavaScript est dynamiquement typé !
+
+Il est donc possible de faire cela :
+
+[source,javascript]
+----
+let user = "Joe";
+user = 42;
+----
