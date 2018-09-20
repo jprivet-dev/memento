@@ -1,11 +1,13 @@
 NOTE: L'injection de dépendances est un _design pattern_ : Le framework crée l'instance du service lui-même et la fournie au composant qui en a besoin.
 
+Il faut d'abord rendre disponible son service à l'injection (Angular 6) :
+
 [source,javascript]
 ----
 import { Injectable } from '@angular/core';
 
 @Injectable({ <1>
-  providedIn: 'root'
+  providedIn: 'root' <2>
 })
 export class ApiService {
   get(path) {
@@ -13,9 +15,12 @@ export class ApiService {
   }
 }
 ----
-<1> Depuis Angular 6, le décorateur `@Injectable` peut être utilisé pour rendre disponible `ApiService` à l'injection
+<1> Depuis Angular 6, le décorateur `@Injectable` peut être utilisé pour rendre disponible `ApiService` à l'injection.
+<2> `root` signifie que `ApiService` peut être utilisé partout.
 
 IMPORTANT: Depuis Angular 6, il est recommandé d'utiliser le décorateur `@Injectable`
+
+Avec une version d'Angular inférieure à la 6, la déclaration se fait ainsi :
 
 [source,javascript]
 ----
@@ -37,6 +42,8 @@ export class AppModule {
 }
 ----
 <1> Avant Angular 6, il faut déclarer son service dans la propriété `providers` du décorateur `@NgModule` du module `AppModule`
+
+On peut ensuite utiliser son service `ApiService` :
 
 [source,javascript]
 ----
