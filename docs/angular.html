@@ -517,7 +517,12 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#truecr-er-son-propre-em-pipe-em">9.11. Créer son propre <em>pipe</em></a></li>
 </ul>
 </li>
-<li><a href="#trueprogrammation-r-active">10. Programmation réactive</a></li>
+<li><a href="#trueprogrammation-r-active">10. Programmation réactive</a>
+<ul class="sectlevel2">
+<li><a href="#truerxjs">10.1. RxJs</a></li>
+<li><a href="#trueprogrammation-r-active-avec-angular">10.2. Programmation réactive avec Angular</a></li>
+</ul>
+</li>
 <li><a href="#truecomposants-et-directives">11. Composants et directives</a></li>
 <li><a href="#truetester-son-application">12. Tester son application</a></li>
 <li><a href="#trueenvoyer-et-recevoir-des-donn-es-par-http">13. Envoyer et recevoir des données par HTTP</a></li>
@@ -3422,8 +3427,177 @@ export class AppModule {
 <div class="sect1">
 <h2 id="trueprogrammation-r-active"><a class="anchor" href="#trueprogrammation-r-active"></a>10. Programmation réactive</h2>
 <div class="sectionbody">
+<div class="sect2">
+<h3 id="truerxjs"><a class="anchor" href="#truerxjs"></a>10.1. RxJs</h3>
+<div class="paragraph">
+<p>Tout <em>observable</em> peut être transformé avec des fonctions classiques :</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">take(n)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Pioche les n premiers éléments.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">map(fn)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Applique la fonction <code>fn</code> sur chaque événement et retourne le résultat.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">filter(predicate)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Laisse passer les seuls événements qui répondent positivement au prédicat</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">reduce(fn)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Applique la fonction <code>fn</code> à chaque événement pour réduire le flux à une seule valeur unique.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">merge(s1, s2)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Fusionne les deux flux <code>s1</code> et  <code>s2</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">subscribe(fn)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Applique la fonction <code>fn</code> à chaque événement qu&#8217;elle reçoit.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="sect3">
+<h4 id="trueexemple-sans-programmation-r-active"><a class="anchor" href="#trueexemple-sans-programmation-r-active"></a>10.1.1. Exemple sans programmation réactive</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">[1, 2, 3, 4, 5]
+    .map(x =&gt; x * 2) <i class="conum" data-value="1"></i><b>(1)</b>
+    .filter(x =&gt; x &gt; 5) <i class="conum" data-value="2"></i><b>(2)</b>
+    .forEach(x =&gt; console.log(x)); // 6, 8, 10 <i class="conum" data-value="3"></i><b>(3)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>On multiplie toutes les valeurs du tableau par 2.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>On filtre et garde toutes les valeurs supérieures à 5.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>On affiche chaque valeurs.</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect3">
+<h4 id="trueexemple-avec-programmation-r-active"><a class="anchor" href="#trueexemple-avec-programmation-r-active"></a>10.1.2. Exemple avec programmation réactive</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">import { from } from 'rxjs';
+import { filter, map } from 'rxjs/operators';
+
+from([1, 2, 3, 4, 5]).pipe(
+    map(x =&gt; x * 2),
+    filter(x =&gt; x &gt; 5)
+).subscribe(x =&gt; console.log(x)); // 6, 8, 10</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="trueerreurs-terminaison"><a class="anchor" href="#trueerreurs-terminaison"></a>10.1.3. Erreurs &amp; terminaison</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">range(1, 5).pipe(
+    map(x =&gt; x * 2),
+    filter(x =&gt; x &gt; 5)
+).subscribe(
+    x =&gt; console.log(x), // 6, 8, 10    <i class="conum" data-value="1"></i><b>(1)</b>
+    error =&gt; console.log(error),        <i class="conum" data-value="2"></i><b>(2)</b>
+    () =&gt; console.log('done')           <i class="conum" data-value="3"></i><b>(3)</b>
+);</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Ce callback sera appelé à chaque valeur.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Ce callback va tracer les erreurs.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Ce callback sera appelé quand <code>range</code> émettra un signal de terminaison.</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="trueprogrammation-r-active-avec-angular"><a class="anchor" href="#trueprogrammation-r-active-avec-angular"></a>10.2. Programmation réactive avec Angular</h3>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Angular propose un adaptateur autour de l&#8217;objet <code>Observable</code> appelé <code>EventEmitter</code>.
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">const emitter = new EventEmitter();
+
+emitter.subscribe(
+    value =&gt; console.log(value),
+    error =&gt; console.log(error),
+    () =&gt; console.log('done')
+);
+
+emitter.emit('Hello');  // 'Hello'
+emitter.emit('there');  // 'there'
+
+emitter.complete();     // 'done'</code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+la méthode <code>subscribe()</code> retourne un objet <em>subscription</em>, avec une méthode <code>unsubscribe</code> pour se désabonner.
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">const emitter = new EventEmitter();
+
+emitter.subscribe(
+    value =&gt; console.log(value),
+    error =&gt; console.log(error),
+    () =&gt; console.log('done')
+);
+
+emitter.emit('Hello');  // 'Hello'
+emitter.unsubscribe();
+
+emitter.emit('there');  // nothing</code></pre>
+</div>
+</div>
 <div class="paragraph">
 <p><a href="#top-of-page">⬆ Back to top</a></p>
+</div>
 </div>
 </div>
 </div>
@@ -3529,7 +3703,7 @@ export class AppModule {
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-09-20 16:09:04 PM
+Last updated 2018-09-20 17:29:06 PM
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.9.1/styles/github.min.css">

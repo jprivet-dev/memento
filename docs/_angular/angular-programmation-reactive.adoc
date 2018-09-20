@@ -1,0 +1,93 @@
+=== RxJs
+
+Tout _observable_ peut être transformé avec des fonctions classiques :
+
+|===
+| take(n)           | Pioche les n premiers éléments.
+| map(fn)           | Applique la fonction `fn` sur chaque événement et retourne le résultat.
+| filter(predicate) | Laisse passer les seuls événements qui répondent positivement au prédicat
+| reduce(fn)        | Applique la fonction `fn` à chaque événement pour réduire le flux à une seule valeur unique.
+| merge(s1, s2)     | Fusionne les deux flux `s1` et  `s2`
+| subscribe(fn)     | Applique la fonction `fn` à chaque événement qu'elle reçoit.
+|===
+
+==== Exemple sans programmation réactive
+
+[source,javascript]
+----
+[1, 2, 3, 4, 5]
+    .map(x => x * 2) <1>
+    .filter(x => x > 5) <2>
+    .forEach(x => console.log(x)); // 6, 8, 10 <3>
+----
+<1> On multiplie toutes les valeurs du tableau par 2.
+<2> On filtre et garde toutes les valeurs supérieures à 5.
+<3> On affiche chaque valeurs.
+
+==== Exemple avec programmation réactive
+
+[source,javascript]
+----
+import { from } from 'rxjs';
+import { filter, map } from 'rxjs/operators';
+
+from([1, 2, 3, 4, 5]).pipe(
+    map(x => x * 2),
+    filter(x => x > 5)
+).subscribe(x => console.log(x)); // 6, 8, 10
+----
+
+==== Erreurs & terminaison
+
+[source,javascript]
+----
+range(1, 5).pipe(
+    map(x => x * 2),
+    filter(x => x > 5)
+).subscribe(
+    x => console.log(x), // 6, 8, 10    <1>
+    error => console.log(error),        <2>
+    () => console.log('done')           <3>
+);
+----
+<1> Ce callback sera appelé à chaque valeur.
+<2> Ce callback va tracer les erreurs.
+<3> Ce callback sera appelé quand `range` émettra un signal de terminaison.
+
+=== Programmation réactive avec Angular
+
+NOTE: Angular propose un adaptateur autour de l'objet `Observable` appelé `EventEmitter`.
+
+[source,javascript]
+----
+const emitter = new EventEmitter();
+
+emitter.subscribe(
+    value => console.log(value),
+    error => console.log(error),
+    () => console.log('done')
+);
+
+emitter.emit('Hello');  // 'Hello'
+emitter.emit('there');  // 'there'
+
+emitter.complete();     // 'done'
+----
+
+TIP: la méthode `subscribe()` retourne un objet _subscription_, avec une méthode `unsubscribe` pour se désabonner.
+
+[source,javascript]
+----
+const emitter = new EventEmitter();
+
+emitter.subscribe(
+    value => console.log(value),
+    error => console.log(error),
+    () => console.log('done')
+);
+
+emitter.emit('Hello');  // 'Hello'
+emitter.unsubscribe();
+
+emitter.emit('there');  // nothing
+----

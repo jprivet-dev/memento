@@ -58,6 +58,8 @@ include::_angular/angular-pipes.adoc[]
 
 == Programmation réactive
 
+include::_angular/angular-programmation-reactive.adoc[]
+
 {BACK_TO_TOP}
 
 == Composants et directives
