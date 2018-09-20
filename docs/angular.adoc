@@ -40,6 +40,8 @@ include::_angular/angular-templates.adoc[]
 
 == Injection de dépendances
 
+include::_angular/angular-injection-dependances.adoc[]
+
 {BACK_TO_TOP}
 
 == Services
