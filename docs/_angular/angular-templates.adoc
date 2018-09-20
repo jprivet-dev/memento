@@ -84,3 +84,144 @@ export class AppComponent {
 }
 ----
 <1> On insert `<ns-races>` dans le template de `AppComponent` pour utiliser `RacesComponent`.
+
+=== _Binding_ de propriété
+
+Les syntaxes suivantes sont équivalentes :
+
+[source,html]
+----
+<p>{{ user.name }}</p>
+<p [textContent]="user.name"></p>
+----
+
+TIP: Avec Angular, on peut écrire dans toutes les propriétés du DOM via des attributs spéciaux sur les éléments HTML, entourés de crochets `[]`. C'est du HTML valide !
+
+NOTE: Un nom d'attribut HTML peut commencer par n'importe quoi, à l'exception de quelques caratères comme `"`, `/`, `=`, espace, ...
+
+IMPORTANT: l'analyseur est sensible à la casse.
+
+==== Exemple : URL dynamique pour une image
+
+[source,html]
+----
+<img src="{{ image.url }}">
+----
+
+==== Exemple : Utilisation d'un Web Component externe
+
+[source,html]
+----
+<ns-pony name="Joe"></ns-pony> <1>
+<ns-pony [name]="pony.name"></ns-pony> <2>
+----
+<1> On passe une valeur *statique* à la propriété `name` du Web Component `Pony`
+<1> On passe une valeur *dynamique* à la propriété `name` du Web Component `Pony`
+
+D'autres couples de syntaxes équivalentes :
+
+[source,html]
+----
+<ns-pony name="Pony {{ pony.name }}"></ns-pony>
+<ns-pony [name]="'Pony ' + pony.name"></ns-pony>
+----
+
+[source,html]
+----
+<ns-pony name="{{ pony.fullName() }}"></ns-pony>
+<ns-pony [name]="pony.fullName()"></ns-pony>
+----
+
+==== Exemple : Utilisation de propriétés standards
+
+[source,html]
+----
+<div [hidden]="isHidden">My text</div> <1>
+<p [style.color]="foreground">Other text</p> <2>
+----
+<1> La `<div>` est cachée quand `isHidden` vaut `true`
+<2> On accède ici à l'attribut `color` de la propriété `style`, qui prendra la valeur de `foreground`
+
+=== Evénements
+
+Exemple de syntaxe :
+
+[source,html]
+----
+<button (click)="refreshRaces()">Refresh the race list</button>
+----
+
+Intégration de l'exemple précédent de le composant `RacesComponent` suivant :
+
+[source,javascript]
+----
+@Component({
+  selector: 'ns-races',
+  template: `
+    <h2>Races</h2>
+    <button (click)="refreshRaces()">Refresh the races list</button> <1>
+    <p>{{ races.length }} races</p> <2>
+  `
+})
+export class RacesComponent {
+  races: any = [];
+
+  refreshRaces() { <1>
+    this.races = [{ name: 'London' }, { name: 'Lyon' }]; <2>
+  }
+}
+----
+<1> L'événement `click` exécutera la fonction `refreshRaces()`.
+<2> `races.length` sera mise à jour quand la valeur de `this.races` sera modifée.
+
+==== Bubbling up : la propagation des événements
+
+NOTE: Bubbling up : les événements se propagent vers le haut depuis le fond des composants enfants
+
+[source,html]
+----
+<div (click)="onButtonClick()">
+    <button>Click me!</button> <1>
+</div>
+----
+
+<1> Si je clique sur `<button>`, l'événement se propagera vers le haut et sera capté par le parent `<div>`, qui exécutera la méthode `onButtonClick()`.
+
+Il est possible d'accéder à l'événement depuis la méthode `onButtonClick` appelée :
+
+[source,html]
+----
+<div (click)="onButtonClick($event)"> <1>
+    <button>Click me!</button>
+</div>
+----
+<1> L'événement `$event` est passé à la méthode `onButtonClick`
+
+[source,javascript]
+----
+onButtonClick(event) {
+    console.log(event); 
+}
+----
+
+WARNING: Par défaut, les événement vont continuer à "bouilloner" et remonter, pouvant déclencher d'autres `handlers` plus haut dans la hiérarchies de composants.
+
+Il est possible de bloquer les événements :
+
+[source,javascript]
+----
+onButtonClick(event) {
+    event.preventDefault(); <1>
+    event.stopPropagation(); <2>
+}
+----
+<1> On bloque ici le comportement par défaut.
+<2> On stope ici la propagation de l'événement.
+
+Gestion des événements du clavier :
+
+[source,html]
+----
+<textarea (keydown.space)="onSpacePress()">Press space!</textarea> <1>
+----
+<1> La méthode `onSpacePress()` sera appelée à chaque appui sur la touche kbd:[Space]
