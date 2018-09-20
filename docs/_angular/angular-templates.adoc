@@ -139,8 +139,8 @@ D'autres couples de syntaxes équivalentes :
 <div [hidden]="isHidden">My text</div> <1>
 <p [style.color]="foreground">Other text</p> <2>
 ----
-<1> La `<div>` est cachée quand `isHidden` vaut `true`
-<2> On accède ici à l'attribut `color` de la propriété `style`, qui prendra la valeur de `foreground`
+<1> La `<div>` est cachée quand `isHidden` vaut `true`.
+<2> On accède ici à l'attribut `color` de la propriété `style`, qui prendra la valeur de `foreground`.
 
 === Evénements
 
@@ -216,7 +216,7 @@ onButtonClick(event) {
 }
 ----
 <1> On bloque ici le comportement par défaut.
-<2> On stope ici la propagation de l'événement.
+<2> On stoppe ici la propagation de l'événement.
 
 Gestion des événements du clavier :
 
@@ -225,3 +225,179 @@ Gestion des événements du clavier :
 <textarea (keydown.space)="onSpacePress()">Press space!</textarea> <1>
 ----
 <1> La méthode `onSpacePress()` sera appelée à chaque appui sur la touche kbd:[Space]
+
+=== Variables locales
+
+Création d'une variable locale :
+
+[source,html]
+----
+<input type="text" #name> <1>
+{{ name.value }} <2>
+----
+<1> Création d'une variable locale `name` avec la notation `#`
+<2> Utilisation de la variable locale `name`
+
+Focus sur un élément :
+
+[source,html]
+----
+<input type="text" #name>
+<button (click)="name.focus()">Focus the input</button> <1>
+----
+<1> La méthode `focus()` est standard dans l'API DOM, et donne ici le focus à l'élément `<input>` au clic sur l'élément `<button>`
+
+Utilisation locale d'une méthode d'un Web Component importé :
+
+[source,html]
+----
+<google-youtube #player></google-youtube>
+<button (click)="player.play()">Play!</button>
+----
+
+=== Directives structurelles
+
+NOTE: Les directives structurelles s'appuient sur la balise standard `<ng-template>`, inspirée de la balise standard `template` de la spécification HTML.
+
+==== NgIf
+
+Ici on instancie le template seulement lorsqu'une condition est réalisée :
+
+[source,html]
+----
+<ng-template [ngIf]="races.length > 0"> <1>
+    <div>
+        <h1>Races</h1>
+    </div>
+</ng-template>
+----
+<1> Le template ne sera instancié que si `races` a au moins un élément.
+
+On privilégiera la synthaxe plus courte avec la version raccourcie suivante :
+
+[source,html]
+----
+<div *ngIf="races.length > 0">
+    <h1>Races!</h1>
+</div>
+----
+
+TIP: La notation `*` indique que c'est une instantiation de template. Ce type de directives est déjà pré-chargé par le framework : il n'est pas nécessaire d'importer et de déclarer `NgIf`
+
+Utilisation de `else` :
+
+[source,html]
+----
+<div *ngIf="races.length > 0; else empty">
+    <h1>Races!</h1>
+</div>
+<ng-template #empty>
+    <h2>No races.</h2>
+</ng-template>
+----
+
+==== NgFor
+
+[source,html]
+----
+<div *ngIf="races.length > 0">
+    <ul>
+        <li *ngFor="let race of races"> <1>
+            {{ race.name }}
+        </li>
+    </ul>
+</div>
+----
+<1> `ngFor` permet d'instancier un template par élément de la collection `races`
+
+`NgFor` utilise la "microsyntaxe". Ainsi les codes suivants sont équivalents :
+
+[source,html]
+----
+<ul>
+  <li *ngFor="let race of races">{{ race.name }}</li>
+</ul>
+----
+
+[source,html]
+----
+<ul>
+    <ng-template ngFor let-race [ngForOf]="races">
+        <li>{{ race.name }}</li>
+    </ng-template>
+</ul>
+----
+
+Utilisation d'une variable exposée :
+
+[source,html]
+----
+<ul>
+    <li *ngFor="let race of races; index as i"> <1>
+        {{ i }} - {{ race.name }}
+    </li>
+</ul>
+----
+<1> La variable `i` recevra l'indice `index` de l'élément en courant, en commançant à zéro.
+
+Il existe d'autres variables exposées : 
+
+|===
+| even  | booléen qui sera à `true` si l'élément a un index *pair*
+| odd   | booléen qui sera à `true` si l'élément a un index *impair*
+| first | booléen qui sera à `true` si l'élément est le *premier* de la liste
+| last  | booléen qui sera à `true` si l'élément est le *dernier* de la liste
+|===
+
+==== NgSwitch
+
+[source,html]
+----
+<div [ngSwitch]="messageCount">
+    <p *ngSwitchCase="0">You have no message</p>
+    <p *ngSwitchCase="1">You have a message</p>
+    <p *ngSwitchDefault>You have some message</p>
+</div>
+----
+
+=== Directives standards
+
+==== NgStyle
+
+[source,html]
+----
+<p [style.color]="foreground">Other text</p> <1>
+
+<div [ngStyle]="{ fontWeight: fontWeight, color: color }"> <2>
+    I've got style
+</div>
+----
+<1> On accède ici à l'attribut `color` de la propriété `style`, qui prendra la valeur de `foreground`.
+<2> On peut changer ici plusieurs styles en même temps.
+
+TIP: les clés peuvent être écrite en *camelCase* (`fontWeight`fontWeight) ou en *dash-case* (`font-weight`).
+
+==== NgClass
+
+[source,html]
+----
+<div [class.awesome-div]="isAnAwesomeDiv()"> <1>
+    I've got style
+</div>
+
+<div [ngClass]="{ 'awesome-div': isAnAwesomeDiv(), 'colored-dev': isAColoredDiv() }"> <2>
+    I've got style
+</div>
+----
+<1> On définie une seule classe avec le _binding_ de propriété.
+<2> On définie plusieurs classes avec `ngClass`.
+
+=== Résumé
+
+|===
+| {{ }}     | interpolation
+| []        | _binding_ de propriétés & directives standards
+| ()        | _binding_ d'événements
+| #         | déclaration de variables
+| *         | directives structurelles
+|===

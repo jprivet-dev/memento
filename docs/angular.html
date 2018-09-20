@@ -485,6 +485,10 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#truecr-er-et-int-grer-un-nouveau-composant">6.2. Créer et intégrer un nouveau composant</a></li>
 <li><a href="#true-em-binding-em-de-propri-t">6.3. <em>Binding</em> de propriété</a></li>
 <li><a href="#trueev-nements">6.4. Evénements</a></li>
+<li><a href="#truevariables-locales">6.5. Variables locales</a></li>
+<li><a href="#truedirectives-structurelles">6.6. Directives structurelles</a></li>
+<li><a href="#truedirectives-standards">6.7. Directives standards</a></li>
+<li><a href="#truer-sum">6.8. Résumé</a></li>
 </ul>
 </li>
 <li><a href="#trueinjection-de-d-pendances">7. Injection de dépendances</a></li>
@@ -2114,11 +2118,11 @@ l&#8217;analyseur est sensible à la casse.
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>La <code>&lt;div&gt;</code> est cachée quand <code>isHidden</code> vaut <code>true</code></td>
+<td>La <code>&lt;div&gt;</code> est cachée quand <code>isHidden</code> vaut <code>true</code>.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>On accède ici à l&#8217;attribut <code>color</code> de la propriété <code>style</code>, qui prendra la valeur de <code>foreground</code></td>
+<td>On accède ici à l&#8217;attribut <code>color</code> de la propriété <code>style</code>, qui prendra la valeur de <code>foreground</code>.</td>
 </tr>
 </table>
 </div>
@@ -2253,7 +2257,7 @@ Par défaut, les événement vont continuer à "bouilloner" et remonter, pouvant
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>On stope ici la propagation de l'événement.</td>
+<td>On stoppe ici la propagation de l'événement.</td>
 </tr>
 </table>
 </div>
@@ -2273,9 +2277,328 @@ Par défaut, les événement vont continuer à "bouilloner" et remonter, pouvant
 </tr>
 </table>
 </div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="truevariables-locales"><a class="anchor" href="#truevariables-locales"></a>6.5. Variables locales</h3>
+<div class="paragraph">
+<p>Création d&#8217;une variable locale :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-html" data-lang="html">&lt;input type="text" #name&gt; <i class="conum" data-value="1"></i><b>(1)</b>
+{{ name.value }} <i class="conum" data-value="2"></i><b>(2)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Création d&#8217;une variable locale <code>name</code> avec la notation <code>#</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Utilisation de la variable locale <code>name</code></td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Focus sur un élément :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-html" data-lang="html">&lt;input type="text" #name&gt;
+&lt;button (click)="name.focus()"&gt;Focus the input&lt;/button&gt; <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>La méthode <code>focus()</code> est standard dans l&#8217;API DOM, et donne ici le focus à l'élément <code>&lt;input&gt;</code> au clic sur l'élément <code>&lt;button&gt;</code></td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Utilisation locale d&#8217;une méthode d&#8217;un Web Component importé :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-html" data-lang="html">&lt;google-youtube #player&gt;&lt;/google-youtube&gt;
+&lt;button (click)="player.play()"&gt;Play!&lt;/button&gt;</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="truedirectives-structurelles"><a class="anchor" href="#truedirectives-structurelles"></a>6.6. Directives structurelles</h3>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Les directives structurelles s&#8217;appuient sur la balise standard <code>&lt;ng-template&gt;</code>, inspirée de la balise standard <code>template</code> de la spécification HTML.
+</td>
+</tr>
+</table>
+</div>
+<div class="sect3">
+<h4 id="truengif"><a class="anchor" href="#truengif"></a>6.6.1. NgIf</h4>
+<div class="paragraph">
+<p>Ici on instancie le template seulement lorsqu&#8217;une condition est réalisée :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-html" data-lang="html">&lt;ng-template [ngIf]="races.length &gt; 0"&gt; <i class="conum" data-value="1"></i><b>(1)</b>
+    &lt;div&gt;
+        &lt;h1&gt;Races&lt;/h1&gt;
+    &lt;/div&gt;
+&lt;/ng-template&gt;</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Le template ne sera instancié que si <code>races</code> a au moins un élément.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>On privilégiera la synthaxe plus courte avec la version raccourcie suivante :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-html" data-lang="html">&lt;div *ngIf="races.length &gt; 0"&gt;
+    &lt;h1&gt;Races!&lt;/h1&gt;
+&lt;/div&gt;</code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+La notation <code>*</code> indique que c&#8217;est une instantiation de template. Ce type de directives est déjà pré-chargé par le framework : il n&#8217;est pas nécessaire d&#8217;importer et de déclarer <code>NgIf</code>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Utilisation de <code>else</code> :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-html" data-lang="html">&lt;div *ngIf="races.length &gt; 0; else empty"&gt;
+    &lt;h1&gt;Races!&lt;/h1&gt;
+&lt;/div&gt;
+&lt;ng-template #empty&gt;
+    &lt;h2&gt;No races.&lt;/h2&gt;
+&lt;/ng-template&gt;</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="truengfor"><a class="anchor" href="#truengfor"></a>6.6.2. NgFor</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-html" data-lang="html">&lt;div *ngIf="races.length &gt; 0"&gt;
+    &lt;ul&gt;
+        &lt;li *ngFor="let race of races"&gt; <i class="conum" data-value="1"></i><b>(1)</b>
+            {{ race.name }}
+        &lt;/li&gt;
+    &lt;/ul&gt;
+&lt;/div&gt;</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td><code>ngFor</code> permet d&#8217;instancier un template par élément de la collection <code>races</code></td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p><code>NgFor</code> utilise la "microsyntaxe". Ainsi les codes suivants sont équivalents :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-html" data-lang="html">&lt;ul&gt;
+  &lt;li *ngFor="let race of races"&gt;{{ race.name }}&lt;/li&gt;
+&lt;/ul&gt;</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-html" data-lang="html">&lt;ul&gt;
+    &lt;ng-template ngFor let-race [ngForOf]="races"&gt;
+        &lt;li&gt;{{ race.name }}&lt;/li&gt;
+    &lt;/ng-template&gt;
+&lt;/ul&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Utilisation d&#8217;une variable exposée :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-html" data-lang="html">&lt;ul&gt;
+    &lt;li *ngFor="let race of races; index as i"&gt; <i class="conum" data-value="1"></i><b>(1)</b>
+        {{ i }} - {{ race.name }}
+    &lt;/li&gt;
+&lt;/ul&gt;</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>La variable <code>i</code> recevra l&#8217;indice <code>index</code> de l'élément en courant, en commançant à zéro.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Il existe d&#8217;autres variables exposées :</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">even</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">booléen qui sera à <code>true</code> si l'élément a un index <strong>pair</strong></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">odd</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">booléen qui sera à <code>true</code> si l'élément a un index <strong>impair</strong></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">first</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">booléen qui sera à <code>true</code> si l'élément est le <strong>premier</strong> de la liste</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">last</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">booléen qui sera à <code>true</code> si l'élément est le <strong>dernier</strong> de la liste</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="truengswitch"><a class="anchor" href="#truengswitch"></a>6.6.3. NgSwitch</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-html" data-lang="html">&lt;div [ngSwitch]="messageCount"&gt;
+    &lt;p *ngSwitchCase="0"&gt;You have no message&lt;/p&gt;
+    &lt;p *ngSwitchCase="1"&gt;You have a message&lt;/p&gt;
+    &lt;p *ngSwitchDefault&gt;You have some message&lt;/p&gt;
+&lt;/div&gt;</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="truedirectives-standards"><a class="anchor" href="#truedirectives-standards"></a>6.7. Directives standards</h3>
+<div class="sect3">
+<h4 id="truengstyle"><a class="anchor" href="#truengstyle"></a>6.7.1. NgStyle</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-html" data-lang="html">&lt;p [style.color]="foreground"&gt;Other text&lt;/p&gt; <i class="conum" data-value="1"></i><b>(1)</b>
+
+&lt;div [ngStyle]="{ fontWeight: fontWeight, color: color }"&gt; <i class="conum" data-value="2"></i><b>(2)</b>
+    I've got style
+&lt;/div&gt;</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>On accède ici à l&#8217;attribut <code>color</code> de la propriété <code>style</code>, qui prendra la valeur de <code>foreground</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>On peut changer ici plusieurs styles en même temps.</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+les clés peuvent être écrite en <strong>camelCase</strong> (<code>fontWeight`fontWeight) ou en <strong>dash-case</strong> (`font-weight</code>).
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect3">
+<h4 id="truengclass"><a class="anchor" href="#truengclass"></a>6.7.2. NgClass</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-html" data-lang="html">&lt;div [class.awesome-div]="isAnAwesomeDiv()"&gt; <i class="conum" data-value="1"></i><b>(1)</b>
+    I've got style
+&lt;/div&gt;
+
+&lt;div [ngClass]="{ 'awesome-div': isAnAwesomeDiv(), 'colored-dev': isAColoredDiv() }"&gt; <i class="conum" data-value="2"></i><b>(2)</b>
+    I've got style
+&lt;/div&gt;</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>On définie une seule classe avec le <em>binding</em> de propriété.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>On définie plusieurs classes avec <code>ngClass</code>.</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="truer-sum"><a class="anchor" href="#truer-sum"></a>6.8. Résumé</h3>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">{{ }}</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">interpolation</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">[]</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>binding</em> de propriétés &amp; directives standards</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">()</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>binding</em> d'événements</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">#</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">déclaration de variables</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">*</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">directives structurelles</p></td>
+</tr>
+</tbody>
+</table>
 <div class="paragraph">
 <p><a href="#top-of-page">⬆ Back to top</a></p>
-</div>
 </div>
 </div>
 </div>
@@ -2414,7 +2737,7 @@ Par défaut, les événement vont continuer à "bouilloner" et remonter, pouvant
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-09-20 09:55:33 PM
+Last updated 2018-09-20 11:27:13 PM
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.9.1/styles/github.min.css">
