@@ -1,0 +1,287 @@
+NOTE: Un _pipe_ peut être utilisé dans le HTML, ou dans le code applicatif.
+
+=== `| json`
+
+NOTE: `json` applique `JSON.stringify()`.
+
+[source,html]
+----
+<p>{{ ponies }}</p>
+<!-- Affiche '[object Object]' -->
+
+<p>{{ ponies | json }}</p>
+<!-- Affiche '[ { "name": "Rainbow Dash" }, { "name": "Pinkie Pie" } ]' -->
+
+<p [textContent]="ponies | json"></p>
+<!-- Affiche '[ { "name": "Rainbow Dash" }, { "name": "Pinkie Pie" } ]' -->
+----
+
+=== `| slice`
+
+NOTE: `slice` récupère un sous-ensemble d'une collection, ou d'une chaîne de caractères.
+
+[source,html]
+----
+<p>{{ ponies | slice:0:2 | json }}</p>
+<!-- Affiche les 2 premiers éléments de la liste `ponies` -->
+
+<p>{{ 'Hello everybody!' | slice:0:5 }}</p>
+<!-- Affiche 'Hello' -->
+
+<p>{{ 'Hello everybody!' | slice:5 }}</p>
+<!-- Affiche ' everybody!' -->
+
+<p>{{ 'Hello everybody!' | slice:-5 }}</p>
+<!-- Affiche 'body!' -->
+----
+
+[source,html]
+----
+<div *ngFor="let pony of ponies | slice:0:2"> <1>
+    {{ pony.name }}
+</div>
+----
+<1> Seuls les 2 premiers poneys seront affichés.
+
+[source,javascript]
+----
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'ns-ponies',
+  template: `<div *ngFor="let pony of ponies | slice:0:size"> <1>
+    {{ pony.name }}
+  </div>`
+})
+export class PoniesComponent {
+  size = 2; <2>
+  ponies = [
+    { name: 'Rainbow Dash' },
+    { name: 'Pinkie Pie' },
+    { name: 'Fluttershy' }
+  ];
+}
+----
+<1> Le paramètre d'un pipe peut être dynamique (ici avec `size`).
+<2> Une valeur est affectée à `size`.
+
+[source,html]
+----
+<div *ngFor="let pony of ponies | slice:0:2 as total; index as i"> <1>
+    {{ i+1 }}/{{ total.length }}: {{ pony.name }}
+</div>
+----
+<1> Il est possible de stocker le résultat du `slice`, ici dans `total`.
+
+=== `| uppercase` & `| lowercase`
+
+[source,html]
+----
+<p>{{ 'My Little Poney' | uppercase }}</p>
+<!-- Affiche 'MY LITTLE PONEY' -->
+
+<p>{{ 'My Little Poney' | lowercase }}</p>
+<!-- Affiche 'my little poney' -->
+----
+
+=== `| titlecase` 
+
+[source,html]
+----
+<p>{{ 'my little poney' | titlecase }}</p>
+<!-- Affiche 'My Little Poney' -->
+----
+
+=== `| number`
+
+NOTE: `number` permet de formater un nombre.
+
+WARNING: Exemples donnés avec la locale par défaut d'Angular `en-US`.
+
+[source,html]
+----
+<p>{{ 12345 }}</p>
+<!-- Affiche '12345' -->
+
+<p>{{ 12345 | number }}</p>
+<!-- Affiche '12,345' -->
+
+<p>{{ 12345 | number:'6.' }}</p>
+<!-- Affiche '012,345' -->
+
+<p>{{ 12345 | number:'.2' }}</p>
+<!-- Affiche '12,345.00' -->
+----
+
+[source,html]
+----
+<p>{{ 12345.13 | number:'.1-1' }}</p>
+<!-- Affiche '12,345.1' -->
+
+<p>{{ 12345.16 | number:'.1-1' }}</p>
+<!-- Affiche '12,345.2' -->
+----
+
+=== `| percent`
+
+NOTE: `percent` permet de formater un pourcentage.
+
+[source,html]
+----
+<p>{{ 0.8 | percent }}</p>
+<!-- Affiche '80%' -->
+
+<p>{{ 0.8 | percent:'.3' }}</p>
+<!-- Affiche '80.000%' -->
+----
+
+=== `| currency`
+
+NOTE: `currency` permet de formater un montant d'argent dans la devise choisie.
+
+[source,html]
+----
+<p>{{ 10.6 | currency:'CAD' }}<.p>
+<!-- Affiche 'CAD$10.6' -->
+
+<p>{{ 10.6 | currency:'CAD':'symbol-narrow' }}<.p>
+<!-- Affiche '$10.6' -->
+
+<p>{{ 10.6 | currency:'EUR':'code':'.3' }}<.p>
+<!-- Affiche 'EUR10.600' -->
+----
+
+options :
+
+|===
+| 'symbol'         | Affiche le symbole (valeur par défaut)
+| 'symbol-narrow'  | Affiche le symbole raccourci
+| 'code'            | Affiche le code ISO
+|===
+
+=== `| date`
+
+NOTE: `date` transforme un objet `Date`, ou un nombre de millisecondes, en chaîne de caractères.
+
+[source,html]
+----
+<p>{{ birthday | date:'dd/MM/yyyy' }}</p>
+<!-- will display '16/07/1986' -->
+
+<p>{{ birthday | date:'longDate' }}</p>
+<!-- will display 'July 16, 1986' -->
+
+<p>{{ birthday | date:'HH:mm' }}</p>
+<!-- will display '15:30' -->
+
+<p>{{ birthday | date:'shortTime' }}</p>
+<!-- will display '3:30 PM' -->
+----
+
+=== `| async`
+
+NOTE: `async` permet d'afficher des données obtenues de manière asynchrone.
+
+- Il utilise `PromisePipe` ou `ObservablePipe`.
+- `| async` retourne une *chaîne de caractères vide* jusqu'à ce que la données deviennent disponibles.
+- Un cycle de détection de changement se déclenche une fois la donnée obtenue.
+- Si la source de données est un Observable, alors le _pipe_ se chargera de *se désabonner* de la source à la *destruction du composant*.
+
+[source,javascript]
+----
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'ns-greeting',
+  template: `<div>{{ asyncGreeting | async }}</div>` <1>
+})
+export class GreetingComponent {
+  asyncGreeting = new Promise(resolve => { <2>
+    window.setTimeout(() => resolve('hello'), 1000);
+  });
+}
+----
+<1> `async` est appliqué à la variable `asyncGreeting`.
+<2> La promesse sera résolue après 1 seconde.
+
+[source,javascript]
+----
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'ns-user',
+  template: `<div *ngIf="asyncUser | async as user">{{ user.name }}</div>` <1>
+})
+export class UserComponent {
+  asyncUser = new Promise(resolve => { <2>
+    window.setTimeout(() => resolve({ name: 'Cédric' }), 1000);
+  });
+}
+----
+<1> Pour éviter de multiples appels à la promesse, le résultat de l'appel est stocké dans `user` avec `as`.
+<2> `asyncUser` sera résolue après 1 seconde.
+
+=== Utilisation d'un _pipe_ dans le code
+
+NOTE: On peut utiliser les _pipes_ dans le code, via l'injection de dépendance.
+
+IMPORTANT: Le _pipe_ a utiliser dans son code doit être préalablement ajouté aux `providers` du `@NgModule` ou du `@Component`.
+
+[source,javascript]
+----
+import { Component, Inject, LOCALE_ID } from '@angular/core';
+import { DecimalPipe } from '@angular/common'; <1>
+
+@Component({
+  selector: 'ns-pony',
+  template: `<p>{{ formattedSpeed }}</p>`
+})
+export class PonyComponent {
+  pony = { name: 'Rainbow Dash', speed: 15 };
+  formattedSpeed: string;
+
+  constructor(decimalPipe: DecimalPipe, @Inject(LOCALE_ID) locale: string) { <2>
+    this.formattedSpeed = decimalPipe.transform(this.pony.speed, '.2', locale); <3>
+  }
+}
+----
+<1> Importation du _pipe_ `DecimalPipe` a utiliser.
+<2> Injection du _pipe_ `DecimalPipe` dans le composant `PonyComponent`.
+<3> Appel de la méthode `transform()` du _pipe_.
+
+=== Créer son propre _pipe_
+
+==== Création de `ThreeTimesLongerPipe`
+
+[source,javascript]
+----
+import { PipeTransform, Pipe } from '@angular/core'; <1>
+
+@Pipe({ name: 'threetimes' }) <2>
+export class ThreeTimesLongerPipe implements PipeTransform {
+  transform(value, args) { <3>
+    return value * 3;
+  }
+}
+----
+<1> On doit importer `PipeTransform` pour pouvoir implémenter l'interface.
+<2> Avec le decorateur `@Pipe`, on rend disponible le _pipe_ dans l'application. On pourra l'utiliser avec `| threetimes`.
+<3> On implémente la méthode `transform()` de l'interface `PipeTransform`.
+
+==== Déclaration de `ThreeTimesLongerPipe`
+
+[source,javascript]
+----
+@NgModule({
+  imports: [BrowserModule],
+  declarations: [
+    AppComponent,
+    RacesComponent,
+    ThreeTimesLongerPipe <1>
+  ],
+  bootstrap: [AppComponent]
+})
+export class AppModule {
+}
+----
+<1> On déclare `ThreeTimesLongerPipe` dans `AppModule`.
