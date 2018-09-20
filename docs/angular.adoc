@@ -64,6 +64,8 @@ include::_angular/angular-programmation-reactive.adoc[]
 
 == Composants et directives
 
+include::_angular/angular-composants-directives.adoc[]
+
 {BACK_TO_TOP}
 
 == Tester son application
