@@ -496,7 +496,12 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#trueappmodule-la-configuration-des-code-providers-code">7.1. AppModule : la configuration des <code>providers</code></a></li>
 </ul>
 </li>
-<li><a href="#trueservices">8. Services</a></li>
+<li><a href="#trueservices">8. Services</a>
+<ul class="sectlevel2">
+<li><a href="#trueservice-code-title-code">8.1. Service <code>Title</code></a></li>
+<li><a href="#trueservice-code-meta-code">8.2. Service <code>Meta</code></a></li>
+</ul>
+</li>
 <li><a href="#truepipes">9. Pipes</a></li>
 <li><a href="#trueprogrammation-r-active">10. Programmation réactive</a></li>
 <li><a href="#truecomposants-et-directives">11. Composants et directives</a></li>
@@ -2811,8 +2816,70 @@ le token doit identifier de manière unique la dépendance.
 <div class="sect1">
 <h2 id="trueservices"><a class="anchor" href="#trueservices"></a>8. Services</h2>
 <div class="sectionbody">
+<div class="sect2">
+<h3 id="trueservice-code-title-code"><a class="anchor" href="#trueservice-code-title-code"></a>8.1. Service <code>Title</code></h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">import { Component } from '@angular/core';
+import { Title } from '@angular/platform-browser'; <i class="conum" data-value="1"></i><b>(1)</b>
+
+@Component({
+  selector: 'ns-root',
+  template: `&lt;h1&gt;PonyRacer&lt;/h1&gt;`
+})
+export class AppComponent {
+  constructor(title: Title) {
+    title.setTitle('PonyRacer - Bet on ponies'); <i class="conum" data-value="2"></i><b>(2)</b>
+  }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Import du service <code>Title</code> qui propose un getter et setter.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Le service crée automatiquement l'élément <code>title</code> dans la section <code>head</code> et y injecte le titre.</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="trueservice-code-meta-code"><a class="anchor" href="#trueservice-code-meta-code"></a>8.2. Service <code>Meta</code></h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">import { Component } from '@angular/core';
+import { Meta } from '@angular/platform-browser'; <i class="conum" data-value="1"></i><b>(1)</b>
+
+@Component({
+  selector: 'ns-root',
+  template: `&lt;h1&gt;PonyRacer&lt;/h1&gt;`
+})
+export class AppComponent {
+  constructor(meta: Meta) {
+    meta.addTag({ name: 'author', content: 'Ninja Squad' }); <i class="conum" data-value="2"></i><b>(2)</b>
+  }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Import du service <code>Meta</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Mise à jour des valeurs <code>meta</code> de la page.</td>
+</tr>
+</table>
+</div>
 <div class="paragraph">
 <p><a href="#top-of-page">⬆ Back to top</a></p>
+</div>
 </div>
 </div>
 </div>
@@ -2934,7 +3001,7 @@ le token doit identifier de manière unique la dépendance.
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-09-20 12:33:21 PM
+Last updated 2018-09-20 14:00:48 PM
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.9.1/styles/github.min.css">

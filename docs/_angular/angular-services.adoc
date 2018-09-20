@@ -1,0 +1,39 @@
+=== Service `Title`
+
+[source,javascript]
+----
+import { Component } from '@angular/core';
+import { Title } from '@angular/platform-browser'; <1>
+
+@Component({
+  selector: 'ns-root',
+  template: `<h1>PonyRacer</h1>`
+})
+export class AppComponent {
+  constructor(title: Title) {
+    title.setTitle('PonyRacer - Bet on ponies'); <2>
+  }
+}
+----
+<1> Import du service `Title` qui propose un getter et setter.
+<2> Le service crée automatiquement l'élément `title` dans la section `head` et y injecte le titre.
+
+=== Service `Meta`
+
+[source,javascript]
+----
+import { Component } from '@angular/core';
+import { Meta } from '@angular/platform-browser'; <1>
+
+@Component({
+  selector: 'ns-root',
+  template: `<h1>PonyRacer</h1>`
+})
+export class AppComponent {
+  constructor(meta: Meta) {
+    meta.addTag({ name: 'author', content: 'Ninja Squad' }); <2>
+  }
+}
+----
+<1> Import du service `Meta`.
+<2> Mise à jour des valeurs `meta` de la page.

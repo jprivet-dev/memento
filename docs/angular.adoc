@@ -46,6 +46,8 @@ include::_angular/angular-injection-dependances.adoc[]
 
 == Services
 
+include::_angular/angular-services.adoc[]
+
 {BACK_TO_TOP}
 
 == Pipes
