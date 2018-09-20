@@ -52,6 +52,8 @@ include::_angular/angular-services.adoc[]
 
 == Pipes
 
+include::_angular/angular-pipes.adoc[]
+
 {BACK_TO_TOP}
 
 == Programmation réactive

@@ -502,7 +502,21 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#trueservice-code-meta-code">8.2. Service <code>Meta</code></a></li>
 </ul>
 </li>
-<li><a href="#truepipes">9. Pipes</a></li>
+<li><a href="#truepipes">9. Pipes</a>
+<ul class="sectlevel2">
+<li><a href="#true-code-json-code">9.1. <code>| json</code></a></li>
+<li><a href="#true-code-slice-code">9.2. <code>| slice</code></a></li>
+<li><a href="#true-code-uppercase-code-code-lowercase-code">9.3. <code>| uppercase</code> &amp; <code>| lowercase</code></a></li>
+<li><a href="#true-code-titlecase-code">9.4. <code>| titlecase</code></a></li>
+<li><a href="#true-code-number-code">9.5. <code>| number</code></a></li>
+<li><a href="#true-code-percent-code">9.6. <code>| percent</code></a></li>
+<li><a href="#true-code-currency-code">9.7. <code>| currency</code></a></li>
+<li><a href="#true-code-date-code">9.8. <code>| date</code></a></li>
+<li><a href="#true-code-async-code">9.9. <code>| async</code></a></li>
+<li><a href="#trueutilisation-d-un-em-pipe-em-dans-le-code">9.10. Utilisation d&#8217;un <em>pipe</em> dans le code</a></li>
+<li><a href="#truecr-er-son-propre-em-pipe-em">9.11. Créer son propre <em>pipe</em></a></li>
+</ul>
+</li>
 <li><a href="#trueprogrammation-r-active">10. Programmation réactive</a></li>
 <li><a href="#truecomposants-et-directives">11. Composants et directives</a></li>
 <li><a href="#truetester-son-application">12. Tester son application</a></li>
@@ -2886,8 +2900,522 @@ export class AppComponent {
 <div class="sect1">
 <h2 id="truepipes"><a class="anchor" href="#truepipes"></a>9. Pipes</h2>
 <div class="sectionbody">
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Un <em>pipe</em> peut être utilisé dans le HTML, ou dans le code applicatif.
+</td>
+</tr>
+</table>
+</div>
+<div class="sect2">
+<h3 id="true-code-json-code"><a class="anchor" href="#true-code-json-code"></a>9.1. <code>| json</code></h3>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<code>json</code> applique <code>JSON.stringify()</code>.
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-html" data-lang="html">&lt;p&gt;{{ ponies }}&lt;/p&gt;
+&lt;!-- Affiche '[object Object]' --&gt;
+
+&lt;p&gt;{{ ponies | json }}&lt;/p&gt;
+&lt;!-- Affiche '[ { "name": "Rainbow Dash" }, { "name": "Pinkie Pie" } ]' --&gt;
+
+&lt;p [textContent]="ponies | json"&gt;&lt;/p&gt;
+&lt;!-- Affiche '[ { "name": "Rainbow Dash" }, { "name": "Pinkie Pie" } ]' --&gt;</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="true-code-slice-code"><a class="anchor" href="#true-code-slice-code"></a>9.2. <code>| slice</code></h3>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<code>slice</code> récupère un sous-ensemble d&#8217;une collection, ou d&#8217;une chaîne de caractères.
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-html" data-lang="html">&lt;p&gt;{{ ponies | slice:0:2 | json }}&lt;/p&gt;
+&lt;!-- Affiche les 2 premiers éléments de la liste `ponies` --&gt;
+
+&lt;p&gt;{{ 'Hello everybody!' | slice:0:5 }}&lt;/p&gt;
+&lt;!-- Affiche 'Hello' --&gt;
+
+&lt;p&gt;{{ 'Hello everybody!' | slice:5 }}&lt;/p&gt;
+&lt;!-- Affiche ' everybody!' --&gt;
+
+&lt;p&gt;{{ 'Hello everybody!' | slice:-5 }}&lt;/p&gt;
+&lt;!-- Affiche 'body!' --&gt;</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-html" data-lang="html">&lt;div *ngFor="let pony of ponies | slice:0:2"&gt; <i class="conum" data-value="1"></i><b>(1)</b>
+    {{ pony.name }}
+&lt;/div&gt;</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Seuls les 2 premiers poneys seront affichés.</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">import { Component } from '@angular/core';
+
+@Component({
+  selector: 'ns-ponies',
+  template: `&lt;div *ngFor="let pony of ponies | slice:0:size"&gt; <i class="conum" data-value="1"></i><b>(1)</b>
+    {{ pony.name }}
+  &lt;/div&gt;`
+})
+export class PoniesComponent {
+  size = 2; <i class="conum" data-value="2"></i><b>(2)</b>
+  ponies = [
+    { name: 'Rainbow Dash' },
+    { name: 'Pinkie Pie' },
+    { name: 'Fluttershy' }
+  ];
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Le paramètre d&#8217;un pipe peut être dynamique (ici avec <code>size</code>).</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Une valeur est affectée à <code>size</code>.</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-html" data-lang="html">&lt;div *ngFor="let pony of ponies | slice:0:2 as total; index as i"&gt; <i class="conum" data-value="1"></i><b>(1)</b>
+    {{ i+1 }}/{{ total.length }}: {{ pony.name }}
+&lt;/div&gt;</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Il est possible de stocker le résultat du <code>slice</code>, ici dans <code>total</code>.</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="true-code-uppercase-code-code-lowercase-code"><a class="anchor" href="#true-code-uppercase-code-code-lowercase-code"></a>9.3. <code>| uppercase</code> &amp; <code>| lowercase</code></h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-html" data-lang="html">&lt;p&gt;{{ 'My Little Poney' | uppercase }}&lt;/p&gt;
+&lt;!-- Affiche 'MY LITTLE PONEY' --&gt;
+
+&lt;p&gt;{{ 'My Little Poney' | lowercase }}&lt;/p&gt;
+&lt;!-- Affiche 'my little poney' --&gt;</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="true-code-titlecase-code"><a class="anchor" href="#true-code-titlecase-code"></a>9.4. <code>| titlecase</code></h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-html" data-lang="html">&lt;p&gt;{{ 'my little poney' | titlecase }}&lt;/p&gt;
+&lt;!-- Affiche 'My Little Poney' --&gt;</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="true-code-number-code"><a class="anchor" href="#true-code-number-code"></a>9.5. <code>| number</code></h3>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<code>number</code> permet de formater un nombre.
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+Exemples donnés avec la locale par défaut d&#8217;Angular <code>en-US</code>.
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-html" data-lang="html">&lt;p&gt;{{ 12345 }}&lt;/p&gt;
+&lt;!-- Affiche '12345' --&gt;
+
+&lt;p&gt;{{ 12345 | number }}&lt;/p&gt;
+&lt;!-- Affiche '12,345' --&gt;
+
+&lt;p&gt;{{ 12345 | number:'6.' }}&lt;/p&gt;
+&lt;!-- Affiche '012,345' --&gt;
+
+&lt;p&gt;{{ 12345 | number:'.2' }}&lt;/p&gt;
+&lt;!-- Affiche '12,345.00' --&gt;</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-html" data-lang="html">&lt;p&gt;{{ 12345.13 | number:'.1-1' }}&lt;/p&gt;
+&lt;!-- Affiche '12,345.1' --&gt;
+
+&lt;p&gt;{{ 12345.16 | number:'.1-1' }}&lt;/p&gt;
+&lt;!-- Affiche '12,345.2' --&gt;</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="true-code-percent-code"><a class="anchor" href="#true-code-percent-code"></a>9.6. <code>| percent</code></h3>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<code>percent</code> permet de formater un pourcentage.
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-html" data-lang="html">&lt;p&gt;{{ 0.8 | percent }}&lt;/p&gt;
+&lt;!-- Affiche '80%' --&gt;
+
+&lt;p&gt;{{ 0.8 | percent:'.3' }}&lt;/p&gt;
+&lt;!-- Affiche '80.000%' --&gt;</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="true-code-currency-code"><a class="anchor" href="#true-code-currency-code"></a>9.7. <code>| currency</code></h3>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<code>currency</code> permet de formater un montant d&#8217;argent dans la devise choisie.
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-html" data-lang="html">&lt;p&gt;{{ 10.6 | currency:'CAD' }}&lt;.p&gt;
+&lt;!-- Affiche 'CAD$10.6' --&gt;
+
+&lt;p&gt;{{ 10.6 | currency:'CAD':'symbol-narrow' }}&lt;.p&gt;
+&lt;!-- Affiche '$10.6' --&gt;
+
+&lt;p&gt;{{ 10.6 | currency:'EUR':'code':'.3' }}&lt;.p&gt;
+&lt;!-- Affiche 'EUR10.600' --&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>options :</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">'symbol'</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Affiche le symbole (valeur par défaut)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">'symbol-narrow'</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Affiche le symbole raccourci</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">'code'</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Affiche le code ISO</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="true-code-date-code"><a class="anchor" href="#true-code-date-code"></a>9.8. <code>| date</code></h3>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<code>date</code> transforme un objet <code>Date</code>, ou un nombre de millisecondes, en chaîne de caractères.
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-html" data-lang="html">&lt;p&gt;{{ birthday | date:'dd/MM/yyyy' }}&lt;/p&gt;
+&lt;!-- will display '16/07/1986' --&gt;
+
+&lt;p&gt;{{ birthday | date:'longDate' }}&lt;/p&gt;
+&lt;!-- will display 'July 16, 1986' --&gt;
+
+&lt;p&gt;{{ birthday | date:'HH:mm' }}&lt;/p&gt;
+&lt;!-- will display '15:30' --&gt;
+
+&lt;p&gt;{{ birthday | date:'shortTime' }}&lt;/p&gt;
+&lt;!-- will display '3:30 PM' --&gt;</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="true-code-async-code"><a class="anchor" href="#true-code-async-code"></a>9.9. <code>| async</code></h3>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<code>async</code> permet d&#8217;afficher des données obtenues de manière asynchrone.
+</td>
+</tr>
+</table>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Il utilise <code>PromisePipe</code> ou <code>ObservablePipe</code>.</p>
+</li>
+<li>
+<p><code>| async</code> retourne une <strong>chaîne de caractères vide</strong> jusqu'à ce que la données deviennent disponibles.</p>
+</li>
+<li>
+<p>Un cycle de détection de changement se déclenche une fois la donnée obtenue.</p>
+</li>
+<li>
+<p>Si la source de données est un Observable, alors le <em>pipe</em> se chargera de <strong>se désabonner</strong> de la source à la <strong>destruction du composant</strong>.</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">import { Component } from '@angular/core';
+
+@Component({
+  selector: 'ns-greeting',
+  template: `&lt;div&gt;{{ asyncGreeting | async }}&lt;/div&gt;` <i class="conum" data-value="1"></i><b>(1)</b>
+})
+export class GreetingComponent {
+  asyncGreeting = new Promise(resolve =&gt; { <i class="conum" data-value="2"></i><b>(2)</b>
+    window.setTimeout(() =&gt; resolve('hello'), 1000);
+  });
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td><code>async</code> est appliqué à la variable <code>asyncGreeting</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>La promesse sera résolue après 1 seconde.</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">import { Component } from '@angular/core';
+
+@Component({
+  selector: 'ns-user',
+  template: `&lt;div *ngIf="asyncUser | async as user"&gt;{{ user.name }}&lt;/div&gt;` <i class="conum" data-value="1"></i><b>(1)</b>
+})
+export class UserComponent {
+  asyncUser = new Promise(resolve =&gt; { <i class="conum" data-value="2"></i><b>(2)</b>
+    window.setTimeout(() =&gt; resolve({ name: 'Cédric' }), 1000);
+  });
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Pour éviter de multiples appels à la promesse, le résultat de l&#8217;appel est stocké dans <code>user</code> avec <code>as</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td><code>asyncUser</code> sera résolue après 1 seconde.</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="trueutilisation-d-un-em-pipe-em-dans-le-code"><a class="anchor" href="#trueutilisation-d-un-em-pipe-em-dans-le-code"></a>9.10. Utilisation d&#8217;un <em>pipe</em> dans le code</h3>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+On peut utiliser les <em>pipes</em> dans le code, via l&#8217;injection de dépendance.
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+Le <em>pipe</em> a utiliser dans son code doit être préalablement ajouté aux <code>providers</code> du <code>@NgModule</code> ou du <code>@Component</code>.
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">import { Component, Inject, LOCALE_ID } from '@angular/core';
+import { DecimalPipe } from '@angular/common'; <i class="conum" data-value="1"></i><b>(1)</b>
+
+@Component({
+  selector: 'ns-pony',
+  template: `&lt;p&gt;{{ formattedSpeed }}&lt;/p&gt;`
+})
+export class PonyComponent {
+  pony = { name: 'Rainbow Dash', speed: 15 };
+  formattedSpeed: string;
+
+  constructor(decimalPipe: DecimalPipe, @Inject(LOCALE_ID) locale: string) { <i class="conum" data-value="2"></i><b>(2)</b>
+    this.formattedSpeed = decimalPipe.transform(this.pony.speed, '.2', locale); <i class="conum" data-value="3"></i><b>(3)</b>
+  }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Importation du <em>pipe</em> <code>DecimalPipe</code> a utiliser.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Injection du <em>pipe</em> <code>DecimalPipe</code> dans le composant <code>PonyComponent</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Appel de la méthode <code>transform()</code> du <em>pipe</em>.</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="truecr-er-son-propre-em-pipe-em"><a class="anchor" href="#truecr-er-son-propre-em-pipe-em"></a>9.11. Créer son propre <em>pipe</em></h3>
+<div class="sect3">
+<h4 id="truecr-ation-de-code-threetimeslongerpipe-code"><a class="anchor" href="#truecr-ation-de-code-threetimeslongerpipe-code"></a>9.11.1. Création de <code>ThreeTimesLongerPipe</code></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">import { PipeTransform, Pipe } from '@angular/core'; <i class="conum" data-value="1"></i><b>(1)</b>
+
+@Pipe({ name: 'threetimes' }) <i class="conum" data-value="2"></i><b>(2)</b>
+export class ThreeTimesLongerPipe implements PipeTransform {
+  transform(value, args) { <i class="conum" data-value="3"></i><b>(3)</b>
+    return value * 3;
+  }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>On doit importer <code>PipeTransform</code> pour pouvoir implémenter l&#8217;interface.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Avec le decorateur <code>@Pipe</code>, on rend disponible le <em>pipe</em> dans l&#8217;application. On pourra l&#8217;utiliser avec <code>| threetimes</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>On implémente la méthode <code>transform()</code> de l&#8217;interface <code>PipeTransform</code>.</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect3">
+<h4 id="trued-claration-de-code-threetimeslongerpipe-code"><a class="anchor" href="#trued-claration-de-code-threetimeslongerpipe-code"></a>9.11.2. Déclaration de <code>ThreeTimesLongerPipe</code></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">@NgModule({
+  imports: [BrowserModule],
+  declarations: [
+    AppComponent,
+    RacesComponent,
+    ThreeTimesLongerPipe <i class="conum" data-value="1"></i><b>(1)</b>
+  ],
+  bootstrap: [AppComponent]
+})
+export class AppModule {
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>On déclare <code>ThreeTimesLongerPipe</code> dans <code>AppModule</code>.</td>
+</tr>
+</table>
+</div>
 <div class="paragraph">
 <p><a href="#top-of-page">⬆ Back to top</a></p>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -3001,7 +3529,7 @@ export class AppComponent {
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-09-20 14:00:48 PM
+Last updated 2018-09-20 16:09:04 PM
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.9.1/styles/github.min.css">
