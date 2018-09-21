@@ -1,0 +1,37 @@
+==== _Style encapsulation_
+
+NOTE: Les styles définis dans un composant seront limités par Angular à ce composant et seulement celui-ci.
+
+La stratégie d'encapsulation est définie par l'attribut `encapsulation` du décorateur du composant :
+
+|====
+| ViewEncapsulation.Emulated    | Valeur par défaut.
+| ViewEncapsulation.Native      | _Shadow DOM v0_, première version de la spécification, aujourd'hui dépréciée.
+| ViewEncapsulation.ShadowDom   | _Shadow DOM v1_, option introduite dans Angular 6.1.
+| ViewEncapsulation.None        | Aucune encapsulation.
+|====
+
+==== _Shadow DOM_
+
+le _Shadow DOM_ fait partie de la spécification récente des Web Components. Cette spécification crée des éléments dans un DOM spécial, parfaitement encapsulé.
+
+WARNING: le _Shadow DOM_ est une spécification vraiment récente, qui n'est pas encore disponible dans tous les navigateurs.
+
+==== _Emulated_
+
+Angular émule la stratégie _Shadow DOM_, mais sans utiliser la _Shadow DOM_. Pour cela Angular va réécrire le sélecteur CSS, pour lui ajouter un attribut identifiant unique.
+
+==== _None_
+
+Cette stratégie ne réalise aucune encapsulation.
+
+==== :host
+
+Le secteur CSS spécial `:host` existe pour styler spécifiquement l'élément hôte. Il vient de la spécification des Web Components :
+
+[source,css]
+----
+:host {
+  display: block;
+}
+----

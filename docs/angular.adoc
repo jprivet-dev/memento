@@ -68,6 +68,12 @@ include::_angular/angular-composants-directives.adoc[]
 
 {BACK_TO_TOP}
 
+== Style des composants et encapsulation
+
+include::_angular/angular-composants-encapsulation.adoc[]
+
+{BACK_TO_TOP}
+
 == Tester son application
 
 {BACK_TO_TOP}
