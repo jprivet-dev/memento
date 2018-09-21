@@ -1,0 +1,262 @@
+Angular propose deux types de tests :
+
+|===
+| Unitaires     | Permet de vérifier le fonctionnement en isolation, indépendamment des dépendances.
+| _end-to-end_  | Permet d'émuler une intéraction utilisateur réelle avec l'application, en démarrant une vraie instance et en pilotant le navigateur.
+|===
+
+=== Tests unitaire
+
+==== Jasmine
+
+NOTE: Jasmine est une bibliothèque pour écrire des tests.
+
+Plusieurs méthodes sont proposées :
+
+|===
+| describe()    | Déclare un groupe de tests.
+| it()          | Déclare un test.
+| expect()      | Déclare une assertion.
+| beforeEach()  | Initialise un contexte avec chaque test.
+|===
+
+Exemple :
+
+[source,javascript]
+----
+class Pony {
+  constructor(public name: string, public speed: number) {
+  }
+
+  isFasterThan(speed) {
+    return this.speed > speed;
+  }
+}
+
+describe('Pony', () => {
+  let pony: Pony;
+
+  beforeEach(() => {
+    pony = new Pony('Rainbow Dash', 10);
+  });
+
+  it('should have a name', () => {
+    expect(pony.name).toBe('Rainbow Dash');
+  });
+
+  it('should have a speed', () => {
+    expect(pony.speed).not.toBe(1);
+    expect(pony.speed).toBeGreaterThan(9);
+  });
+});
+----
+
+==== Karma
+
+NOTE: Karma est une bibliothèque développée par l'équipe Angular dont le seul but est d'exécuter les tests dans un ou plusieurs navigateurs.
+
+=== Injection de dépendance
+
+[source,javascript]
+----
+import { async, TestBed } from '@angular/core/testing';
+
+describe('RaceService', () => {
+  let service: RaceService;
+
+  beforeEach(() => service = TestBed.get(RaceService)); <1>
+
+  it('should return an observable of 2 races', async(() => { <2>
+    service.list().subscribe(races => { <3>
+      expect(races.length).toBe(2);
+    });
+  }));
+});
+----
+<1> `TestBed.get()` permet d'utiliser le système d'injection de dépendances dans le test.
+<2> `async()` enregistre tous les appels asynchrones faits dans le test et attend leur résolution.
+<3> On souscrit à l'observable `service.list()`.
+
+=== Dépendances factices
+
+[source,javascript]
+----
+import { TestBed } from '@angular/core/testing';
+
+describe('RaceService', () => {
+  const localStorage = jasmine.createSpyObj('LocalStorageService', ['get']); <1>
+
+  beforeEach(() => TestBed.configureTestingModule({
+    providers: [
+      { provide: LocalStorageService, useValue: localStorage } <2>
+    ]
+  }));
+
+  it('should return 2 races from localStorage', () => {
+    localStorage.get.and.returnValue([{ name: 'Lyon' }, { name: 'London' }]); <3>
+
+    const service: RaceService = TestBed.get(RaceService);
+    const races = service.list();
+
+    expect(races.length).toBe(2);
+    expect(localStorage.get).toHaveBeenCalledWith('races'); <4>
+  });
+});
+----
+<1> Jasmine va permettre ici de créer un service factice `localStorage`, d'espionner et de vérifier que la méthode `get()` a été invoquée avec la bonne clé `races`.
+<2> Avec la méthode `configureTestingModule()`, on déclare ici le service factice `localStorage` qui remplacera le service d'origine `LocalStorageService`.
+<3> On définit la valeur que doit retourner `localStorage`.
+<4> On vérifie que la méthode `get()` a été invoquée avec la bonne clé `races`.
+
+=== Tester des composants
+
+IMPORTANT: *Un composant n'est pas injectable* : on ne peut donc pas utiliser le système d'injection de dépendances pour fournir une instance du composant à tester.
+
+On utilise le modèle "Given/When/Then" pour écrire le test :
+
+|===
+| Given | On met en place le contexte du test.
+| When  | On déclenche manuellement la détection de changements, avec la méthode `detectChanges()`.
+| Then  | Contient les assertions. On peut récupérer l'élément natif et interroger le DOM.
+|===
+
+Exemple 1 :
+
+[source,javascript]
+----
+import { TestBed } from '@angular/core/testing';
+import { PonyComponent } from './pony_cmp';
+
+describe('PonyComponent', () => {
+  it('should have an image', () => {
+    TestBed.configureTestingModule({ <1>
+      declarations: [PonyComponent] <2>
+    });
+    
+    const fixture = TestBed.createComponent(PonyComponent); <3>
+    const ponyComponent = fixture.componentInstance; <4>
+    
+    ponyComponent.pony = { name: 'Rainbow Dash', color: 'BLUE' }; <5>
+
+    fixture.detectChanges(); <6>
+
+    const element = fixture.nativeElement; <7>
+    expect(element.querySelector('img').getAttribute('src')).toBe('/images/pony-blue.png'; <8>
+  });
+});
+----
+<1> On crée un module de test.
+<2> On déclare au module le composant `PonyComponent`.
+<3> La méthode `createComponent()` retourne un `ComponentFixture`, une représentation du composant `PonyComponent`.
+<4> On récupère l'instance du composant `PonyComponent`.
+<5> On attribut des valeurs à la propriété `pony` de l'instance de composant `ponyComponent`.
+<6> On active manuellement, avec la méthode `detectChanges()`, la détection de changements.
+<7> On récupère l'élément natif pour interroger le DOM.
+<8> On vérifie que `<img>` contient la bonne url d'image dans son attribut `src`.
+
+Exemple 2 :
+
+[source,javascript]
+----
+it('should emit an event on click', () => {
+  TestBed.configureTestingModule({ <1>
+    declarations: [PonyComponent] <2>
+  });
+  
+  const fixture = TestBed.createComponent(PonyComponent); <3>
+  const ponyComponent = fixture.componentInstance; <4>
+  
+  ponyComponent.pony = { name: 'Rainbow Dash', color: 'BLUE' }; <5>
+
+  spyOn(ponyComponent.ponyClicked, 'emit'); <6>
+
+  const element = fixture.nativeElement; <7>
+  const image = element.querySelector('img'); <8>
+  image.dispatchEvent(new Event('click')); <9>
+
+  fixture.detectChanges(); <10>
+
+  expect(ponyComponent.ponyClicked.emit).toHaveBeenCalled(); <11>
+});
+----
+<1> On crée un module de test.
+<2> On déclare au module le composant `PonyComponent`.
+<3> La méthode `createComponent()` retourne un `ComponentFixture`, une représentation du composant `PonyComponent`.
+<4> On récupère l'instance du composant `PonyComponent`.
+<5> On attribut des valeurs à la propriété `pony` de l'instance de composant `ponyComponent`.
+<6> On surveille l'événement `ponyClicked`.
+<7> On récupère l'élément natif pour interroger le DOM.
+<8> On récupère la référence de l'image dans le DOM.
+<9> On déclenche un évément de `click` sur l'image.
+<10> On active manuellement, avec la méthode `detectChanges()`, la détection de changements.
+<11> On vérifie que l'événement `ponyClicked` a bien été déclenché.
+
+=== Tester avec des templates ou des providers factices
+
+[source,javascript]
+----
+describe('RaceComponent', () => {
+  let fixture: ComponentFixture<RaceComponent>;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      declarations: [RaceComponent, PonyComponent]
+    });
+    TestBed.overrideComponent( <1>
+        RaceComponent,
+        { set: { template: '<h2>{{ race.name }}</h2>' } }
+    );
+    fixture = TestBed.createComponent(RaceComponent);
+  });
+  // ...
+});
+----
+<1> Il est possible de surcharger le composant avec la méthode `overrideComponent()`.
+
+On peut, pour surcharger un _template_ avec  `overrideComponent()`, écrire la syntaxe raccourcie avec `overrideTemplate()` :
+
+[source,javascript]
+----
+    // ...
+    TestBed.overrideTemplate(RaceComponent, '<h2>{{ race.name }}</h2>');
+    // ...
+----
+
+On peut surchager ajouter, supprimer ou remplacer d'autres méta-données. Par exemple :
+
+|===
+| providers | Remplace les dépendances d'un composant.
+| styles    | Remplace le style utilisé dans le template.
+|===
+
+=== Tests _end-to-end_ (_e2e_)
+
+NOTE: Les tests _e2e_ lancent réellement l'application dans un navigateur et simulent l'interaction d'un utilisateur. Les tests s'appuient sur l'outil Protractor.
+
+WARNING: Les tests _e2e_ sont plus lents, et rendent difficile le test des cas limites.
+
+Protractor fournit un objet `browser`, avec quelques méthodes utilitaires :
+
+|===
+| get()         | Permet d'aller à une URL.
+| element.all() | Sélectionne tous les éléments répondant à un prédicat donné. Ce prédicat s'appuie souvent sur `by`.
+| by.css()      | Permet de faire une requête CSS.
+| by.id()       | Permet de récupérer un élément par son identifiant.
+| $('h1')       | Est un raccourci de `element(by.css('h1'))`.
+|===
+
+Avec `$('x')` il est possible d'utiliser `getText()`, `getAttribute()`, `click()`, `sendKeys()`, etc.
+
+Exemple : 
+
+[source,javascript]
+----
+describe('Home', () => {
+  it('should display title, tagline and logo', () => {
+    browser.get('/');
+    expect(element.all(by.css('img')).count()).toEqual(1);
+    expect($('h1').getText()).toContain('PonyRacer');
+    expect($('small').getText()).toBe('Always a pleasure to bet on ponies');
+  });
+});
+----

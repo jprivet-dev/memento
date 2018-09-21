@@ -538,7 +538,16 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#true-host">12.5. :host</a></li>
 </ul>
 </li>
-<li><a href="#truetester-son-application">13. Tester son application</a></li>
+<li><a href="#truetester-son-application">13. Tester son application</a>
+<ul class="sectlevel2">
+<li><a href="#truetests-unitaire">13.1. Tests unitaire</a></li>
+<li><a href="#trueinjection-de-d-pendance">13.2. Injection de dépendance</a></li>
+<li><a href="#trued-pendances-factices">13.3. Dépendances factices</a></li>
+<li><a href="#truetester-des-composants">13.4. Tester des composants</a></li>
+<li><a href="#truetester-avec-des-templates-ou-des-providers-factices">13.5. Tester avec des templates ou des providers factices</a></li>
+<li><a href="#truetests-em-end-to-end-em-em-e2e-em">13.6. Tests <em>end-to-end</em> (<em>e2e</em>)</a></li>
+</ul>
+</li>
 <li><a href="#trueenvoyer-et-recevoir-des-donn-es-par-http">14. Envoyer et recevoir des données par HTTP</a></li>
 <li><a href="#truerouteur">15. Routeur</a></li>
 <li><a href="#trueformulaires">16. Formulaires</a></li>
@@ -4127,7 +4136,513 @@ le <em>Shadow DOM</em> est une spécification vraiment récente, qui n&#8217;est
 <h2 id="truetester-son-application"><a class="anchor" href="#truetester-son-application"></a>13. Tester son application</h2>
 <div class="sectionbody">
 <div class="paragraph">
+<p>Angular propose deux types de tests :</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Unitaires</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Permet de vérifier le fonctionnement en isolation, indépendamment des dépendances.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>end-to-end</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Permet d'émuler une intéraction utilisateur réelle avec l&#8217;application, en démarrant une vraie instance et en pilotant le navigateur.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="sect2">
+<h3 id="truetests-unitaire"><a class="anchor" href="#truetests-unitaire"></a>13.1. Tests unitaire</h3>
+<div class="sect3">
+<h4 id="truejasmine"><a class="anchor" href="#truejasmine"></a>13.1.1. Jasmine</h4>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Jasmine est une bibliothèque pour écrire des tests.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Plusieurs méthodes sont proposées :</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">describe()</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Déclare un groupe de tests.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">it()</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Déclare un test.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">expect()</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Déclare une assertion.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">beforeEach()</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Initialise un contexte avec chaque test.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Exemple :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">class Pony {
+  constructor(public name: string, public speed: number) {
+  }
+
+  isFasterThan(speed) {
+    return this.speed &gt; speed;
+  }
+}
+
+describe('Pony', () =&gt; {
+  let pony: Pony;
+
+  beforeEach(() =&gt; {
+    pony = new Pony('Rainbow Dash', 10);
+  });
+
+  it('should have a name', () =&gt; {
+    expect(pony.name).toBe('Rainbow Dash');
+  });
+
+  it('should have a speed', () =&gt; {
+    expect(pony.speed).not.toBe(1);
+    expect(pony.speed).toBeGreaterThan(9);
+  });
+});</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="truekarma"><a class="anchor" href="#truekarma"></a>13.1.2. Karma</h4>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Karma est une bibliothèque développée par l'équipe Angular dont le seul but est d&#8217;exécuter les tests dans un ou plusieurs navigateurs.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="trueinjection-de-d-pendance"><a class="anchor" href="#trueinjection-de-d-pendance"></a>13.2. Injection de dépendance</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">import { async, TestBed } from '@angular/core/testing';
+
+describe('RaceService', () =&gt; {
+  let service: RaceService;
+
+  beforeEach(() =&gt; service = TestBed.get(RaceService)); <i class="conum" data-value="1"></i><b>(1)</b>
+
+  it('should return an observable of 2 races', async(() =&gt; { <i class="conum" data-value="2"></i><b>(2)</b>
+    service.list().subscribe(races =&gt; { <i class="conum" data-value="3"></i><b>(3)</b>
+      expect(races.length).toBe(2);
+    });
+  }));
+});</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td><code>TestBed.get()</code> permet d&#8217;utiliser le système d&#8217;injection de dépendances dans le test.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td><code>async()</code> enregistre tous les appels asynchrones faits dans le test et attend leur résolution.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>On souscrit à l&#8217;observable <code>service.list()</code>.</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="trued-pendances-factices"><a class="anchor" href="#trued-pendances-factices"></a>13.3. Dépendances factices</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">import { TestBed } from '@angular/core/testing';
+
+describe('RaceService', () =&gt; {
+  const localStorage = jasmine.createSpyObj('LocalStorageService', ['get']); <i class="conum" data-value="1"></i><b>(1)</b>
+
+  beforeEach(() =&gt; TestBed.configureTestingModule({
+    providers: [
+      { provide: LocalStorageService, useValue: localStorage } <i class="conum" data-value="2"></i><b>(2)</b>
+    ]
+  }));
+
+  it('should return 2 races from localStorage', () =&gt; {
+    localStorage.get.and.returnValue([{ name: 'Lyon' }, { name: 'London' }]); <i class="conum" data-value="3"></i><b>(3)</b>
+
+    const service: RaceService = TestBed.get(RaceService);
+    const races = service.list();
+
+    expect(races.length).toBe(2);
+    expect(localStorage.get).toHaveBeenCalledWith('races'); <i class="conum" data-value="4"></i><b>(4)</b>
+  });
+});</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Jasmine va permettre ici de créer un service factice <code>localStorage</code>, d&#8217;espionner et de vérifier que la méthode <code>get()</code> a été invoquée avec la bonne clé <code>races</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Avec la méthode <code>configureTestingModule()</code>, on déclare ici le service factice <code>localStorage</code> qui remplacera le service d&#8217;origine <code>LocalStorageService</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>On définit la valeur que doit retourner <code>localStorage</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>On vérifie que la méthode <code>get()</code> a été invoquée avec la bonne clé <code>races</code>.</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="truetester-des-composants"><a class="anchor" href="#truetester-des-composants"></a>13.4. Tester des composants</h3>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+<strong>Un composant n&#8217;est pas injectable</strong> : on ne peut donc pas utiliser le système d&#8217;injection de dépendances pour fournir une instance du composant à tester.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>On utilise le modèle "Given/When/Then" pour écrire le test :</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Given</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">On met en place le contexte du test.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">When</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">On déclenche manuellement la détection de changements, avec la méthode <code>detectChanges()</code>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Then</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Contient les assertions. On peut récupérer l'élément natif et interroger le DOM.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Exemple 1 :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">import { TestBed } from '@angular/core/testing';
+import { PonyComponent } from './pony_cmp';
+
+describe('PonyComponent', () =&gt; {
+  it('should have an image', () =&gt; {
+    TestBed.configureTestingModule({ <i class="conum" data-value="1"></i><b>(1)</b>
+      declarations: [PonyComponent] <i class="conum" data-value="2"></i><b>(2)</b>
+    });
+
+    const fixture = TestBed.createComponent(PonyComponent); <i class="conum" data-value="3"></i><b>(3)</b>
+    const ponyComponent = fixture.componentInstance; <i class="conum" data-value="4"></i><b>(4)</b>
+
+    ponyComponent.pony = { name: 'Rainbow Dash', color: 'BLUE' }; <i class="conum" data-value="5"></i><b>(5)</b>
+
+    fixture.detectChanges(); <i class="conum" data-value="6"></i><b>(6)</b>
+
+    const element = fixture.nativeElement; <i class="conum" data-value="7"></i><b>(7)</b>
+    expect(element.querySelector('img').getAttribute('src')).toBe('/images/pony-blue.png'; <i class="conum" data-value="8"></i><b>(8)</b>
+  });
+});</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>On crée un module de test.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>On déclare au module le composant <code>PonyComponent</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>La méthode <code>createComponent()</code> retourne un <code>ComponentFixture</code>, une représentation du composant <code>PonyComponent</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>On récupère l&#8217;instance du composant <code>PonyComponent</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>On attribut des valeurs à la propriété <code>pony</code> de l&#8217;instance de composant <code>ponyComponent</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="6"></i><b>6</b></td>
+<td>On active manuellement, avec la méthode <code>detectChanges()</code>, la détection de changements.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="7"></i><b>7</b></td>
+<td>On récupère l'élément natif pour interroger le DOM.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="8"></i><b>8</b></td>
+<td>On vérifie que <code>&lt;img&gt;</code> contient la bonne url d&#8217;image dans son attribut <code>src</code>.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Exemple 2 :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">it('should emit an event on click', () =&gt; {
+  TestBed.configureTestingModule({ <i class="conum" data-value="1"></i><b>(1)</b>
+    declarations: [PonyComponent] <i class="conum" data-value="2"></i><b>(2)</b>
+  });
+
+  const fixture = TestBed.createComponent(PonyComponent); <i class="conum" data-value="3"></i><b>(3)</b>
+  const ponyComponent = fixture.componentInstance; <i class="conum" data-value="4"></i><b>(4)</b>
+
+  ponyComponent.pony = { name: 'Rainbow Dash', color: 'BLUE' }; <i class="conum" data-value="5"></i><b>(5)</b>
+
+  spyOn(ponyComponent.ponyClicked, 'emit'); <i class="conum" data-value="6"></i><b>(6)</b>
+
+  const element = fixture.nativeElement; <i class="conum" data-value="7"></i><b>(7)</b>
+  const image = element.querySelector('img'); <i class="conum" data-value="8"></i><b>(8)</b>
+  image.dispatchEvent(new Event('click')); <i class="conum" data-value="9"></i><b>(9)</b>
+
+  fixture.detectChanges(); <i class="conum" data-value="10"></i><b>(10)</b>
+
+  expect(ponyComponent.ponyClicked.emit).toHaveBeenCalled(); <i class="conum" data-value="11"></i><b>(11)</b>
+});</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>On crée un module de test.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>On déclare au module le composant <code>PonyComponent</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>La méthode <code>createComponent()</code> retourne un <code>ComponentFixture</code>, une représentation du composant <code>PonyComponent</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>On récupère l&#8217;instance du composant <code>PonyComponent</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>On attribut des valeurs à la propriété <code>pony</code> de l&#8217;instance de composant <code>ponyComponent</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="6"></i><b>6</b></td>
+<td>On surveille l'événement <code>ponyClicked</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="7"></i><b>7</b></td>
+<td>On récupère l'élément natif pour interroger le DOM.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="8"></i><b>8</b></td>
+<td>On récupère la référence de l&#8217;image dans le DOM.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="9"></i><b>9</b></td>
+<td>On déclenche un évément de <code>click</code> sur l&#8217;image.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="10"></i><b>10</b></td>
+<td>On active manuellement, avec la méthode <code>detectChanges()</code>, la détection de changements.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="11"></i><b>11</b></td>
+<td>On vérifie que l'événement <code>ponyClicked</code> a bien été déclenché.</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="truetester-avec-des-templates-ou-des-providers-factices"><a class="anchor" href="#truetester-avec-des-templates-ou-des-providers-factices"></a>13.5. Tester avec des templates ou des providers factices</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">describe('RaceComponent', () =&gt; {
+  let fixture: ComponentFixture&lt;RaceComponent&gt;;
+
+  beforeEach(() =&gt; {
+    TestBed.configureTestingModule({
+      declarations: [RaceComponent, PonyComponent]
+    });
+    TestBed.overrideComponent( <i class="conum" data-value="1"></i><b>(1)</b>
+        RaceComponent,
+        { set: { template: '&lt;h2&gt;{{ race.name }}&lt;/h2&gt;' } }
+    );
+    fixture = TestBed.createComponent(RaceComponent);
+  });
+  // ...
+});</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Il est possible de surcharger le composant avec la méthode <code>overrideComponent()</code>.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>On peut, pour surcharger un <em>template</em> avec  <code>overrideComponent()</code>, écrire la syntaxe raccourcie avec <code>overrideTemplate()</code> :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">    // ...
+    TestBed.overrideTemplate(RaceComponent, '&lt;h2&gt;{{ race.name }}&lt;/h2&gt;');
+    // ...</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>On peut surchager ajouter, supprimer ou remplacer d&#8217;autres méta-données. Par exemple :</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">providers</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Remplace les dépendances d&#8217;un composant.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">styles</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Remplace le style utilisé dans le template.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="truetests-em-end-to-end-em-em-e2e-em"><a class="anchor" href="#truetests-em-end-to-end-em-em-e2e-em"></a>13.6. Tests <em>end-to-end</em> (<em>e2e</em>)</h3>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Les tests <em>e2e</em> lancent réellement l&#8217;application dans un navigateur et simulent l&#8217;interaction d&#8217;un utilisateur. Les tests s&#8217;appuient sur l&#8217;outil Protractor.
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+Les tests <em>e2e</em> sont plus lents, et rendent difficile le test des cas limites.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Protractor fournit un objet <code>browser</code>, avec quelques méthodes utilitaires :</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">get()</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Permet d&#8217;aller à une URL.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">element.all()</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Sélectionne tous les éléments répondant à un prédicat donné. Ce prédicat s&#8217;appuie souvent sur <code>by</code>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">by.css()</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Permet de faire une requête CSS.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">by.id()</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Permet de récupérer un élément par son identifiant.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">$('h1')</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Est un raccourci de <code>element(by.css('h1'))</code>.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Avec <code>$('x')</code> il est possible d&#8217;utiliser <code>getText()</code>, <code>getAttribute()</code>, <code>click()</code>, <code>sendKeys()</code>, etc.</p>
+</div>
+<div class="paragraph">
+<p>Exemple :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">describe('Home', () =&gt; {
+  it('should display title, tagline and logo', () =&gt; {
+    browser.get('/');
+    expect(element.all(by.css('img')).count()).toEqual(1);
+    expect($('h1').getText()).toContain('PonyRacer');
+    expect($('small').getText()).toBe('Always a pleasure to bet on ponies');
+  });
+});</code></pre>
+</div>
+</div>
+<div class="paragraph">
 <p><a href="#top-of-page">⬆ Back to top</a></p>
+</div>
 </div>
 </div>
 </div>
@@ -4217,7 +4732,7 @@ le <em>Shadow DOM</em> est une spécification vraiment récente, qui n&#8217;est
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-09-21 12:17:33 PM
+Last updated 2018-09-21 15:50:16 PM
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.9.1/styles/github.min.css">
