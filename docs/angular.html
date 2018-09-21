@@ -526,6 +526,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#truecomposants-et-directives">11. Composants et directives</a>
 <ul class="sectlevel2">
 <li><a href="#truedirectives">11.1. Directives</a></li>
+<li><a href="#truecomposant">11.2. Composant</a></li>
 </ul>
 </li>
 <li><a href="#truetester-son-application">12. Tester son application</a></li>
@@ -3798,6 +3799,221 @@ export class MyDirective {
 }</code></pre>
 </div>
 </div>
+</div>
+<div class="sect3">
+<h4 id="truesorties-via-les-v-nements"><a class="anchor" href="#truesorties-via-les-v-nements"></a>11.1.3. Sorties, via les événements</h4>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+En angular, les données entre dans un composant via des <strong>propriétés</strong>, et en sortent via des <strong>événements</strong>.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Exemple :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">@Component({
+  selector: 'ns-pony',
+  template: `&lt;div (click)="selectPony()"&gt;{{ pony.name }}&lt;/div&gt;` <i class="conum" data-value="1"></i><b>(1)</b>
+})
+export class SelectablePonyComponent {
+  @Input() pony: Pony; <i class="conum" data-value="2"></i><b>(2)</b>
+  @Output() ponySelected = new EventEmitter&lt;Pony&gt;(); <i class="conum" data-value="3"></i><b>(3)</b>
+
+  selectPony() {
+    this.ponySelected.emit(this.pony); <i class="conum" data-value="4"></i><b>(4)</b>
+  }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Au clic sur la <code>div</code>, la méthode <code>selectPony()</code> du composant <code>SelectablePonyComponent</code> sera exécutée.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Le composant reçoit en entrée un objet <code>Pony</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>On déclare un événement <code>ponySelected</code> qui émettra plus tard un objet <code>Pony</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Au clic sur la <code>div</code>, l'événement <code>ponySelected</code> sera émis.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Un composant parent peut utiliser <code>ns-pony</code> ainsi :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-html" data-lang="html">&lt;ns-pony [pony]="pony" (ponySelected)="betOnPony($event)"&gt;&lt;/ns-pony&gt;</code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Au clic sur le poney, l'événement <code>ponySelected</code> est émis, avec le poney en paramètre.</p>
+</li>
+<li>
+<p>Le composant parent qui écoute cet événement appelera sa méthode <code>betOnPony()</code>.</p>
+</li>
+<li>
+<p><code>$event</code> correspondra au poney transmis en paramètre de l'événement.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="truecycle-de-vie"><a class="anchor" href="#truecycle-de-vie"></a>11.1.4. Cycle de vie</h4>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+Les entrées d&#8217;un composant ne sont pas encore évaluées dans son constructeur.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Quelques phases accessibles :</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ngOnIni()</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Est appelée une seule fois, après le premier changement.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ngOnChanges()</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Est appelée à chaque fois que la valeur d&#8217;une propriété bindée est modifiée.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ngOnDestroy()</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Est appelée à la destruction du composant. Utile pour faire du nettoyage.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">@Directive({
+  selector: '[initDirective]'
+})
+export class OnInitDirective implements OnInit {
+  @Input() pony: string;
+  ngOnInit() {
+    console.log(`inputs are ${this.pony}`); <i class="conum" data-value="1"></i><b>(1)</b>
+  }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>A l&#8217;initialisation, <code>this.pony</code> retourne bien un poney, au lieu de <code>undefined</code> s&#8217;il était dans le constructeur.</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="truecomposant"><a class="anchor" href="#truecomposant"></a>11.2. Composant</h3>
+<div class="sect3">
+<h4 id="truetemplate-2"><a class="anchor" href="#truetemplate-2"></a>11.2.1. Template</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">@Component({
+  selector: 'ns-templated-pony',
+  templateUrl: 'components/pony/templated-pony.html' <i class="conum" data-value="1"></i><b>(1)</b>
+})
+export class TemplatedPonyComponent {
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>On indique ici une URL relative pour charger le template. L&#8217;URL finale sera résolue en utilisant l&#8217;URL de la base de l&#8217;application.</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Avec Angular CLI et sa configuration de Webpack, on peut utiliser un chemin relatif au composant :
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">@Component({
+  selector: 'ns-templated-pony',
+  templateUrl: 'templated-pony.html'
+})
+export class TemplatedPonyComponent {
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="truestyles"><a class="anchor" href="#truestyles"></a>11.2.2. Styles</h4>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Il est possible de spécifier des styles au composant avec <code>styles</code> ou <code>styleUrls</code>.
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">@Component({
+  selector: 'ns-styled-pony',
+  template: '&lt;div class="pony"&gt;{{ pony.name }}&lt;/div&gt;',
+  styles: ['.pony{ color: red; }'] <i class="conum" data-value="1"></i><b>(1)</b>
+})
+export class StyledPonyComponent {
+  @Input() pony: any;
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>L&#8217;attribut <code>styles</code> reçoit un tableau de règles CSS sous forme de chaînes de caractères.</td>
+</tr>
+</table>
+</div>
 <div class="paragraph">
 <p><a href="#top-of-page">⬆ Back to top</a></p>
 </div>
@@ -3899,7 +4115,7 @@ export class MyDirective {
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-09-21 10:02:45 PM
+Last updated 2018-09-21 11:41:56 PM
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.9.1/styles/github.min.css">

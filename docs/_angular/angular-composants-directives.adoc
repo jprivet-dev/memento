@@ -117,3 +117,110 @@ export class MyDirective {
     @Input() propertyComponent: string;
 }
 ----
+
+==== Sorties, via les événements
+
+NOTE: En angular, les données entre dans un composant via des *propriétés*, et en sortent via des *événements*.
+
+Exemple :
+
+[source,javascript]
+----
+@Component({
+  selector: 'ns-pony',
+  template: `<div (click)="selectPony()">{{ pony.name }}</div>` <1>
+})
+export class SelectablePonyComponent {
+  @Input() pony: Pony; <2>
+  @Output() ponySelected = new EventEmitter<Pony>(); <3>
+  
+  selectPony() {
+    this.ponySelected.emit(this.pony); <4>
+  }
+}
+----
+<1> Au clic sur la `div`, la méthode `selectPony()` du composant `SelectablePonyComponent` sera exécutée.
+<2> Le composant reçoit en entrée un objet `Pony`.
+<3> On déclare un événement `ponySelected` qui émettra plus tard un objet `Pony`.
+<4> Au clic sur la `div`, l'événement `ponySelected` sera émis.
+
+Un composant parent peut utiliser `ns-pony` ainsi :
+
+[source,html]
+----
+<ns-pony [pony]="pony" (ponySelected)="betOnPony($event)"></ns-pony>
+----
+
+- Au clic sur le poney, l'événement `ponySelected` est émis, avec le poney en paramètre.
+- Le composant parent qui écoute cet événement appelera sa méthode `betOnPony()`.
+- `$event` correspondra au poney transmis en paramètre de l'événement.
+
+==== Cycle de vie
+
+IMPORTANT: Les entrées d'un composant ne sont pas encore évaluées dans son constructeur.
+
+Quelques phases accessibles :
+
+|===
+| ngOnIni()     | Est appelée une seule fois, après le premier changement.
+| ngOnChanges() | Est appelée à chaque fois que la valeur d'une propriété bindée est modifiée.
+| ngOnDestroy() | Est appelée à la destruction du composant. Utile pour faire du nettoyage.
+|===
+
+[source,javascript]
+----
+@Directive({
+  selector: '[initDirective]'
+})
+export class OnInitDirective implements OnInit {
+  @Input() pony: string;
+  ngOnInit() {
+    console.log(`inputs are ${this.pony}`); <1>
+  }
+}
+----
+<1> A l'initialisation, `this.pony` retourne bien un poney, au lieu de `undefined` s'il était dans le constructeur.
+
+=== Composant
+
+==== Template
+
+[source,javascript]
+----
+@Component({
+  selector: 'ns-templated-pony',
+  templateUrl: 'components/pony/templated-pony.html' <1>
+})
+export class TemplatedPonyComponent {
+}
+----
+<1> On indique ici une URL relative pour charger le template. L'URL finale sera résolue en utilisant l'URL de la base de l'application.
+
+TIP: Avec Angular CLI et sa configuration de Webpack, on peut utiliser un chemin relatif au composant :
+
+[source,javascript]
+----
+@Component({
+  selector: 'ns-templated-pony',
+  templateUrl: 'templated-pony.html'
+})
+export class TemplatedPonyComponent {
+}
+----
+
+==== Styles
+
+NOTE: Il est possible de spécifier des styles au composant avec `styles` ou `styleUrls`.
+
+[source,javascript]
+----
+@Component({
+  selector: 'ns-styled-pony',
+  template: '<div class="pony">{{ pony.name }}</div>',
+  styles: ['.pony{ color: red; }'] <1>
+})
+export class StyledPonyComponent {
+  @Input() pony: any;
+}
+----
+<1> L'attribut `styles` reçoit un tableau de règles CSS sous forme de chaînes de caractères.
