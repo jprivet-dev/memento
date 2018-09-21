@@ -548,7 +548,16 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#truetests-em-end-to-end-em-em-e2e-em">13.6. Tests <em>end-to-end</em> (<em>e2e</em>)</a></li>
 </ul>
 </li>
-<li><a href="#trueenvoyer-et-recevoir-des-donn-es-par-http">14. Envoyer et recevoir des données par HTTP</a></li>
+<li><a href="#trueenvoyer-et-recevoir-des-donn-es-par-http">14. Envoyer et recevoir des données par HTTP</a>
+<ul class="sectlevel2">
+<li><a href="#trueimporter-code-httpclientmodule-code">14.1. Importer <code>HttpClientModule</code></a></li>
+<li><a href="#trueutiliser-code-httpclientmodule-code">14.2. Utiliser <code>HttpClientModule</code></a></li>
+<li><a href="#truequelques-options-avanc-es">14.3. Quelques options avancées</a></li>
+<li><a href="#truejsonp-json-with-padding">14.4. JSONP (JSON with Padding)</a></li>
+<li><a href="#trueintercepteurs">14.5. Intercepteurs</a></li>
+<li><a href="#truetests-unitaires">14.6. Tests unitaires</a></li>
+</ul>
+</li>
 <li><a href="#truerouteur">15. Routeur</a></li>
 <li><a href="#trueformulaires">16. Formulaires</a></li>
 <li><a href="#truezones">17. Zones</a></li>
@@ -4649,8 +4658,416 @@ Les tests <em>e2e</em> sont plus lents, et rendent difficile le test des cas lim
 <div class="sect1">
 <h2 id="trueenvoyer-et-recevoir-des-donn-es-par-http"><a class="anchor" href="#trueenvoyer-et-recevoir-des-donn-es-par-http"></a>14. Envoyer et recevoir des données par HTTP</h2>
 <div class="sectionbody">
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Angular fournit le module <code>HttpClientModule</code>, codé par l'équipe interne.
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Il est tout à fait possible d&#8217;utiliser un autre module, comme l&#8217;API Fetch par exemple.
+</td>
+</tr>
+</table>
+</div>
+<div class="sect2">
+<h3 id="trueimporter-code-httpclientmodule-code"><a class="anchor" href="#trueimporter-code-httpclientmodule-code"></a>14.1. Importer <code>HttpClientModule</code></h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">import { NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+import { HttpClientModule } from '@angular/common/http';
+
+@NgModule({
+  imports: [BrowserModule, HttpClientModule], <i class="conum" data-value="1"></i><b>(1)</b>
+  declarations: [AppComponent],
+  bootstrap: [AppComponent]
+})
+export class AppModule {
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Il faut importer le module <code>HttpClientModule</code> dans le module racine <code>AppModule</code>. On le rend ainsi disponible à tous les composants et services.</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">@Component({
+  selector: 'ns-races',
+  template: `&lt;h1&gt;Races&lt;/h1&gt;`
+})
+export class RacesComponent {
+  constructor(private http: HttpClient) { <i class="conum" data-value="1"></i><b>(1)</b>
+  }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>On peut maintenant injecter le service <code>HttpClient</code> dans son composant <code>RacesComponent</code> par exemple.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Le service <code>HttpClient</code> réalise des requêtes AJAX avec <code>XMLHttpRequest</code>. Il propose plusieurs méthodes : <code>get</code>, <code>post</code>, <code>put</code>, <code>delete</code>, <code>patch</code>, <code>head</code>, <code>jsonp</code>, &#8230;&#8203;</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Toutes ces méthodes retournent un objet <code>Observable</code>, ce qui donne la possibilité d&#8217;annuler une requête, de la retenter, d&#8217;en composer facilement plusieurs, etc.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="trueutiliser-code-httpclientmodule-code"><a class="anchor" href="#trueutiliser-code-httpclientmodule-code"></a>14.2. Utiliser <code>HttpClientModule</code></h3>
+<div class="sect3">
+<h4 id="trueget"><a class="anchor" href="#trueget"></a>14.2.1. get()</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">http.get(`${baseUrl}/api/races`)
+  .subscribe((response: Array&lt;RaceModel&gt;) =&gt; {
+    console.log(response);
+  });</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Il est possible de s&#8217;abonner à la réponse HTTP complète :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">http.get(`${baseUrl}/api/races`, { observe: 'response' })
+  .subscribe((response: HttpResponse&lt;Array&lt;RaceModel&gt;&gt;) =&gt; {
+    console.log(response.status); // logs 200
+    console.log(response.headers.keys()); // logs []
+  });</code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Si la réponse a un statut différent de 2xx ou 3xx, alors l&#8217;observable retourne un objet <code>HttpErrorResponse</code>.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect3">
+<h4 id="truepost"><a class="anchor" href="#truepost"></a>14.2.2. post()</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">http.post(`${baseUrl}/api/races`, newRace)</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="truequelques-options-avanc-es"><a class="anchor" href="#truequelques-options-avanc-es"></a>14.3. Quelques options avancées</h3>
+<div class="sect3">
+<h4 id="trueparams"><a class="anchor" href="#trueparams"></a>14.3.1. params</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">const params = {
+  'sort': 'ascending',
+  'page': '1'
+};
+
+http.get(`${baseUrl}/api/races`, { params }) <i class="conum" data-value="1"></i><b>(1)</b>
+  .subscribe(response =&gt; {
+    this.races = response;
+  });</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Avec les <code>params</code>, l&#8217;URL finale sera <code>${baseUrl}/api/races?sort=ascending&amp;page=1</code>.</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect3">
+<h4 id="trueheaders"><a class="anchor" href="#trueheaders"></a>14.3.2. headers</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">const headers = { 'Authorization': `Bearer ${token}` };
+
+http.get(`${baseUrl}/api/races`, { headers }) <i class="conum" data-value="1"></i><b>(1)</b>
+  .subscribe(response =&gt; {
+    this.races = response;
+  });</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>On transmet le token dans le <code>header</code>.</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="truejsonp-json-with-padding"><a class="anchor" href="#truejsonp-json-with-padding"></a>14.4. JSONP (JSON with Padding)</h3>
+<div class="paragraph">
+<p><code>XMLHttpRequest</code> et <code>l&#8217;API Fetch</code> respectent la règle d&#8217;origine unique (<code>Same-origin policy</code>) : une application web peut uniquement émettre des requêtes vers la même origine que celle à partir de laquelle l&#8217;application à été chargée, sauf si des en-têtes <code>CORS (Cross-origin resource sharing)</code> sont utilisés.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<code>HttpClient</code> offre une méthode <code>jsonp</code>, qui emballera la réponse <code>JSON</code> dans une fonction passée en <em>callback</em>. La réponse arrive alors sous forme de script, qui n&#8217;est pas soumis à la <code>Same-origin policy</code>.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Exemple :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">http.jsonp('https://api.github.com/orgs/Ninja-Squad/repos', 'callback').pipe( <i class="conum" data-value="1"></i><b>(1)</b>
+  map((res: { data: Array&lt;any&gt; }) =&gt; res.data)
+).subscribe(response =&gt; {
+  this.repos = response;
+});</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>On récupère les dépôts publics de l&#8217;organisation Github via <code>JSONP</code>.</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="trueintercepteurs"><a class="anchor" href="#trueintercepteurs"></a>14.5. Intercepteurs</h3>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Les intercepteurs permettent d&#8217;intercepter des requêtes ou des réponses dans l&#8217;application.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Exemple :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">@Injectable()
+export class GithubAPIInterceptor implements HttpInterceptor {
+    intercept(req: HttpRequest&lt;any&gt;, next: HttpHandler): Observable&lt;HttpEvent&lt;any&gt;&gt; {
+        if (req.url.includes('api.github.com')) { <i class="conum" data-value="1"></i><b>(1)</b>
+          let params = { setHeaders: { 'Authorization': `token ${OAUTH_TOKEN}` } }; <i class="conum" data-value="2"></i><b>(2)</b>
+          const clone = req.clone(params); <i class="conum" data-value="3"></i><b>(3)</b>
+          return next.handle(clone); <i class="conum" data-value="4"></i><b>(4)</b>
+        }
+        return next.handle(req);
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Si c&#8217;est une requête vers l&#8217;API de GitHub&#8230;&#8203;</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>On insert le <code>OAUTH token</code> dans le <code>header</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>On clone la requête, car les requêtes sont immuables.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>On transmet le clone de la requête au <em>handler</em> suivant.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>On ajoute bien l&#8217;intercepteur au tableau <code>HTTP_INTERCEPTORS</code>, avec l&#8217;injection de dépendances :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">providers: [
+  { provide: HTTP_INTERCEPTORS, useClass: GithubAPIInterceptor, multi: true }
+]</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Il est possible d&#8217;intercepter la réponse pour gérer les erreurs de façon générique :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">@Injectable()
+export class ErrorHandlerInterceptor implements HttpInterceptor {
+  constructor(private router: Router, private errorHandler: ErrorHandler) {}
+
+  intercept(req: HttpRequest&lt;any&gt;, next: HttpHandler): Observable&lt;HttpEvent&lt;any&gt;&gt; {
+    return next.handle(req).pipe(
+      catchError((errorResponse: HttpErrorResponse) =&gt; { <i class="conum" data-value="1"></i><b>(1)</b>
+        if (errorResponse.status === 401) { <i class="conum" data-value="2"></i><b>(2)</b>
+          this.router.navigateByUrl('/login'); <i class="conum" data-value="3"></i><b>(3)</b>
+        } else {
+          this.errorHandler.handle(errorResponse); <i class="conum" data-value="4"></i><b>(4)</b>
+        }
+        return throwError(errorResponse);
+      })
+    );
+  }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>On <code>catch</code> l&#8217;erreur.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Si l&#8217;accès n&#8217;est pas autorisé&#8230;&#8203;</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>&#8230;&#8203; On redirige l&#8217;utilisateur vers la page de <code>login</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>&#8230;&#8203; Sinon on renvoie l&#8217;erreur à l&#8217;utilisateur.</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="truetests-unitaires"><a class="anchor" href="#truetests-unitaires"></a>14.6. Tests unitaires</h3>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Il faut remplacer la dépendance au service <code>HttpClient</code> par une implémentation bouchonnée de <code>HttpClientTestingModule</code>. Il sera ensuite possible de simuler les réponses <code>HTTP</code> avec <code>HttpTestingController</code>.
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">import { async, TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+
+describe('RaceService', () =&gt; {
+  let raceService: RaceService;
+  let http: HttpTestingController;
+
+  beforeEach(() =&gt; TestBed.configureTestingModule({ <i class="conum" data-value="1"></i><b>(1)</b>
+    imports: [HttpClientTestingModule]
+  }));
+
+  beforeEach(() =&gt; { <i class="conum" data-value="2"></i><b>(2)</b>
+    raceService = TestBed.get(RaceService);
+    http = TestBed.get(HttpTestingController);
+  });
+
+  afterEach(() =&gt; {
+    http.verify();
+  });
+
+  it('should return an Observable of 2 races', async(() =&gt; {
+    const hardcodedRaces = [{ name: 'London' }, { name: 'Lyon' }]; <i class="conum" data-value="3"></i><b>(3)</b>
+
+    let actualRaces = [];
+    raceService.list().subscribe(races =&gt; actualRaces = races); <i class="conum" data-value="4"></i><b>(4)</b>
+
+    http
+      .expectOne('/api/races') <i class="conum" data-value="5"></i><b>(5)</b>
+      .flush(hardcodedRaces); <i class="conum" data-value="6"></i><b>(6)</b>
+
+    expect(actualRaces.length).toBe(2); <i class="conum" data-value="7"></i><b>(7)</b>
+  }));
+});</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Avec la méthode <code>configureTestingModule()</code>, on importe le module factice <code>HttpClientTestingModule</code> qui remplacera le module d’origine <code>HttpClient</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>TestBed.get() permet d’utiliser le système d’injection de dépendances dans le test, et de charger ici <code>RaceService</code> et <code>HttpTestingController</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>On crée une fausse réponse <code>json</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>On appelle le service instancié <code>raceService</code> et on y souscrit.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>On vérifie que la requête HTTP sous-jacente est correcte.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="6"></i><b>6</b></td>
+<td>On renvoie la réponse <code>json</code> <code>hardcodedRaces</code> dès la requête reçue.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="7"></i><b>7</b></td>
+<td>On vérifie que le <code>json</code> a bien été désérialisé.</td>
+</tr>
+</table>
+</div>
 <div class="paragraph">
 <p><a href="#top-of-page">⬆ Back to top</a></p>
+</div>
 </div>
 </div>
 </div>
@@ -4732,7 +5149,7 @@ Les tests <em>e2e</em> sont plus lents, et rendent difficile le test des cas lim
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-09-21 15:50:16 PM
+Last updated 2018-09-21 18:26:06 PM
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.9.1/styles/github.min.css">

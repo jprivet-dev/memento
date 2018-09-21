@@ -82,6 +82,8 @@ include::_angular/angular-tester-application.adoc[]
 
 == Envoyer et recevoir des données par HTTP
 
+include::_angular/angular-donnees-http.adoc[]
+
 {BACK_TO_TOP}
 
 == Routeur
