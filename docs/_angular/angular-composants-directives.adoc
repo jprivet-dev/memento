@@ -1,0 +1,119 @@
+=== Directives
+
+NOTE: Une directive est semblable à un composant, sauf qu'elle n'a pas de template. Elle sera annotée du décorateur `@Directive`.
+
+TIP: La classe `Component` hérite de la classe `Directive`.
+
+==== Sélecteurs
+
+Une directive doit avoir un sélecteur CSS qui indiquera au framework où l'activer dans un template.
+
+La directive suivante :
+
+[source,javascript]
+----
+@Directive({
+  selector: '[doNothing]' <1>
+})
+export class DoNothingDirective {
+  constructor() {
+    console.log('Do nothing directive');
+  }
+}
+----
+<1> On défini ici le sélecteur `[doNothing]`.
+
+Peut-être utilisé dans le composant suivant :
+
+[source,javascript]
+----
+@Component({
+  selector: 'ns-test',
+  template: '<div doNothing>Click me</div>' <1>
+})
+export class TestComponent {
+}
+----
+<1> On pointe avec `doNothing` la directive `DoNothingDirective`.
+
+==== Entrées : le binding de données
+
+Le binding de donnée se fait avec l'attribut `inputs` du décorateur `@Directive` sous la forme suivante :
+
+[source,javascript]
+----
+@Directive({
+    selector: '[mySelector]',
+    inputs: ['propertyComponent: propertyDOM']
+})
+export class MyDirective {
+}
+----
+
+[source,html]
+----
+<div mySelector propertyDOM="Some text">Hello</div>
+----
+
+- `propertyComponent` désigne la propriété de l'instance du composant.
+- `propertyDOM` désigne la propriété du DOM qui contiendra l'expression.
+
+Dans le code suivant, le _setter_ sur `propertyComponent` sera appelé lors de chaque modification de la propriété `propertyDOM` :
+
+[source,javascript]
+----
+@Directive({
+    selector: '[mySelector]',
+    inputs: ['propertyComponent: propertyDOM']
+})
+export class MyDirective {
+    set propertyComponent(value) {
+        console.log(value);
+    }
+}
+----
+
+NOTE: Si la propriété `propertyComponent` n'existe pas dans la directive `MyDirective`, elle est créée.
+
+Si la propriété du DOM porte le même nom que la propriété du composant, on peut écrire la version raccourcie suivante :
+
+[source,javascript]
+----
+@Directive({
+    selector: '[mySelector]',
+    inputs: ['propertyComponent']
+})
+export class MyDirective {
+}
+----
+
+[source,html]
+----
+<div mySelector propertyComponent="Some text">Hello</div>
+----
+
+TIP: Il est possible de déclarer une entrée dans la directive avec le décorateur `@Input` (méthode recommandée dans le guide de style officiel).
+
+En utilisant le décorateur `@Input`, on peut réécrire les exemples précédents comme cela :
+
+[source,javascript]
+----
+@Directive({
+    selector: '[mySelector]'
+})
+export class MyDirective {
+    @Input('propertyDOM') propertyComponent: string;
+}
+----
+
+Et si les propriétés du DOM et du composant ont le même nom :
+
+[source,javascript]
+----
+@Directive({
+    selector: '[mySelector]'
+})
+export class MyDirective {
+    @Input() propertyComponent: string;
+}
+----
