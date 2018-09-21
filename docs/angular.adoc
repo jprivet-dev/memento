@@ -76,6 +76,8 @@ include::_angular/angular-composants-encapsulation.adoc[]
 
 == Tester son application
 
+include::_angular/angular-tester-application.adoc[]
+
 {BACK_TO_TOP}
 
 == Envoyer et recevoir des données par HTTP
