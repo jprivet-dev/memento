@@ -558,7 +558,18 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#truetests-unitaires">14.6. Tests unitaires</a></li>
 </ul>
 </li>
-<li><a href="#truerouteur">15. Routeur</a></li>
+<li><a href="#truerouteur">15. Routeur</a>
+<ul class="sectlevel2">
+<li><a href="#trueconfiguration-du-routeur">15.1. Configuration du routeur</a></li>
+<li><a href="#trueinsertion-du-composant-dans-la-page">15.2. Insertion du composant dans la page</a></li>
+<li><a href="#truenavigation">15.3. Navigation</a></li>
+<li><a href="#trueroutes-avec-des-param-tres">15.4. Routes avec des paramètres</a></li>
+<li><a href="#trueredirections">15.5. Redirections</a></li>
+<li><a href="#truechoix-de-la-route">15.6. Choix de la route</a></li>
+<li><a href="#trueroutes-hi-rarchiques">15.7. Routes hiérarchiques</a></li>
+<li><a href="#trueguards">15.8. Guards</a></li>
+</ul>
+</li>
 <li><a href="#trueformulaires">16. Formulaires</a></li>
 <li><a href="#truezones">17. Zones</a></li>
 <li><a href="#truecompilation-jit-just-in-time-aot-ahead-of-time">18. Compilation : JiT (Just in Time) &amp; AoT (Ahead of Time)</a></li>
@@ -5075,7 +5086,550 @@ describe('RaceService', () =&gt; {
 <h2 id="truerouteur"><a class="anchor" href="#truerouteur"></a>15. Routeur</h2>
 <div class="sectionbody">
 <div class="paragraph">
+<p>Objectifs du routeur d&#8217;Angular (<em>Single Page Application</em>) :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Avoir des URLs compréhensibles qui reflètent l'état de notre application.</p>
+</li>
+<li>
+<p>Déterminer pour chaque URL quels composants initialiser et insérer dans la page.</p>
+</li>
+<li>
+<p>Déclencher toute cette mécanique sans rafraîchir la page et sans lancer de requête auprès du serveur.</p>
+</li>
+</ul>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<code>RouterModule</code> est un module optionel, il n&#8217;est donc pas inclus dans le noyau du framework.
+</td>
+</tr>
+</table>
+</div>
+<div class="sect2">
+<h3 id="trueconfiguration-du-routeur"><a class="anchor" href="#trueconfiguration-du-routeur"></a>15.1. Configuration du routeur</h3>
+<div class="paragraph">
+<p>On doit définir les associations entre les URLs et les composants :</p>
+</div>
+<div class="listingblock">
+<div class="title">src/app/app.routes.ts</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">import { Routes } from '@angular/router';
+import { HomeComponent } from './home/home.component';
+import { RacesComponent } from './races/races.component';
+
+export const ROUTES: Routes = {
+    { path: '', component: HomeComponent },
+    { path: 'races', component: RacesComponent }
+};</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>On doit ensuite importer le module <code>RouterModule</code> dans le module racine <code>AppModule</code> :</p>
+</div>
+<div class="listingblock">
+<div class="title">src/app/app.module.ts</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">import { NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+import { RouterModule } from '@angular/router'; <i class="conum" data-value="1"></i><b>(1)</b>
+import { ROUTES } from './app.routes'; <i class="conum" data-value="2"></i><b>(2)</b>
+import { HomeComponent } from './home/home.component'; <i class="conum" data-value="3"></i><b>(3)</b>
+import { RacesComponent } from './races/races.component'; <i class="conum" data-value="3"></i><b>(3)</b>
+
+
+@NgModule({
+  imports: [BrowserModule, RouterModule.forRoot(ROUTES)], <i class="conum" data-value="4"></i><b>(4)</b>
+  declarations: [AppComponent, HomeComponent, RacesComponent], <i class="conum" data-value="5"></i><b>(5)</b>
+  bootstrap: [AppComponent]
+})
+export class AppModule {
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>On importe le module <code>RouterModule</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>On importe la configuration des routes de la constante <code>ROUTES</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>On importe les composants rattachés aux routes.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>On rattache aux <code>imports</code> le module <code>RouterModule</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>On rattache bien les composants à <code>declarations</code>.</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="trueinsertion-du-composant-dans-la-page"><a class="anchor" href="#trueinsertion-du-composant-dans-la-page"></a>15.2. Insertion du composant dans la page</h3>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Pour inclure un composant dans l&#8217;application, il faut utiliser, dans le template du composant principal, le tag spécial <code>&lt;router-outlet&gt;</code>.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Exemple :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-html" data-lang="html">&lt;header&gt;
+  &lt;nav&gt;...&lt;/nav&gt;
+&lt;/header&gt;
+&lt;main&gt;
+  &lt;router-outlet&gt;&lt;/router-outlet&gt; <i class="conum" data-value="1"></i><b>(1)</b>
+&lt;/main&gt;
+&lt;footer&gt;...&lt;/footer&gt;</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Le template du composant sera inséré ici grâce à la directive <code>RouterOutlet</code>.</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="truenavigation"><a class="anchor" href="#truenavigation"></a>15.3. Navigation</h3>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+On peux insérer un lien avec la directive <code>RouterLink</code>, pointant sur le chemin où on veut aller.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Exemple :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-html" data-lang="html">&lt;a href="" routerLink="/"&gt;Home&lt;/a&gt;</code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+le <em>slash</em> <code>/</code> de début dans le chemin construit une URL absolue depuis l&#8217;URL de base de l&#8217;application. S&#8217;il n&#8217;est pas présent, <code>RouterLink</code> construira une URL relative au chemin courant.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Options avec <code>routerLinkActive</code> :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-html" data-lang="html">&lt;a href="" routerLink="/" routerLinkActive="active"&gt;Home&lt;/a&gt; <i class="conum" data-value="1"></i><b>(1)</b>
+
+&lt;a href="" routerLink="/" routerLinkActive #route="routerLinkActive"&gt; <i class="conum" data-value="2"></i><b>(2)</b>
+    Home {{ route.isActive ? '(here)' : '' }}
+&lt;/a&gt;</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>La directive <code>RouterLinkActive</code> permet d&#8217;ajouter une classe CSS si le lien pointe sur la route courante.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>On peut récupérer une référence sur la directive <code>RouterLinkActive</code> pour s&#8217;en servir dans le template.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Il est possible de naviger depuis le code avec la méthode <code>navigate()</code> du service <code>Router</code> :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">export class RacesComponent {
+    constructor(private router: Router) {
+    }
+
+    saveAndMoveBackToHome() {
+        // ...
+        this.router.navigate(['']); <i class="conum" data-value="1"></i><b>(1)</b>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>La méthode prend en paramètre un tableau dont le premier élément est le chemin vers lequel on souhaite rediriger l&#8217;utilisateur.</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="trueroutes-avec-des-param-tres"><a class="anchor" href="#trueroutes-avec-des-param-tres"></a>15.4. Routes avec des paramètres</h3>
+<div class="paragraph">
+<p>On peut définir des routes avec des paramètres :</p>
+</div>
+<div class="listingblock">
+<div class="title">src/app/app.routes.ts</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">// ...
+
+export const ROUTES: Routes = {
+    { path: '', component: HomeComponent },
+    { path: 'races', component: RacesComponent },
+    { path: 'races/:raceId/ponies/:PonyId', component: PonyComponent }
+};</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Et définir des liens dynamiques avec <code>routerLink</code> :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-html" data-lang="html">&lt;a href="" [routerLink]="['/races', race.id, 'ponies', pony.id]"&gt;See pony&lt;/a&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>On peur récupérer ces paramètres dans le composant cible <code>PonyComponent</code> avec le hook <code>ngOnInit()</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">export class PonyComponent implements OnInit {
+  pony: any;
+
+  constructor(private ponyService: PonyService, private route: ActivatedRoute) { <i class="conum" data-value="1"></i><b>(1)</b>
+  }
+
+  ngOnInit() { <i class="conum" data-value="2"></i><b>(2)</b>
+    const id = this.route.snapshot.paramMap.get('ponyId'); <i class="conum" data-value="3"></i><b>(3)</b>
+    this.ponyService.get(id).subscribe(pony =&gt; this.pony = pony);
+  }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Le composant reçoit un objet de type <code>ActivatedRoute</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Le hook <code>ngOnInit()</code> est le bon entroit pour faire le travail d&#8217;initialisation du composant.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>L&#8217;objet <code>ActivatedRoute</code> donne accès à une propriété <code>snapshot</code>, qui contient tous les paramètres de l&#8217;URL dans l&#8217;observable <code>paramMap</code>.</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+<code>ngOnInit</code> ne sera appelé qu&#8217;une seule fois, à l&#8217;initialisation du composant. Si l&#8217;URL change de  <code>/ponies/1</code> à <code>/ponies/2</code>, le routeur réutilisera l&#8217;instance du composant, sans appeler à nouveau <code>ngOnInit()</code>. Si, dans ce cas de figure, on veut mettre à jour le composant, alors il faut utiliser l&#8217;observable <code>paramMap</code>.
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">// ...
+  ngOnInit() {
+    this.route.paramMap.subscribe((params: ParamMap) =&gt; { <i class="conum" data-value="1"></i><b>(1)</b>
+      const id = params.get('ponyId');
+      this.ponyService.get(id).subscribe(pony =&gt; this.pony = pony);
+    });
+  }
+// ...</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>A chaque changement d&#8217;URL, l&#8217;observable <code>paramMap</code> émettra un événement. On pourra ensuite récupérer le bon poney à afficher.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Il est aussi possible d&#8217;utiliser l&#8217;opérateur <code>switchMap</code> :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">// ...
+  ngOnInit() {
+    this.route.paramMap.pipe(
+      map((params: ParamMap) =&gt; params.get('ponyId')),
+      switchMap(id =&gt; this.ponyService.get(id))
+    ).subscribe(pony =&gt; this.pony = pony);
+  }
+// ...</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="trueredirections"><a class="anchor" href="#trueredirections"></a>15.5. Redirections</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">{ path: '', pathMatch: 'full', redirectTo: '/breaking' }, <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>La redirection applique la stratégie <code>full</code> (celle par défaut est <code>prefix</code>).</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="truechoix-de-la-route"><a class="anchor" href="#truechoix-de-la-route"></a>15.6. Choix de la route</h3>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+La stratégie du routeur consiste à trouver la première route qui correspond à l&#8217;URL complète.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="trueroutes-hi-rarchiques"><a class="anchor" href="#trueroutes-hi-rarchiques"></a>15.7. Routes hiérarchiques</h3>
+<div class="paragraph">
+<p>Les routes peuvent avoir des routes filles. On peut ainsi :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Appliquer des <em>guards</em> à plusieurs routes à la fois.</p>
+</li>
+<li>
+<p>Appliquer des <em>resolvers</em>, à plusieurs routes à la fois.</p>
+</li>
+<li>
+<p>Appliquer un <em>template</em> commun à plusieurs routes.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Exemple :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">{
+  path: 'ponies/:ponyId',
+  component: PonyComponent,
+  children: [
+    { path: '', component: BirthCertificateComponent }, <i class="conum" data-value="1"></i><b>(1)</b>
+    { path: 'track-record', component: TrackRecordComponent },
+    { path: 'reviews', component: ReviewsComponent } <i class="conum" data-value="2"></i><b>(2)</b>
+  ]
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Accès vis <code>ponies/42</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Accès via <code>ponies/42/reviews</code></td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+La redirection est relative à la route <code>ponies/:ponyId</code> parce qu&#8217;elle ne commence pas par un <code>/</code>.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Imbrication des templates :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code>. -- app.component.html
+     &lt;router-outlet&gt;
+            |
+            ` -- pony.component.html
+                 &lt;router-outlet&gt;
+                        |
+                        ` -- review.component.html</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="trueguards"><a class="anchor" href="#trueguards"></a>15.8. Guards</h3>
+<div class="paragraph">
+<p>Il existe 4 types de <em>guards</em> :</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>CanActivate</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Peut empêcher l&#8217;activation de la route, et naviguer vers une autre route (ex: vers la page de connexion si l&#8217;utilisateur accède à une page qui requiert une authentification.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>CanActivateChild</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Peut empêcher l&#8217;activations des enfants d&#8217;une route, pour empêcher l&#8217;accès à plusieurs routes d&#8217;un seul coup.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>CanLoad</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Utilisé sur un route ayant l&#8217;attribut <code>loadChildren</code>. Peut empêcher le téléchargement des fichiers JavaScript dans le système de <em>lazy loading</em>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>CanDeactivate</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Peut empêcher de quitter une page (ex: confirmation avant de quitter un formulaire).</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Exemple :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">{ path: 'races', component: RacesComponent, canActivate: [LoggedInGuard] }</code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Il faut bien déclaré le service <code>LoggedInGuard</code> dans les <em>providers</em> du module Angular.
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+le service <code>LoggedInGuard</code> doit implémenter l&#8217;interface <code>CanActivate</code>.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Exemple :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">@Injectable({
+  providedIn: 'root'
+})
+export class LoggedInGuard implements CanActivate { <i class="conum" data-value="1"></i><b>(1)</b>
+
+  constructor(private router: Router, private userService: UserService) { }
+
+  canActivate(
+    route: ActivatedRouteSnapshot,
+    state: RouterStateSnapshot
+  ): Observable&lt;boolean&gt;|Promise&lt;boolean&gt;|boolean {
+    const loggedIn = this.userService.isLoggedIn();
+    if (!loggedIn) {
+      this.router.navigate(['/login']); <i class="conum" data-value="3"></i><b>(3)</b>
+    }
+    return loggedIn;
+  }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td><code>LoggedInGuard</code> implémente l&#8217;interface <code>CanActivate</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td><code>canActivate()</code> retourne un <code>Observable&lt;boolean&gt;</code>, un <code>Promise&lt;boolean&gt;</code> ou simplement un <code>boolean</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>si <code>loggedIn</code> est à <code>false</code>, alors l&#8217;utilisateur est redirigé vers la page d&#8217;authentification.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Il est possible d&#8217;utiliser une route mère avec un chemin vide et sans composant. Cette route ne consommera aucun segment d&#8217;URL, et n&#8217;activera aucun composant, mais ses <em>guards</em> seront appelés chaque fois que l&#8217;on accèdera au routes filles :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">{
+  path: '',
+  canActivate: [LoggedInGuard],
+  children: [
+    { path: 'ponies/:ponyId', component: PonyComponent },
+    { path: 'races', component: RacesComponent }
+  ]
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
 <p><a href="#top-of-page">⬆ Back to top</a></p>
+</div>
 </div>
 </div>
 </div>
@@ -5139,6 +5693,9 @@ describe('RaceService', () =&gt; {
 <li>
 <p><a href="https://www.typescriptlang.org" class="bare">https://www.typescriptlang.org</a></p>
 </li>
+<li>
+<p><a href="https://leanpub.com/router" class="bare">https://leanpub.com/router</a></p>
+</li>
 </ul>
 </div>
 <div class="paragraph">
@@ -5149,7 +5706,7 @@ describe('RaceService', () =&gt; {
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-09-21 18:26:06 PM
+Last updated 2018-09-24 14:20:15 PM
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.9.1/styles/github.min.css">

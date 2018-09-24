@@ -1,0 +1,298 @@
+Objectifs du routeur d'Angular (_Single Page Application_) :
+
+* Avoir des URLs compréhensibles qui reflètent l'état de notre application.
+* Déterminer pour chaque URL quels composants initialiser et insérer dans la page.
+* Déclencher toute cette mécanique sans rafraîchir la page et sans lancer de requête auprès du serveur.
+
+NOTE: `RouterModule` est un module optionel, il n'est donc pas inclus dans le noyau du framework.
+
+=== Configuration du routeur
+
+On doit définir les associations entre les URLs et les composants :
+
+.src/app/app.routes.ts
+[source,javascript]
+----
+import { Routes } from '@angular/router';
+import { HomeComponent } from './home/home.component';
+import { RacesComponent } from './races/races.component';
+
+export const ROUTES: Routes = {
+    { path: '', component: HomeComponent },
+    { path: 'races', component: RacesComponent }
+};
+----
+
+On doit ensuite importer le module `RouterModule` dans le module racine `AppModule` :
+
+.src/app/app.module.ts
+[source,javascript]
+----
+import { NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+import { RouterModule } from '@angular/router'; <1>
+import { ROUTES } from './app.routes'; <2>
+import { HomeComponent } from './home/home.component'; <3>
+import { RacesComponent } from './races/races.component'; <3>
+
+
+@NgModule({
+  imports: [BrowserModule, RouterModule.forRoot(ROUTES)], <4>
+  declarations: [AppComponent, HomeComponent, RacesComponent], <5>
+  bootstrap: [AppComponent]
+})
+export class AppModule {
+}
+----
+<1> On importe le module `RouterModule`.
+<2> On importe la configuration des routes de la constante `ROUTES`.
+<3> On importe les composants rattachés aux routes.
+<4> On rattache aux `imports` le module `RouterModule`.
+<5> On rattache bien les composants à `declarations`.
+
+=== Insertion du composant dans la page
+
+NOTE: Pour inclure un composant dans l'application, il faut utiliser, dans le template du composant principal, le tag spécial `<router-outlet>`.
+
+Exemple :
+
+[source,html]
+----
+<header>
+  <nav>...</nav>
+</header>
+<main>
+  <router-outlet></router-outlet> <1>
+</main>
+<footer>...</footer>
+----
+<1> Le template du composant sera inséré ici grâce à la directive `RouterOutlet`.
+
+=== Navigation
+
+NOTE: On peux insérer un lien avec la directive `RouterLink`, pointant sur le chemin où on veut aller.
+
+Exemple :
+
+[source,html]
+----
+<a href="" routerLink="/">Home</a>
+----
+
+TIP: le _slash_ `/` de début dans le chemin construit une URL absolue depuis l'URL de base de l'application. S'il n'est pas présent, `RouterLink` construira une URL relative au chemin courant.
+
+Options avec `routerLinkActive` :
+
+[source,html]
+----
+<a href="" routerLink="/" routerLinkActive="active">Home</a> <1>
+
+<a href="" routerLink="/" routerLinkActive #route="routerLinkActive"> <2>
+    Home {{ route.isActive ? '(here)' : '' }}
+</a>
+----
+<1> La directive `RouterLinkActive` permet d'ajouter une classe CSS si le lien pointe sur la route courante.
+<2> On peut récupérer une référence sur la directive `RouterLinkActive` pour s'en servir dans le template.
+
+Il est possible de naviger depuis le code avec la méthode `navigate()` du service `Router` :
+
+[source,javascript]
+----
+export class RacesComponent {
+    constructor(private router: Router) {
+    }
+    
+    saveAndMoveBackToHome() {
+        // ...
+        this.router.navigate(['']); <1>
+    }
+}
+----
+<1> La méthode prend en paramètre un tableau dont le premier élément est le chemin vers lequel on souhaite rediriger l'utilisateur.
+
+=== Routes avec des paramètres
+
+On peut définir des routes avec des paramètres :
+
+.src/app/app.routes.ts
+[source,javascript]
+----
+// ...
+
+export const ROUTES: Routes = {
+    { path: '', component: HomeComponent },
+    { path: 'races', component: RacesComponent },
+    { path: 'races/:raceId/ponies/:PonyId', component: PonyComponent }
+};
+----
+
+Et définir des liens dynamiques avec `routerLink` :
+
+[source,html]
+----
+<a href="" [routerLink]="['/races', race.id, 'ponies', pony.id]">See pony</a>
+----
+
+On peur récupérer ces paramètres dans le composant cible `PonyComponent` avec le hook `ngOnInit()`:
+
+[source,javascript]
+----
+export class PonyComponent implements OnInit {
+  pony: any;
+
+  constructor(private ponyService: PonyService, private route: ActivatedRoute) { <1>
+  }
+
+  ngOnInit() { <2>
+    const id = this.route.snapshot.paramMap.get('ponyId'); <3>
+    this.ponyService.get(id).subscribe(pony => this.pony = pony);
+  }
+}
+----
+<1> Le composant reçoit un objet de type `ActivatedRoute`.
+<2> Le hook `ngOnInit()` est le bon entroit pour faire le travail d'initialisation du composant.
+<3> L'objet `ActivatedRoute` donne accès à une propriété `snapshot`, qui contient tous les paramètres de l'URL dans l'observable `paramMap`.
+
+WARNING: `ngOnInit` ne sera appelé qu'une seule fois, à l'initialisation du composant. Si l'URL change de  `/ponies/1` à `/ponies/2`, le routeur réutilisera l'instance du composant, sans appeler à nouveau `ngOnInit()`. Si, dans ce cas de figure, on veut mettre à jour le composant, alors il faut utiliser l'observable `paramMap`.
+
+[source,javascript]
+----
+// ...
+  ngOnInit() {
+    this.route.paramMap.subscribe((params: ParamMap) => { <1>
+      const id = params.get('ponyId');
+      this.ponyService.get(id).subscribe(pony => this.pony = pony);
+    });
+  }
+// ...
+----
+<1> A chaque changement d'URL, l'observable `paramMap` émettra un événement. On pourra ensuite récupérer le bon poney à afficher.
+
+Il est aussi possible d'utiliser l'opérateur `switchMap` :
+
+[source,javascript]
+----
+// ...
+  ngOnInit() {
+    this.route.paramMap.pipe(
+      map((params: ParamMap) => params.get('ponyId')),
+      switchMap(id => this.ponyService.get(id))
+    ).subscribe(pony => this.pony = pony);
+  }
+// ...
+----
+
+=== Redirections
+
+[source,javascript]
+----
+{ path: '', pathMatch: 'full', redirectTo: '/breaking' }, <1>
+----
+<1> La redirection applique la stratégie `full` (celle par défaut est `prefix`).
+
+=== Choix de la route
+
+IMPORTANT: La stratégie du routeur consiste à trouver la première route qui correspond à l'URL complète.
+
+=== Routes hiérarchiques
+
+Les routes peuvent avoir des routes filles. On peut ainsi :
+
+- Appliquer des _guards_ à plusieurs routes à la fois.
+- Appliquer des _resolvers_, à plusieurs routes à la fois.
+- Appliquer un _template_ commun à plusieurs routes.
+
+Exemple :
+
+[source,javascript]
+----
+{
+  path: 'ponies/:ponyId',
+  component: PonyComponent,
+  children: [
+    { path: '', component: BirthCertificateComponent }, <1>
+    { path: 'track-record', component: TrackRecordComponent },
+    { path: 'reviews', component: ReviewsComponent } <2>
+  ]
+}
+----
+<1> Accès vis `ponies/42`
+<2> Accès via `ponies/42/reviews`
+
+NOTE: La redirection est relative à la route `ponies/:ponyId` parce qu'elle ne commence pas par un `/`.
+
+Imbrication des templates :
+
+[source,]
+----
+. -- app.component.html
+     <router-outlet>
+            |
+            ` -- pony.component.html
+                 <router-outlet>
+                        |
+                        ` -- review.component.html
+----
+
+=== Guards
+
+Il existe 4 types de _guards_ :
+
+|===
+| `CanActivate`         | Peut empêcher l'activation de la route, et naviguer vers une autre route (ex: vers la page de connexion si l'utilisateur accède à une page qui requiert une authentification.
+| `CanActivateChild`    | Peut empêcher l'activations des enfants d'une route, pour empêcher l'accès à plusieurs routes d'un seul coup.
+| `CanLoad`             | Utilisé sur un route ayant l'attribut `loadChildren`. Peut empêcher le téléchargement des fichiers JavaScript dans le système de _lazy loading_.
+| `CanDeactivate`       | Peut empêcher de quitter une page (ex: confirmation avant de quitter un formulaire).
+|===
+
+Exemple :
+
+[source,javascript]
+----
+{ path: 'races', component: RacesComponent, canActivate: [LoggedInGuard] }
+----
+
+TIP: Il faut bien déclaré le service `LoggedInGuard` dans les _providers_ du module Angular.
+
+IMPORTANT: le service `LoggedInGuard` doit implémenter l'interface `CanActivate`.
+
+Exemple :
+
+[source,javascript]
+----
+@Injectable({
+  providedIn: 'root'
+})
+export class LoggedInGuard implements CanActivate { <1>
+
+  constructor(private router: Router, private userService: UserService) { }
+
+  canActivate(
+    route: ActivatedRouteSnapshot,
+    state: RouterStateSnapshot
+  ): Observable<boolean>|Promise<boolean>|boolean {
+    const loggedIn = this.userService.isLoggedIn();
+    if (!loggedIn) {
+      this.router.navigate(['/login']); <3>
+    }
+    return loggedIn;
+  }
+}
+----
+<1> `LoggedInGuard` implémente l'interface `CanActivate`.
+<2> `canActivate()` retourne un `Observable<boolean>`, un `Promise<boolean>` ou simplement un `boolean`.
+<3> si `loggedIn` est à `false`, alors l'utilisateur est redirigé vers la page d'authentification.
+
+Il est possible d'utiliser une route mère avec un chemin vide et sans composant. Cette route ne consommera aucun segment d'URL, et n'activera aucun composant, mais ses _guards_ seront appelés chaque fois que l'on accèdera au routes filles :
+
+[source,javascript]
+----
+{
+  path: '',
+  canActivate: [LoggedInGuard],
+  children: [
+    { path: 'ponies/:ponyId', component: PonyComponent },
+    { path: 'races', component: RacesComponent }
+  ]
+}
+----

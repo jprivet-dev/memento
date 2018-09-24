@@ -88,6 +88,8 @@ include::_angular/angular-donnees-http.adoc[]
 
 == Routeur
 
+include::_angular/angular-routeur.adoc[]
+
 {BACK_TO_TOP}
 
 == Formulaires
@@ -117,5 +119,6 @@ include::_angular/angular-donnees-http.adoc[]
 - https://developer.mozilla.org/fr/docs/Web/JavaScript
 - http://speakingjs.com/ : Speaking JavaScript: An In-Depth Guide for Programmers
 - https://www.typescriptlang.org
+- https://leanpub.com/router
 
 {BACK_TO_TOP}
