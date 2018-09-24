@@ -264,7 +264,6 @@ Exemple :
   providedIn: 'root'
 })
 export class LoggedInGuard implements CanActivate { <1>
-
   constructor(private router: Router, private userService: UserService) { }
 
   canActivate(
@@ -296,3 +295,187 @@ Il est possible d'utiliser une route mère avec un chemin vide et sans composant
   ]
 }
 ----
+
+=== Résolvers
+
+Que se passe-t-il quand on clique sur un lien :
+
+. L'utilisateur clique sur un lien pour afficher une course de poneys.
+. Le routeur crée une instance de `RaceComponent`.
+. Le composant envoie une requête AJAX pour charger la course.
+. Le router insère immédiatement le template du composant à l'endroit indiqué par le `<router-outlet>`.
+. Immédiatement après le clic, l'URL a déjà changé dans la barre d'adresse, et l'utilisateur voit déjà la nouvelle page, mais sans une seule course affichée.
+. Lorsque la réponse arrive du serveur, la course est stockée dans le composant, et le DOM est mis à jour pour afficher la course.
+
+NOTE: Que fait un _resolver_ ? : Au lieu de charger la course depuis le composant lui-même, on applique un _resolver_ à la route, et ce _resolver_ charge la course.
+
+Ainsi :
+
+- Un _resolver_ peut retourner des données de manière synchrone ou asynchrone.
+- Le routeur ne navique vers la route que lorsque la promesse a été résolue, ou lorsque l'observable a émis une course.
+
+Exemple de _resolver_ :
+
+[source,javascript]
+----
+@Injectable({
+  providedIn: 'root'
+})
+export class RaceResolver implements Resolve<RaceModel> {
+  constructor(private raceService: RaceService) { }
+
+  resolve(
+    route: ActivatedRouteSnapshot,
+    state: RouterStateSnapshot
+  ): Observable<RaceModel> | Promise<RaceModel> | RaceModel {
+    return this.raceService.get(+route.paramMap.get('raceId')); <1>
+  }
+}
+----
+<1> `resolve()` retourne un observable. La course est identifiée par le paramètre `raceId`.
+
+TIP: '+' convertie le segment d'URL `route.paramMap.get('raceId')` de type `string` en type `number`.
+
+Exemple de configuration pour appliquer le _resolver_ :
+
+[source,javascript]
+----
+{
+  path: 'races/:raceId',
+  component: RaceComponent,
+  resolve: {
+    race: RaceResolver, <1>
+    allowDeletion: false <2>
+  }
+}
+----
+<1> `RaceResolver` est associé à la clé `race`. Le routeur utilisera cette clé et stockera la course retournée par le _resolver_ dans `this.route.snapshot.data['race']`.
+<2> Il est possible d'ajouter des propriétés directement depuis la configuration de la route.
+
+[source,javascript]
+----
+export class RaceComponent implements OnInit {
+  race: RaceModel;
+
+  constructor(private route: ActivatedRoute) { }
+
+  ngOnInit() {
+    this.race = this.route.snapshot.data['race']; <1>
+  }
+}
+----
+<1> On récupère ici la course retournée par le _resolver_.
+
+=== Evénements de routage
+
+Le routeur émet plusieurs événements lorsqu'on navigue vers une route :
+
+|===
+| `NavigationStart`     | Emis lorsqu'une navigation est demandée. Peut être utilisé pour afficher un indicateur animé.
+| `NavigationEnd`       | Emis lorsque la navigation s'achève avec succès. Peut être utilisé pour masquer l'indicateur animé, ou pour l'envoi d'un _hit_ à un service de statistiques.
+| `NavigationError`     | Emis lorsque la navigation échoue à cause d'une erreur inattendue. 
+| `NavigationCancel`    | Emis lorsque la navigation est annulée.
+|===
+
+Autres événements possibles : `RouteConfigLoadStart`, `RouteConfigLoadEnd`, `RoutesRecognized`, `ResolveStart`, `ResolveEnd`, `GuardsCheckStart`, `GuardsCheckEnd`, `ChildActivationStart`, `ChildActivationEnd`, `Scroll`, ...
+
+=== Paramètres et data
+
+==== Matrix
+
+NOTE: les paramètres `matrix` sont des éléments standards des URIs.
+
+Exemple d'URIs :
+
+[source,]
+----
+/races/42;foo=bar;baz=wiz/ponies <1>
+----
+<1> Dans ce cas, le composant associé au segment `ponies` n'aura pas les données des paramètres `foo` et `baz`. Seul le composant associé au segment `races/42` les aura.
+
+Générer l'URI dans le template :
+
+[source,html]
+----
+<a [routerLink]="['/races', 42, {foo: 'bar', baz: 'wiz'}, 'ponies']">Link</a>
+----
+
+==== Query parameters
+
+Exemple d'URIs :
+
+[source,]
+----
+/races/42/ponies?foo=bar&baz=wiz <1>
+----
+<1> Dans ce cas les paramètres sont partagés par tous les segments de la route.
+
+Naviguer vers cette URI :
+
+[source,javascript]
+----
+router.navigate(['/races', 42, 'ponies'], { queryParams: {foo: 'bar', 'baz': 'wiz'} });
+----
+
+Générer l'URI dans le template :
+
+[source,html]
+----
+<a [routerLink]="['/races', 42, 'ponies']"  [queryParams]="{foo: 'bar', baz: 'wiz'}">Link</a>
+----
+
+=== Chargement à la demande
+
+NOTE: le _lazy loading_ évite de charger toute l'application au démarrage, pour éviter un gaspillage de bande passante et une perte de temps pour l'utilisateur.
+
+Le chargement à la demande consiste à diviser l'application en plusieurs modules Angular :
+
+- Un module chargé à la demande définit ses propres routes, composants et services, tous empaquetés dans un fichier JavaScript, qu'on appelle un _bundle_, distinct du _bundle_ principal de l'application.
+- Le module principal de l'application ne fait que définir une route permettant d'accéder à ce module chargé à la demande.
+- Le routeur ne télécharge le bundle de ce module que lorsque l'utilisateur navigue vers cette route.
+- Une fois le module chargé, les composants, services et routes filles sont ajoutés dynamiquement à l'application.
+
+TIP: Avec `preloadingStrategy`, il est possible de pré-charger des modules en tâche de fond, sans attendre que l'utilisateur navigue vers la route du module fils.
+
+Exemple de création de module à la demande :
+
+[source,javascript]
+----
+@NgModule({
+  imports: [
+    CommonModule <1>
+  ],
+  declarations: []
+})
+export class AdminModule { }
+----
+<1> Ce module fils importe `CommonModule`, alors que le module racine de l'application importe `BrowserModule`.
+
+[source,javascript]
+----
+export const ADMIN_ROUTES: Routes = [ <1>
+  { path: '', component: AdminComponent }
+];
+----
+<1> On définie dans `ADMIN_ROUTES` une route pour le composant `AdminComponent`.
+
+[source,javascript]
+----
+@NgModule({
+  imports: [
+    CommonModule,
+    RouterModule.forChild(ADMIN_ROUTES) <1>
+  ],
+  declarations: [AdminComponent] <2>
+})
+export class AdminModule { }
+----
+<1> On importe la configuration de routage dans le module `AdminModule` avec la méthode `RouterModule.forChild()`, et non `RouterModule.forRoot()` comme dans le module racine.
+<2> On déclare bien le composant `AdminComponent` dans ce module fils, et non le module racine.
+
+.app.routes.ts
+[source,javascript]
+----
+{ path: 'admin', loadChildren: './admin/admin.module#AdminModule' } <1>
+----
+<1> Avec la propriété `loadChildren`, on indique dans les routes du module racine qu'il faut charger le module d'administration lorsqu'on navigue vers la route `admin`.

@@ -568,6 +568,10 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#truechoix-de-la-route">15.6. Choix de la route</a></li>
 <li><a href="#trueroutes-hi-rarchiques">15.7. Routes hiérarchiques</a></li>
 <li><a href="#trueguards">15.8. Guards</a></li>
+<li><a href="#truer-solvers">15.9. Résolvers</a></li>
+<li><a href="#trueev-nements-de-routage">15.10. Evénements de routage</a></li>
+<li><a href="#trueparam-tres-et-data">15.11. Paramètres et data</a></li>
+<li><a href="#truechargement-la-demande">15.12. Chargement à la demande</a></li>
 </ul>
 </li>
 <li><a href="#trueformulaires">16. Formulaires</a></li>
@@ -5580,7 +5584,6 @@ le service <code>LoggedInGuard</code> doit implémenter l&#8217;interface <code>
   providedIn: 'root'
 })
 export class LoggedInGuard implements CanActivate { <i class="conum" data-value="1"></i><b>(1)</b>
-
   constructor(private router: Router, private userService: UserService) { }
 
   canActivate(
@@ -5626,6 +5629,378 @@ export class LoggedInGuard implements CanActivate { <i class="conum" data-value=
   ]
 }</code></pre>
 </div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="truer-solvers"><a class="anchor" href="#truer-solvers"></a>15.9. Résolvers</h3>
+<div class="paragraph">
+<p>Que se passe-t-il quand on clique sur un lien :</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>L&#8217;utilisateur clique sur un lien pour afficher une course de poneys.</p>
+</li>
+<li>
+<p>Le routeur crée une instance de <code>RaceComponent</code>.</p>
+</li>
+<li>
+<p>Le composant envoie une requête AJAX pour charger la course.</p>
+</li>
+<li>
+<p>Le router insère immédiatement le template du composant à l&#8217;endroit indiqué par le <code>&lt;router-outlet&gt;</code>.</p>
+</li>
+<li>
+<p>Immédiatement après le clic, l&#8217;URL a déjà changé dans la barre d&#8217;adresse, et l&#8217;utilisateur voit déjà la nouvelle page, mais sans une seule course affichée.</p>
+</li>
+<li>
+<p>Lorsque la réponse arrive du serveur, la course est stockée dans le composant, et le DOM est mis à jour pour afficher la course.</p>
+</li>
+</ol>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Que fait un <em>resolver</em> ? : Au lieu de charger la course depuis le composant lui-même, on applique un <em>resolver</em> à la route, et ce <em>resolver</em> charge la course.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Ainsi :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Un <em>resolver</em> peut retourner des données de manière synchrone ou asynchrone.</p>
+</li>
+<li>
+<p>Le routeur ne navique vers la route que lorsque la promesse a été résolue, ou lorsque l&#8217;observable a émis une course.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Exemple de <em>resolver</em> :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">@Injectable({
+  providedIn: 'root'
+})
+export class RaceResolver implements Resolve&lt;RaceModel&gt; {
+  constructor(private raceService: RaceService) { }
+
+  resolve(
+    route: ActivatedRouteSnapshot,
+    state: RouterStateSnapshot
+  ): Observable&lt;RaceModel&gt; | Promise&lt;RaceModel&gt; | RaceModel {
+    return this.raceService.get(+route.paramMap.get('raceId')); <i class="conum" data-value="1"></i><b>(1)</b>
+  }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td><code>resolve()</code> retourne un observable. La course est identifiée par le paramètre <code>raceId</code>.</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+'+' convertie le segment d&#8217;URL <code>route.paramMap.get('raceId')</code> de type <code>string</code> en type <code>number</code>.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Exemple de configuration pour appliquer le <em>resolver</em> :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">{
+  path: 'races/:raceId',
+  component: RaceComponent,
+  resolve: {
+    race: RaceResolver, <i class="conum" data-value="1"></i><b>(1)</b>
+    allowDeletion: false <i class="conum" data-value="2"></i><b>(2)</b>
+  }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td><code>RaceResolver</code> est associé à la clé <code>race</code>. Le routeur utilisera cette clé et stockera la course retournée par le <em>resolver</em> dans <code>this.route.snapshot.data['race']</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Il est possible d&#8217;ajouter des propriétés directement depuis la configuration de la route.</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">export class RaceComponent implements OnInit {
+  race: RaceModel;
+
+  constructor(private route: ActivatedRoute) { }
+
+  ngOnInit() {
+    this.race = this.route.snapshot.data['race']; <i class="conum" data-value="1"></i><b>(1)</b>
+  }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>On récupère ici la course retournée par le <em>resolver</em>.</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="trueev-nements-de-routage"><a class="anchor" href="#trueev-nements-de-routage"></a>15.10. Evénements de routage</h3>
+<div class="paragraph">
+<p>Le routeur émet plusieurs événements lorsqu&#8217;on navigue vers une route :</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>NavigationStart</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Emis lorsqu&#8217;une navigation est demandée. Peut être utilisé pour afficher un indicateur animé.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>NavigationEnd</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Emis lorsque la navigation s&#8217;achève avec succès. Peut être utilisé pour masquer l&#8217;indicateur animé, ou pour l&#8217;envoi d&#8217;un <em>hit</em> à un service de statistiques.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>NavigationError</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Emis lorsque la navigation échoue à cause d&#8217;une erreur inattendue.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>NavigationCancel</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Emis lorsque la navigation est annulée.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Autres événements possibles : <code>RouteConfigLoadStart</code>, <code>RouteConfigLoadEnd</code>, <code>RoutesRecognized</code>, <code>ResolveStart</code>, <code>ResolveEnd</code>, <code>GuardsCheckStart</code>, <code>GuardsCheckEnd</code>, <code>ChildActivationStart</code>, <code>ChildActivationEnd</code>, <code>Scroll</code>, &#8230;&#8203;</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="trueparam-tres-et-data"><a class="anchor" href="#trueparam-tres-et-data"></a>15.11. Paramètres et data</h3>
+<div class="sect3">
+<h4 id="truematrix"><a class="anchor" href="#truematrix"></a>15.11.1. Matrix</h4>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+les paramètres <code>matrix</code> sont des éléments standards des URIs.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Exemple d&#8217;URIs :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code>/races/42;foo=bar;baz=wiz/ponies <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Dans ce cas, le composant associé au segment <code>ponies</code> n&#8217;aura pas les données des paramètres <code>foo</code> et <code>baz</code>. Seul le composant associé au segment <code>races/42</code> les aura.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Générer l&#8217;URI dans le template :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-html" data-lang="html">&lt;a [routerLink]="['/races', 42, {foo: 'bar', baz: 'wiz'}, 'ponies']"&gt;Link&lt;/a&gt;</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="truequery-parameters"><a class="anchor" href="#truequery-parameters"></a>15.11.2. Query parameters</h4>
+<div class="paragraph">
+<p>Exemple d&#8217;URIs :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code>/races/42/ponies?foo=bar&amp;baz=wiz <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Dans ce cas les paramètres sont partagés par tous les segements de la route.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Naviguer vers cette URI :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">router.navigate(['/races', 42, 'ponies'], { queryParams: {foo: 'bar', 'baz': 'wiz'} });</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Générer l&#8217;URI dans le template :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-html" data-lang="html">&lt;a [routerLink]="['/races', 42, 'ponies']"  [queryParams]="{foo: 'bar', baz: 'wiz'}"&gt;Link&lt;/a&gt;</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="truechargement-la-demande"><a class="anchor" href="#truechargement-la-demande"></a>15.12. Chargement à la demande</h3>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+le <em>lazy loading</em> évite de charger toute l&#8217;application au démarrage, pour éviter un gaspillage de bande passante et une perte de temps pour l&#8217;utilisateur.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Le chargement à la demande consiste à diviser l&#8217;application en plusieurs modules Angular :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Un module chargé à la demande définit ses propoes routes, composants et services, tous empaquetés dans un fichier JavaScript, qu&#8217;on appelle un <em>bundle</em>, distinct du <em>bundle</em> principal de l&#8217;application.</p>
+</li>
+<li>
+<p>Le module principal de l&#8217;application ne faut que définir une route permettant d&#8217;accéder à ce module chargé à la demande.</p>
+</li>
+<li>
+<p>Le routeur ne télécharge le bundle de ce module que lorsque l&#8217;utilisateur navigue vers cette route.</p>
+</li>
+<li>
+<p>Une fois le module chargé, les composants, services et routes filles sont ajoutés dynamiquement à l&#8217;application.</p>
+</li>
+</ul>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Avec <code>preloadingStrategy</code>, il est possible de pré-charger des modules en tâche de fond, sans attendre que l&#8217;utilisateur navigue vers la route du module fils.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Exemple de création de module à la demande :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">@NgModule({
+  imports: [
+    CommonModule <i class="conum" data-value="1"></i><b>(1)</b>
+  ],
+  declarations: []
+})
+export class AdminModule { }</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Ce module fils importe <code>CommonModule</code>, alors que le module racine de l&#8217;application importe <code>BrowserModule</code>.</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">export const ADMIN_ROUTES: Routes = [ <i class="conum" data-value="1"></i><b>(1)</b>
+  { path: '', component: AdminComponent }
+];</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>On définie dans <code>ADMIN_ROUTES</code> une route pour le composant <code>AdminComponent</code>.</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">@NgModule({
+  imports: [
+    CommonModule,
+    RouterModule.forChild(ADMIN_ROUTES) <i class="conum" data-value="1"></i><b>(1)</b>
+  ],
+  declarations: [AdminComponent] <i class="conum" data-value="2"></i><b>(2)</b>
+})
+export class AdminModule { }</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>On importe la configuration de routage dans le module <code>AdminModule</code> avec la méthode <code>RouterModule.forChild()</code>, et non <code>RouterModule.forRoot()</code> comme dans le module racine.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>On déclare bien le composant <code>AdminComponent</code> dans ce module fils, et non le module racine.</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="title">app.routes.ts</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">{ path: 'admin', loadChildren: './admin/admin.module#AdminModule' } <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Avec la propriété <code>loadChildren</code>, on indique dans les routes du module racine qu&#8217;il faut charger le module d&#8217;administration lorsqu&#8217;on navigue vers la route <code>admin</code>.</td>
+</tr>
+</table>
 </div>
 <div class="paragraph">
 <p><a href="#top-of-page">⬆ Back to top</a></p>
@@ -5706,7 +6081,7 @@ export class LoggedInGuard implements CanActivate { <i class="conum" data-value=
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-09-24 14:20:15 PM
+Last updated 2018-09-24 15:45:12 PM
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.9.1/styles/github.min.css">
