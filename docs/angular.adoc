@@ -118,6 +118,8 @@ include::_angular/angular-observables.adoc[]
 
 == Composants et directives avancés
 
+include::_angular/angular-composants-directives-avances.adoc[]
+
 {BACK_TO_TOP}
 
 == Internationalisation

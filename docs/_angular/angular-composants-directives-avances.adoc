@@ -1,0 +1,101 @@
+=== `@ViewChild`
+
+Exemple 1 - Focus à un champ dès que le composant est affiché :
+
+[source,javascript]
+----
+@Component({
+  selector: 'ns-login',
+  template: `
+    <input #loginInput name="login" [(ngModel)]="credentials.login" required> <1>
+  `
+})
+export class LoginComponent implements AfterViewInit {
+  credentials = { login: '' };
+
+  @ViewChild('loginInput') <2>
+  private loginInput: ElementRef<HTMLInputElement>; <3>
+
+  ngAfterViewInit() { <4>
+    this.loginInput.nativeElement.focus(); <5>
+  }
+}
+----
+<1> On crée une référence avec la variable locale `#loginInput`.
+<2> Le décorateur `@ViewChild` indique que l'on veut requêter la vue pour y trouver un élément avec le nom de la variable locale `#loginInput` du template.
+<3> L'attribut `loginInput` sera initialisé avec l'élément retourné par le décorateur `@ViewChild`.
+<4> Cette méthode `ngAfterViewInit()` est appelée dès que la vue est créée.
+<5> On applique le focus sur l'élément `loginInput`.
+
+Exemple 2 - Focus à un champ, avec une directive :
+
+[source,javascript]
+----
+@Directive({
+  selector: '[nsFocus]'
+})
+export class FocusDirective implements AfterViewInit {
+  constructor(private element: ElementRef<HTMLElement>) { } <1>
+
+  ngAfterViewInit(): void { <2>
+    this.element.nativeElement.focus();
+  }
+
+}
+----
+<1> On accède à l'élément hôte de la directive.
+<2> La méthode `ngAfterViewInit()` est appelée dès que la vue est créée.
+
+[source,html]
+----
+<input nsFocus>
+----
+<1> `nsFocus` utilise la directive `FocusDirective` qui permet d'activer le focus.
+
+TIP: `ViewChild` est une requête dynamique : l'élément sera toujours à jour du template. Si l'élément requêté est détruit, l'attribut deviendra `undefined`.
+
+=== `@ViewChildren`
+
+NOTE: `@ViewChildren` permet d'obtenir une référence vers tous les éléments : il retourne une `QueryList`.
+
+Une `QueryList` a quelques attributs pratiques :
+
+|===
+| `first`   | Retourne le premier élément satisfaisant la requête.
+| `last`    | Retourne le dernier élément satisfaisant la requête.
+| `length`  | Retourne le nombre d'éléments satisfaisant la requête.
+| `changes` | Retourne un observabe qui émet la nouvelle `QueryList` chaque fois qu'un élément satisfaisant la requête est ajouté, enlevé, ou déplacé.
+|===
+
+NOTE: Il existe aussi `toArray()`, `map()` , `filter()` , `find()`, ...
+
+Exemple :
+
+[source,javascript]
+----
+@Component({
+  selector: 'ns-race',
+  templateUrl: './race.component.html'
+})
+export class RaceComponent implements AfterViewInit {
+  @Input() raceModel: RaceModel;
+
+  @ViewChildren(PonyComponent) ponies: QueryList<PonyComponent>;
+
+  ngAfterViewInit() {
+    this.ponies.changes
+      .subscribe(newList => console.log(newList.length));
+  }
+}
+----
+
+=== `Content`
+
+=== `@ContentChild`
+
+=== `@ContentChildren`
+
+=== `@HostListener`
+
+=== `@HostBinding`
+
