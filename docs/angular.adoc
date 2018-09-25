@@ -96,14 +96,17 @@ include::_angular/angular-routeur.adoc[]
 
 include::_angular/angular-formulaires.adoc[]
 
-
 {BACK_TO_TOP}
 
 == Zones
 
+include::_angular/angular-zones.adoc[]
+
 {BACK_TO_TOP}
 
 == Compilation : JiT (Just in Time) & AoT (Ahead of Time)
+
+include::_angular/angular-compilation.adoc[]
 
 {BACK_TO_TOP}
 
@@ -123,5 +126,6 @@ include::_angular/angular-formulaires.adoc[]
 - http://speakingjs.com/ : Speaking JavaScript: An In-Depth Guide for Programmers
 - https://www.typescriptlang.org
 - https://leanpub.com/router
+- https://www.youtube.com/watch?v=RXYjPYkFwy4 (The Angular Compiler 4.0 - TOBIAS BOSCH)
 
 {BACK_TO_TOP}
