@@ -1,0 +1,177 @@
+=== Subscribe, unsubscribe et `| aync`
+
+==== `subscribe` & `unsubscribe`
+
+NOTE: Un observable représente un flux d'événements à laquelle on peut s'abonner.
+
+Il y a deux familles d'observables :
+
+|===
+| Les observables "chauds" (_hot_)    | cela vont émettre des événements dès leur création. Ex: Avec l'observable `valueChanges` d'un `FormControl`, on ne reçoit pas les valeurs émises avant l'abonnement, mais seulement celles émises après.
+| Les observables "froids" (_cold_)   | cela vont émettre des événements uniquement quand on s'y est abonné. Ex: Les observables de la classe `HttpClient` déclenchent une requête uniquement quand on invoque `subscribe`.
+|===
+
+
+On peut passer 3 fonctions en paramètres quand on s'abonne à un observable :
+
+|===
+| Une pour gérer le prochain événement. | L'observable est un flux d'événements et on définie quoi faire quand tel événement survient.
+| Une pour gérer une erreur.            | (Ce paramètre est facultatif) Ex: cela permet de définir quoi faire si on reçoit une erreur en réponse du serveur HTTP.
+| Une pour gérer la terminaison.        | Ex: permet de prévenir l'utilisateur, ou calculer une valeur, ...
+|===
+
+TIP: BONNE PRATIQUE : Il faut mettre en place une règle générale de désabonnement (`unsubscribe`) aux observables.
+
+Le désabonnement n'est pas nécessaire dans les cas suivants :
+
+- Pour les observables qui n'émettent qu'un seul événement puis se terminent (ex: une requête HTTP).
+- Pour les observables du routeur, comme les observables `params` : le routeur s'en chargera.
+
+==== `| async`
+
+Quels sont les avantages :
+
+- On peut stocker l'observable directement dans le composant, s'en avoir besoin de s'y abonner manuellement, puis stocker la valeur émise dans un attribut du composant.
+- Le _pipe_ va s'occuper du désabonnement à la destruction du composant.
+- Il peut être utiliser pour améliorer les performances.
+
+WARNING: Il faut être prudent quand on utilise plusieurs fois la syntaxe `async` dans un template.
+
+Exemple :
+
+[source,javascript]
+----
+import { Component, OnInit } from '@angular/core';
+import { Observable, EMPTY } from 'rxjs';
+import { catchError, shareReplay } from 'rxjs/operators';
+import { RaceService, RaceModel } from './race.service';
+
+@Component({
+  selector: 'ns-race',
+  template: `<div>
+    <h2>{{ (race | async)?.name }}</h2> <1>
+    <small>{{ (race | async)?.date }}</small> <1>
+  </div>`
+})
+export class RaceComponent implements OnInit {
+
+  race: Observable<RaceModel>;
+  error: boolean;
+
+  constructor(private raceService: RaceService) {
+  }
+
+  ngOnInit() {
+    this.race = this.raceService.get().pipe(
+      catchError(error => {
+        this.error = true;
+        console.error(error);
+        return EMPTY;
+      }),
+      shareReplay() <2>
+    );
+  }
+}
+----
+<1> On utilise 2 fois le _pipe_ `async`, donc on s'abonne 2 fois au composant. Dans le cas d'un appel HTTP, cela déclencherait 2 requêtes.
+<2> Pour éviter ces multiples abonnements, on peut partager l'observable entre les différents abonnés avec l'opérateur `shareReplay`.
+
+[source,javascript]
+----
+import { Component, OnInit } from '@angular/core';
+import { Observable, EMPTY } from 'rxjs';
+import { catchError } from 'rxjs/operators';
+import { RaceService, RaceModel } from './race.service';
+
+@Component({
+  selector: 'ns-race',
+  template: `<div *ngIf="race | async as raceModel"> <1>
+    <h2>{{ raceModel.name }}</h2>
+    <small>{{ raceModel.date }}</small>
+  </div>`
+})
+export class RaceComponent implements OnInit {
+
+  race: Observable<RaceModel>;
+  error: boolean;
+
+  constructor(private raceService: RaceService) {
+  }
+
+  ngOnInit() {
+    this.race = this.raceService.get().pipe(
+      catchError(error => {
+        this.error = true;
+        console.error(error);
+        return EMPTY;
+      })
+    );
+  }
+}
+----
+<1> Pour éviter d'utiliser plusieurs fois `async`, on peut utiliser la syntaxe `as` pour ne s'abonner qu'une seule fois et stocker le résultat dans une variable du template.
+
+=== Les opérateurs
+
+Exemple avec une boîte de recherche :
+
+[source,javascript]
+----
+this.input.valueChanges.pipe( <1>
+  filter(query => query.length >= 3), <2>
+  debounceTime(400), <3>
+  distinctUntilChanged(), <4>
+  switchMap(value => this.ponyService.search(value).pipe( <5> <6>
+    catchError(error => of([]))) <7>
+  )
+).subscribe(results => this.ponies = results);
+----
+<1> On s'abonne à l'observable `valueChanges` exposé par le `FormControl`.
+<2> On utilise l'opérateur `filter` pour ignorer les recherches de moins de 3 caratères.
+<3> Avec `debounceTime`, la recherche se déclenche seulement quand l'utilisateur a arrêté de taper pendant 400ms.
+<4> `distinctUntilChanged` permet de déclencher la recherche que si la valeur actuelle est différente de la valeur de la dernière requête.
+<5> `switchMap` (tout comme `concatMap`) permet "d'aplatir" le code. `switchMap` ne se préoccupe que de la dernière valeur émise, et ignore les valeurs précédentes.
+<6> On s'abonne à la méthode `search()` du service `ponyService`.
+<7> `valueChanges` ne va jamais émettre d'erreur, mais la méthode `search` oui. Par contre une erreur va définitivement stopper le flux. Pour éviter cela, on récupère l'erreur avec l'opérateur `catchError`.
+
+=== Créer un observable
+
+Exemple 1 :
+
+[source,javascript]
+----
+const numbers = Observable.create(observer => { <1>
+  observer.next(1);
+  observer.next(2);
+  observer.complete();
+});
+
+numbers.subscribe( <2>
+  number => console.log(number),
+  error => console.log(error),
+  () => console.log('Complete!')
+);
+// 1
+// 2
+// Complete!
+----
+<1> On crée un observable qui émettra 1, puis 2, puis se termine.
+<2> On s'abonne à l'observable `numbers`
+
+Exemple 2 - Emission de 'hello' toutes les deux secondes :
+
+[source,javascript]
+----
+import { Observable } from 'rxjs';
+
+export class HelloService {
+  get(): Observable<string> {
+    return Observable.create(observer => {
+      const interval = setInterval(() => observer.next('hello'), 2000); <1>
+      return () => clearInterval(interval); <2>
+    });
+  }
+}
+----
+<1> Ce premier paramètre créera `interval` à l'abonnement de l'observable de `HelloService.get()`.
+<2> Ce deuxième paramètre stoppera le `setInterval` au désabonnement de l'observable.

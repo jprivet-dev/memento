@@ -603,9 +603,17 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#truecompilation-em-ahead-of-time-em-em-aot-em">18.2. Compilation <em>Ahead of Time</em> (<em>AoT</em>)</a></li>
 </ul>
 </li>
-<li><a href="#trueobservables">19. Observables</a></li>
-<li><a href="#trueperformances">20. Performances</a></li>
-<li><a href="#trueressources">21. Ressources</a></li>
+<li><a href="#trueobservables">19. Observables</a>
+<ul class="sectlevel2">
+<li><a href="#truesubscribe-unsubscribe-et-code-aync-code">19.1. Subscribe, unsubscribe et <code>| aync</code></a></li>
+<li><a href="#trueles-op-rateurs">19.2. Les opérateurs</a></li>
+<li><a href="#truecr-er-un-observable">19.3. Créer un observable</a></li>
+</ul>
+</li>
+<li><a href="#truecomposants-et-directives-avanc-s">20. Composants et directives avancés</a></li>
+<li><a href="#trueinternationalisation">21. Internationalisation</a></li>
+<li><a href="#trueperformances">22. Performances</a></li>
+<li><a href="#trueressources">23. Ressources</a></li>
 </ul>
 </div>
 </div>
@@ -7346,13 +7354,336 @@ L&#8217;inconvénient sera la taille des modules JavaScript à envoyer aux utili
 <div class="sect1">
 <h2 id="trueobservables"><a class="anchor" href="#trueobservables"></a>19. Observables</h2>
 <div class="sectionbody">
+<div class="sect2">
+<h3 id="truesubscribe-unsubscribe-et-code-aync-code"><a class="anchor" href="#truesubscribe-unsubscribe-et-code-aync-code"></a>19.1. Subscribe, unsubscribe et <code>| aync</code></h3>
+<div class="sect3">
+<h4 id="true-code-subscribe-code-code-unsubscribe-code"><a class="anchor" href="#true-code-subscribe-code-code-unsubscribe-code"></a>19.1.1. <code>subscribe</code> &amp; <code>unsubscribe</code></h4>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Un observable représente un flux d'événements à laquelle on peut s&#8217;abonner.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Il y a deux familles d&#8217;observables :</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Les observables "chauds" (<em>hot</em>)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">cela vont émettre des événements dès leur création. Ex: Avec l&#8217;observable <code>valueChanges</code> d&#8217;un <code>FormControl</code>, on ne reçoit pas les valeurs émises avant l&#8217;abonnement, mais seulement celles émises après.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Les observables "froids" (<em>cold</em>)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">cela vont émettre des événements uniquement quand on s&#8217;y est abonné. Ex: Les observables de la classe <code>HttpClient</code> déclenchent une requête uniquement quand on invoque <code>subscribe</code>.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>On peut passer 3 fonctions en paramètres quand on s&#8217;abonne à un observable :</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Une pour gérer le prochain événement.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">L&#8217;observable est un flux d'événements et on définie quoi faire quand tel événement survient.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Une pour gérer une erreur.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">(Ce paramètre est facultatif) Ex: cela permet de définir quoi faire si on reçoit une erreur en réponse du serveur HTTP.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Une pour gérer la terminaison.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Ex: permet de prévenir l&#8217;utilisateur, ou calculer une valeur, &#8230;&#8203;</p></td>
+</tr>
+</tbody>
+</table>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+BONNE PRATIQUE : Il faut mettre en place une règle générale de désabonnement (<code>unsubscribe</code>) aux observables.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Le désabonnement n&#8217;est pas nécessaire dans les cas suivants :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Pour les observables qui n'émettent qu&#8217;un seul événement puis se terminent (ex: une requête HTTP).</p>
+</li>
+<li>
+<p>Pour les observables du routeur, comme les observables <code>params</code> : le routeur s&#8217;en chargera.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="true-code-async-code-2"><a class="anchor" href="#true-code-async-code-2"></a>19.1.2. <code>| async</code></h4>
+<div class="paragraph">
+<p>Quels sont les avantages :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>On peut stocker l&#8217;observable directement dans le composant, s&#8217;en avoir besoin de s&#8217;y abonner manuellement, puis stocker la valeur émise dans un attribut du composant.</p>
+</li>
+<li>
+<p>Le <em>pipe</em> va s&#8217;occuper du désabonnement à la destruction du composant.</p>
+</li>
+<li>
+<p>Il peut être utiliser pour améliorer les performances.</p>
+</li>
+</ul>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+Il faut être prudent quand on utilise plusieurs fois la syntaxe <code>async</code> dans un template.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Exemple :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">import { Component, OnInit } from '@angular/core';
+import { Observable, EMPTY } from 'rxjs';
+import { catchError, shareReplay } from 'rxjs/operators';
+import { RaceService, RaceModel } from './race.service';
+
+@Component({
+  selector: 'ns-race',
+  template: `&lt;div&gt;
+    &lt;h2&gt;{{ (race | async)?.name }}&lt;/h2&gt; <i class="conum" data-value="1"></i><b>(1)</b>
+    &lt;small&gt;{{ (race | async)?.date }}&lt;/small&gt; <i class="conum" data-value="1"></i><b>(1)</b>
+  &lt;/div&gt;`
+})
+export class RaceComponent implements OnInit {
+
+  race: Observable&lt;RaceModel&gt;;
+  error: boolean;
+
+  constructor(private raceService: RaceService) {
+  }
+
+  ngOnInit() {
+    this.race = this.raceService.get().pipe(
+      catchError(error =&gt; {
+        this.error = true;
+        console.error(error);
+        return EMPTY;
+      }),
+      shareReplay() <i class="conum" data-value="2"></i><b>(2)</b>
+    );
+  }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>On utilise 2 fois le <em>pipe</em> <code>async</code>, donc on s&#8217;abonne 2 fois au composant. Dans le cas d&#8217;un appel HTTP, cela déclencherait 2 requêtes.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Pour éviter ces multiples abonnements, on peut partager l&#8217;observable entre les différents abonnés avec l&#8217;opérateur <code>shareReplay</code>.</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">import { Component, OnInit } from '@angular/core';
+import { Observable, EMPTY } from 'rxjs';
+import { catchError } from 'rxjs/operators';
+import { RaceService, RaceModel } from './race.service';
+
+@Component({
+  selector: 'ns-race',
+  template: `&lt;div *ngIf="race | async as raceModel"&gt; <i class="conum" data-value="1"></i><b>(1)</b>
+    &lt;h2&gt;{{ raceModel.name }}&lt;/h2&gt;
+    &lt;small&gt;{{ raceModel.date }}&lt;/small&gt;
+  &lt;/div&gt;`
+})
+export class RaceComponent implements OnInit {
+
+  race: Observable&lt;RaceModel&gt;;
+  error: boolean;
+
+  constructor(private raceService: RaceService) {
+  }
+
+  ngOnInit() {
+    this.race = this.raceService.get().pipe(
+      catchError(error =&gt; {
+        this.error = true;
+        console.error(error);
+        return EMPTY;
+      })
+    );
+  }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Pour éviter d&#8217;utiliser plusieurs fois <code>async</code>, on peut utiliser la syntaxe <code>as</code> pour ne s&#8217;abonner qu&#8217;une seule fois et stocker le résultat dans une variable du template.</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="trueles-op-rateurs"><a class="anchor" href="#trueles-op-rateurs"></a>19.2. Les opérateurs</h3>
+<div class="paragraph">
+<p>Exemple avec une boîte de recherche :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">this.input.valueChanges.pipe( <i class="conum" data-value="1"></i><b>(1)</b>
+  filter(query =&gt; query.length &gt;= 3), <i class="conum" data-value="2"></i><b>(2)</b>
+  debounceTime(400), <i class="conum" data-value="3"></i><b>(3)</b>
+  distinctUntilChanged(), <i class="conum" data-value="4"></i><b>(4)</b>
+  switchMap(value =&gt; this.ponyService.search(value).pipe( <i class="conum" data-value="5"></i><b>(5)</b> <i class="conum" data-value="6"></i><b>(6)</b>
+    catchError(error =&gt; of([]))) <i class="conum" data-value="7"></i><b>(7)</b>
+  )
+).subscribe(results =&gt; this.ponies = results);</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>On s&#8217;abonne à l&#8217;observable <code>valueChanges</code> exposé par le <code>FormControl</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>On utilise l&#8217;opérateur <code>filter</code> pour ignorer les recherches de moins de 3 caratères.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Avec <code>debounceTime</code>, la recherche se déclenche seulement quand l&#8217;utilisateur a arrêté de taper pendant 400ms.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td><code>distinctUntilChanged</code> permet de déclencher la recherche que si la valeur actuelle est différente de la valeur de la dernière requête.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td><code>switchMap</code> (tout comme <code>concatMap</code>) permet "d&#8217;aplatir" le code. <code>switchMap</code> ne se préoccupe que de la dernière valeur émise, et ignore les valeurs précédentes.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="6"></i><b>6</b></td>
+<td>On s&#8217;abonne à la méthode <code>search()</code> du service <code>ponyService</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="7"></i><b>7</b></td>
+<td><code>valueChanges</code> ne va jamais émettre d&#8217;erreur, mais la méthode <code>search</code> oui. Par contre une erreur va définitivement stopper le flux. Pour éviter cela, on récupère l&#8217;erreur avec l&#8217;opérateur <code>catchError</code>.</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="truecr-er-un-observable"><a class="anchor" href="#truecr-er-un-observable"></a>19.3. Créer un observable</h3>
+<div class="paragraph">
+<p>Exemple 1 :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">const numbers = Observable.create(observer =&gt; { <i class="conum" data-value="1"></i><b>(1)</b>
+  observer.next(1);
+  observer.next(2);
+  observer.complete();
+});
+
+numbers.subscribe( <i class="conum" data-value="2"></i><b>(2)</b>
+  number =&gt; console.log(number),
+  error =&gt; console.log(error),
+  () =&gt; console.log('Complete!')
+);
+// 1
+// 2
+// Complete!</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>On crée un observable qui émettra 1, puis 2, puis se termine.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>On s&#8217;abonne à l&#8217;observable <code>numbers</code></td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Exemple 2 - Emission de 'hello' toutes les deux secondes :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">import { Observable } from 'rxjs';
+
+export class HelloService {
+  get(): Observable&lt;string&gt; {
+    return Observable.create(observer =&gt; {
+      const interval = setInterval(() =&gt; observer.next('hello'), 2000); <i class="conum" data-value="1"></i><b>(1)</b>
+      return () =&gt; clearInterval(interval); <i class="conum" data-value="2"></i><b>(2)</b>
+    });
+  }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Ce premier paramètre créera <code>interval</code> à l&#8217;abonnement de l&#8217;observable de <code>HelloService.get()</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Ce deuxième paramètre stoppera le <code>setInterval</code> au désabonnement de l&#8217;observable.</td>
+</tr>
+</table>
+</div>
 <div class="paragraph">
 <p><a href="#top-of-page">⬆ Back to top</a></p>
 </div>
 </div>
 </div>
+</div>
 <div class="sect1">
-<h2 id="trueperformances"><a class="anchor" href="#trueperformances"></a>20. Performances</h2>
+<h2 id="truecomposants-et-directives-avanc-s"><a class="anchor" href="#truecomposants-et-directives-avanc-s"></a>20. Composants et directives avancés</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p><a href="#top-of-page">⬆ Back to top</a></p>
@@ -7360,7 +7691,23 @@ L&#8217;inconvénient sera la taille des modules JavaScript à envoyer aux utili
 </div>
 </div>
 <div class="sect1">
-<h2 id="trueressources"><a class="anchor" href="#trueressources"></a>21. Ressources</h2>
+<h2 id="trueinternationalisation"><a class="anchor" href="#trueinternationalisation"></a>21. Internationalisation</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><a href="#top-of-page">⬆ Back to top</a></p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="trueperformances"><a class="anchor" href="#trueperformances"></a>22. Performances</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><a href="#top-of-page">⬆ Back to top</a></p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="trueressources"><a class="anchor" href="#trueressources"></a>23. Ressources</h2>
 <div class="sectionbody">
 <div class="ulist">
 <ul>
@@ -7385,6 +7732,9 @@ L&#8217;inconvénient sera la taille des modules JavaScript à envoyer aux utili
 <li>
 <p><a href="https://www.youtube.com/watch?v=RXYjPYkFwy4" class="bare">https://www.youtube.com/watch?v=RXYjPYkFwy4</a> (The Angular Compiler 4.0 - TOBIAS BOSCH)</p>
 </li>
+<li>
+<p><a href="https://blog.ninja-squad.com/2015/05/28/angularjs-promises/" class="bare">https://blog.ninja-squad.com/2015/05/28/angularjs-promises/</a></p>
+</li>
 </ul>
 </div>
 <div class="paragraph">
@@ -7395,7 +7745,7 @@ L&#8217;inconvénient sera la taille des modules JavaScript à envoyer aux utili
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-09-25 15:09:44 PM
+Last updated 2018-09-25 17:04:51 PM
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.9.1/styles/github.min.css">

@@ -112,6 +112,16 @@ include::_angular/angular-compilation.adoc[]
 
 == Observables
 
+include::_angular/angular-observables.adoc[]
+
+{BACK_TO_TOP}
+
+== Composants et directives avancés
+
+{BACK_TO_TOP}
+
+== Internationalisation
+
 {BACK_TO_TOP}
 
 == Performances
@@ -127,5 +137,6 @@ include::_angular/angular-compilation.adoc[]
 - https://www.typescriptlang.org
 - https://leanpub.com/router
 - https://www.youtube.com/watch?v=RXYjPYkFwy4 (The Angular Compiler 4.0 - TOBIAS BOSCH)
+- https://blog.ninja-squad.com/2015/05/28/angularjs-promises/
 
 {BACK_TO_TOP}
