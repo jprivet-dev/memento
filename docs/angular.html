@@ -574,7 +574,24 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#truechargement-la-demande">15.12. Chargement à la demande</a></li>
 </ul>
 </li>
-<li><a href="#trueformulaires">16. Formulaires</a></li>
+<li><a href="#trueformulaires">16. Formulaires</a>
+<ul class="sectlevel2">
+<li><a href="#true-code-formcontrol-code">16.1. <code>FormControl</code></a></li>
+<li><a href="#true-code-formgroup-code">16.2. <code>FormGroup</code></a></li>
+<li><a href="#trueformulaire-pilot-par-le-template">16.3. Formulaire piloté par le template</a></li>
+<li><a href="#trueformulaire-piloter-par-le-code">16.4. Formulaire piloter par le code</a></li>
+<li><a href="#truela-validation-pilotage-par-le-code">16.5. La validation (pilotage par le code)</a></li>
+<li><a href="#truela-validation-pilotage-par-le-template">16.6. La validation (pilotage par le template)</a></li>
+<li><a href="#trueerreurs-et-soumission-pilotage-par-le-code">16.7. Erreurs et soumission (pilotage par le code)</a></li>
+<li><a href="#trueerreurs-et-soumission-pilotage-par-le-template">16.8. Erreurs et soumission (pilotage par le template)</a></li>
+<li><a href="#truestyle-css">16.9. Style &amp; CSS</a></li>
+<li><a href="#truecr-er-un-validateur-sp-cifique-synchrone-ou-asynchrone-pilotage-par-le-code">16.10. Créer un validateur spécifique synchrone ou asynchrone (pilotage par le code)</a></li>
+<li><a href="#truecr-er-un-validateur-sp-cifique-synchrone-ou-asynchrone-pilotage-par-le-template">16.11. Créer un validateur spécifique synchrone ou asynchrone (pilotage par le template)</a></li>
+<li><a href="#trueregrouper-des-champs">16.12. Regrouper des champs</a></li>
+<li><a href="#truer-agir-au-modification">16.13. Réagir au modification</a></li>
+<li><a href="#truemettre-jour-seulement-la-perte-de-focus-ou-la-soumission">16.14. Mettre à jour seulement à la perte de focus ou à la soumission</a></li>
+</ul>
+</li>
 <li><a href="#truezones">17. Zones</a></li>
 <li><a href="#truecompilation-jit-just-in-time-aot-ahead-of-time">18. Compilation : JiT (Just in Time) &amp; AoT (Ahead of Time)</a></li>
 <li><a href="#trueobservables">19. Observables</a></li>
@@ -5860,7 +5877,7 @@ les paramètres <code>matrix</code> sont des éléments standards des URIs.
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Dans ce cas les paramètres sont partagés par tous les segements de la route.</td>
+<td>Dans ce cas les paramètres sont partagés par tous les segments de la route.</td>
 </tr>
 </table>
 </div>
@@ -5902,10 +5919,10 @@ le <em>lazy loading</em> évite de charger toute l&#8217;application au démarra
 <div class="ulist">
 <ul>
 <li>
-<p>Un module chargé à la demande définit ses propoes routes, composants et services, tous empaquetés dans un fichier JavaScript, qu&#8217;on appelle un <em>bundle</em>, distinct du <em>bundle</em> principal de l&#8217;application.</p>
+<p>Un module chargé à la demande définit ses propres routes, composants et services, tous empaquetés dans un fichier JavaScript, qu&#8217;on appelle un <em>bundle</em>, distinct du <em>bundle</em> principal de l&#8217;application.</p>
 </li>
 <li>
-<p>Le module principal de l&#8217;application ne faut que définir une route permettant d&#8217;accéder à ce module chargé à la demande.</p>
+<p>Le module principal de l&#8217;application ne fait que définir une route permettant d&#8217;accéder à ce module chargé à la demande.</p>
 </li>
 <li>
 <p>Le routeur ne télécharge le bundle de ce module que lorsque l&#8217;utilisateur navigue vers cette route.</p>
@@ -6012,7 +6029,1146 @@ export class AdminModule { }</code></pre>
 <h2 id="trueformulaires"><a class="anchor" href="#trueformulaires"></a>16. Formulaires</h2>
 <div class="sectionbody">
 <div class="paragraph">
+<p>Il existe 2 approches :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>"Piloté par le template" : on écrit le formulaire en utilisant seulement des directives (utile pour des formulaires simples, sans trop de validation).</p>
+</li>
+<li>
+<p>"Piloté par le code" : on écrit une description du formulaire dans le composant, puis on utilise des directives pour lier ce formulaire aux champs (plus puissant pour faire de la validation, générer des formulaires dynamiques, &#8230;&#8203;).</p>
+</li>
+</ul>
+</div>
+<div class="sect2">
+<h3 id="true-code-formcontrol-code"><a class="anchor" href="#true-code-formcontrol-code"></a>16.1. <code>FormControl</code></h3>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Le <code>FormControl</code> est la plus petite partie d&#8217;un formulaire. Il encapsule l'état du champ et sa valeur.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p><code>FormControl</code> a plusieurs attributs et méthodes :</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>valid</code> / <code>invalid</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Si le champ est valide ou invalide au regard des contraintes imposées.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>errors</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Est un objet qui contient les erreurs du champ .</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>dirty</code> / <code>pristine</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Respectivement <code>false</code> &amp; <code>true</code> jusqu'à ce que l&#8217;utilisateur modifie la valeur du champ.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>touched</code> / <code>untouched</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Respectivement <code>false</code> &amp; <code>true</code> jusqu'à ce que l&#8217;utilisateur soit entrée dans le champ.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>value</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">La valeur du champ.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>valueChanges</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Un observable qui émet à chaque changement sur le champ.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>hasError()</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Pour savoir si le contrôle a une erreur de donnée.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Exemple :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">const password = new FormControl();
+console.log(password.dirty);
+console.log(password.value);
+console.log(password.hasError('required'));</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="true-code-formgroup-code"><a class="anchor" href="#true-code-formgroup-code"></a>16.2. <code>FormGroup</code></h3>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Les <code>FormControl</code> peuvent être regroupés en <code>FormGroup</code>, pour constituer une partie du formulaire qui a des règles de validations communes.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p><code>FormGroup</code> a quasiment les mêmes attributs et méthodes qu&#8217;un <code>FormControl</code>:</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>valid</code> / <code>invalid</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Respectivement à <code>true</code> si tous les champs sont valides, et à <code>false</code> si un seul champ est invalide au regard des contraintes imposées.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>errors</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Est un objet qui contient les erreurs du groupe.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>dirty</code> / <code>pristine</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Respectivement <code>false</code> &amp; <code>true</code> jusqu'à ce que l&#8217;utilisateur modifie la valeur d&#8217;un champ du groupe.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>touched</code> / <code>untouched</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Respectivement <code>false</code> &amp; <code>true</code> jusqu'à ce que l&#8217;utilisateur soit entrée dans dans un champ du groupe.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>value</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Les valeurs du groupe.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>valueChanges</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Un observable qui émet à chaque changement sur un contrôle du groupe.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>hasError()</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Pour savoir si le groupe a une erreur de donnée.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>get()</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Pour récupérer un contrôle du groupe.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Exemple :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">const form = new FormGroup({
+  username: new FormControl('Cédric'),
+  password: new FormControl()
+});
+console.log(form.dirty); // "false"
+console.log(form.value); // "{username: "Cédric", password: null}"
+console.log(form.get('username'));</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="trueformulaire-pilot-par-le-template"><a class="anchor" href="#trueformulaire-pilot-par-le-template"></a>16.3. Formulaire piloté par le template</h3>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Avec cette méthode, c&#8217;est le framework qui construit les instances de <code>FormControl</code> et <code>FormGroup</code>.
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">import { NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+import { FormsModule } from '@angular/forms'; <i class="conum" data-value="1"></i><b>(1)</b>
+
+@NgModule({
+  imports: [BrowserModule, FormsModule], <i class="conum" data-value="1"></i><b>(1)</b>
+  declarations: [AppComponent],
+  bootstrap: [AppComponent]
+})
+export class AppModule {
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Pour "piloter par le template", il faut importer le module <code>FormsModule</code>.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Construction du formulaire :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">import { Component } from '@angular/core';
+
+@Component({
+  selector: 'ns-register',
+  templateUrl: 'register-form.component.html' <i class="conum" data-value="1"></i><b>(1)</b>
+})
+export class RegisterFormComponent {
+  register(user) { <i class="conum" data-value="2"></i><b>(2)</b>
+    // ...
+  }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td><code>register-form.component.html</code> contiendra le formulaire du composant.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td><code>register()</code> sera appelé par le handler d'événement <code>ngSubmit</code> du template, avec la valeur du formulaire en paramètre.</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-html" data-lang="html">&lt;h2&gt;Sign up&lt;/h2&gt;
+&lt;form (ngSubmit)="register(userForm.value)" #userForm="ngForm"&gt; <i class="conum" data-value="1"></i><b>(1)</b> <i class="conum" data-value="2"></i><b>(2)</b>
+  &lt;div&gt;
+    &lt;label&gt;Username&lt;/label&gt;
+    &lt;input name="username" ngModel&gt; <i class="conum" data-value="3"></i><b>(3)</b>
+  &lt;/div&gt;
+  &lt;div&gt;
+    &lt;label&gt;Password&lt;/label&gt;
+    &lt;input type="password" name="password" ngModel&gt; <i class="conum" data-value="3"></i><b>(3)</b>
+  &lt;/div&gt;
+  &lt;button type="submit"&gt;Register&lt;/button&gt; <i class="conum" data-value="4"></i><b>(4)</b>
+&lt;/form&gt;</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>On défini un handler d'événement <code>ngSubmit</code> qui appelera la méthode <code>register()</code> du composant <code>RegisterFormComponent</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>On définie une variable <code>userForm</code> à laquelle on assigne l&#8217;objet <code>ngForm</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Les directives <code>ngModel</code> crée le <code>FormControl</code> et le <code>&lt;form&gt;</code> crée automatiquement le <code>FormGroup</code>. Il faut bien donner un <code>name</code> aux <code>input</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Il faut ajouter un bouton de soumission.</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+Pour le moment c&#8217;est du binding uni-directionnel. Si on met à jour le champ, le modèle sera mis à jour, mais mettre à jour le modèle ne mettra pas à jour le champ.
+</td>
+</tr>
+</table>
+</div>
+<div class="sect3">
+<h4 id="truebinding-bi-directionnel"><a class="anchor" href="#truebinding-bi-directionnel"></a>16.3.1. Binding bi-directionnel</h4>
+<div class="paragraph">
+<p>Tout d&#8217;abord on crée une interface <code>UserModel</code> :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">export interface UserModel {
+  username: string;
+  password: string;
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>On ajuste la méthode <code>register()</code> :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">import { Component } from '@angular/core';
+
+@Component({
+  selector: 'ns-register',
+  templateUrl: 'register-form.component.html' <i class="conum" data-value="1"></i><b>(1)</b>
+})
+export class RegisterFormComponent {
+  user: UserModel = { <i class="conum" data-value="2"></i><b>(2)</b>
+    username: '',
+    password: ''
+  };
+
+  register() {
+    console.log(this.user); <i class="conum" data-value="3"></i><b>(3)</b>
+  }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td><code>register-form.component.html</code> contiendra le formulaire du composant.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td><code>user</code> est défini à partir de l&#8217;interface <code>UserModel</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Maintenant, <code>register()</code> trace directement l&#8217;objet <code>user</code>.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>On lie les champs du template au model :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-html" data-lang="html">&lt;h2&gt;Sign up&lt;/h2&gt;
+&lt;form (ngSubmit)="register()"&gt; <i class="conum" data-value="1"></i><b>(1)</b> <i class="conum" data-value="2"></i><b>(2)</b>
+  &lt;div&gt;
+    &lt;label&gt;Username&lt;/label&gt;
+    &lt;input name="username" [(ngModel)]="user.username"&gt; <i class="conum" data-value="3"></i><b>(3)</b>
+  &lt;/div&gt;
+  &lt;div&gt;
+    &lt;label&gt;Password&lt;/label&gt;
+    &lt;input type="password" name="password" [(ngModel)]="user.password"&gt; <i class="conum" data-value="3"></i><b>(3)</b>
+  &lt;/div&gt;
+  &lt;button type="submit"&gt;Register&lt;/button&gt; <i class="conum" data-value="4"></i><b>(4)</b>
+&lt;/form&gt;</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>On conserve le handler d'événement <code>ngSubmit</code> qui appelera la méthode <code>register()</code> du composant <code>RegisterFormComponent</code>, mais sans transmettre de paramètre.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>On supprime la variable <code>userForm</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Les directives <code>ngModel</code> crée le <code>FormControl</code> et le <code>&lt;form&gt;</code> crée automatiquement le <code>FormGroup</code>. Il faut bien donner un <code>name</code> aux <code>input</code>. Les champs sont maintenant liés au model avec <code>[(ngModel)]</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Il faut conserver le bouton de soumission.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Que veut dire <code>[(ngModel)]</code> ? Les syntaxes suivantes sont équivalentes :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-html" data-lang="html">&lt;input name="user.name" [(ngModel)]="user.name"&gt;
+&lt;input name="user.name" [ngModel]="user.name" (ngModelChange)="user.username = $event"&gt;</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="trueformulaire-piloter-par-le-code"><a class="anchor" href="#trueformulaire-piloter-par-le-code"></a>16.4. Formulaire piloter par le code</h3>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+pour manipuler directement les formulaires dans le code, il faut utiliser les abstractions <code>FormControl</code> et <code>FormGroup</code>.
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">import { Component } from '@angular/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
+
+@Component({
+  selector: 'ns-register',
+  templateUrl: 'register-form.component.html'
+})
+export class RegisterFormComponent {
+  userForm: FormGroup; <i class="conum" data-value="1"></i><b>(1)</b>
+
+  constructor(fb: FormBuilder) { <i class="conum" data-value="2"></i><b>(2)</b>
+    this.userForm = fb.group({ <i class="conum" data-value="3"></i><b>(3)</b>
+      username: '',
+      password: ''
+    });
+  }
+
+  register() {
+    // ...
+  }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>On crée la propriété <code>userForm</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td><code>FormBuilder</code> est injectée dans le composant.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>On crée un <code>&lt;form&gt;</code> avec deux contrôles <code>username</code> &amp; <code>password</code>.</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-html" data-lang="html">&lt;h2&gt;Sign up&lt;/h2&gt;
+&lt;form (ngSubmit)="register()" [formGroup]="userForm"&gt; <i class="conum" data-value="1"></i><b>(1)</b> <i class="conum" data-value="2"></i><b>(2)</b>
+  &lt;div&gt;
+    &lt;label&gt;Username&lt;/label&gt;
+    &lt;input formControlName="username"&gt; <i class="conum" data-value="3"></i><b>(3)</b>
+  &lt;/div&gt;
+  &lt;div&gt;
+    &lt;label&gt;Password&lt;/label&gt;
+    &lt;input type="password" formControlName="password"&gt; <i class="conum" data-value="3"></i><b>(3)</b>
+  &lt;/div&gt;
+  &lt;button type="submit"&gt;Register&lt;/button&gt; <i class="conum" data-value="4"></i><b>(4)</b>
+&lt;/form&gt;</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>On défini un handler d'événement <code>ngSubmit</code> qui appelera la méthode <code>register()</code> du composant <code>RegisterFormComponent</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Avec la directive <code>[formGroup]</code>, on relie le formulaire à l&#8217;objet <code>userForm</code> du composant.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Chaque <code>input</code> reçoit la directive <code>formControlName</code> avec le nom du contrôle auquel il est relié.</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+Comme c&#8217;est une valeur qui est transmise et non une expression, on n&#8217;utilise pas les <code>[]</code> autour de <code>formControlName</code>.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>On peux mettre à jour la valeur d&#8217;un <code>FormControl</code> depuis le composant en utilisant la méthode <code>setValue()</code> :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">import { Component } from '@angular/core';
+import { FormBuilder, FormGroup, FormControl } from '@angular/forms';
+
+@Component({
+  selector: 'ns-register',
+  templateUrl: 'register-form.component.html',
+})
+export class RegisterFormComponent {
+  usernameCtrl: FormControl;
+  passwordCtrl: FormControl;
+  userForm: FormGroup;
+
+  constructor(fb: FormBuilder) {
+    this.usernameCtrl = fb.control('');
+    this.passwordCtrl = fb.control('');
+    this.userForm = fb.group({
+      username: this.usernameCtrl,
+      password: this.passwordCtrl
+    });
+  }
+
+  reset() {
+    this.usernameCtrl.setValue('');
+    this.passwordCtrl.setValue('');
+  }
+
+  register() {
+    console.log(this.userForm.value);
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="truela-validation-pilotage-par-le-code"><a class="anchor" href="#truela-validation-pilotage-par-le-code"></a>16.5. La validation (pilotage par le code)</h3>
+<div class="paragraph">
+<p>Liste de quelques validateurs fournis par le framework :</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Validators.required</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Pour vérifier qu&#8217;un contrôle n&#8217;est pas vide.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Validators.minLength(n)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Pour s&#8217;assurer que la valeur entrée a au moins <em>n</em> caractrères.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Validators.maxLength(n)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Pour s&#8217;assurer que la valeur entrée a au plus <em>n</em> caractrères.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Validators.email()</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Pour s&#8217;assurer que l&#8217;adresse email est valide.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Validators.min(n)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Pour s&#8217;assurer que la valeur entrée vaut au moin <em>n</em>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Validators.max(n)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Pour s&#8217;assurer que la valeur entrée vaut au plus <em>n</em>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Validators.pattern(p)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Pour s&#8217;assurer que la valeur entrée correspond à l&#8217;expression régulière <em>p</em> définie.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Les validateurs peuvent être multiples, en passant un tableau.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Exemple :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">import { Component } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+
+@Component({
+  selector: 'ns-register',
+  templateUrl: 'register-form.component.html',
+})
+export class RegisterFormComponent {
+  userForm: FormGroup;
+
+  constructor(fb: FormBuilder) {
+    this.userForm = fb.group({
+      username: fb.control('', [Validators.required, Validators.minLength(3)]), <i class="conum" data-value="1"></i><b>(1)</b> <i class="conum" data-value="2"></i><b>(2)</b>
+      password: fb.control('', Validators.required) <i class="conum" data-value="1"></i><b>(1)</b>
+    });
+  }
+
+  register() {
+    console.log(this.userForm.value);
+  }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>On ajoute le validator <code>required</code> sur chaque contrôle.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>On s&#8217;assure que le nom de l&#8217;utilisateur fait 3 caractères au minimum.</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="truela-validation-pilotage-par-le-template"><a class="anchor" href="#truela-validation-pilotage-par-le-template"></a>16.6. La validation (pilotage par le template)</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-html" data-lang="html">&lt;h2&gt;Sign up&lt;/h2&gt;
+&lt;form (ngSubmit)="register(userForm.value)" #userForm="ngForm"&gt;
+  &lt;div&gt;
+    &lt;label&gt;Username&lt;/label&gt;
+    &lt;input name="username" ngModel required minlength="3"&gt; <i class="conum" data-value="1"></i><b>(1)</b> <i class="conum" data-value="2"></i><b>(2)</b>
+  &lt;/div&gt;
+  &lt;div&gt;
+    &lt;label&gt;Password&lt;/label&gt;
+    &lt;input type="password" name="password" ngModel required&gt; <i class="conum" data-value="1"></i><b>(1)</b>
+  &lt;/div&gt;
+  &lt;button type="submit"&gt;Register&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>On ajoute le validator <code>required</code> sur chaque contrôle.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>On s&#8217;assure que le nom de l&#8217;utilisateur fait 3 caractères au minimum.</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="trueerreurs-et-soumission-pilotage-par-le-code"><a class="anchor" href="#trueerreurs-et-soumission-pilotage-par-le-code"></a>16.7. Erreurs et soumission (pilotage par le code)</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">@Component({
+  selector: 'ns-register',
+  templateUrl: 'register-form.component.html'
+})
+export class RegisterFormComponent {
+  userForm: FormGroup;
+  usernameCtrl: FormControl;
+  passwordCtrl: FormControl;
+
+  constructor(fb: FormBuilder) {
+    this.usernameCtrl = fb.control('', Validators.required);
+    this.passwordCtrl = fb.control('', Validators.required);
+
+    this.userForm = fb.group({
+      username: this.usernameCtrl,
+      password: this.passwordCtrl
+    });
+  }
+
+  register() {
+    console.log(this.userForm.value);
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-html" data-lang="html">&lt;h2&gt;Sign up&lt;/h2&gt;
+&lt;form (ngSubmit)="register()" [formGroup]="userForm"&gt;
+  &lt;div&gt;
+    &lt;label&gt;Username&lt;/label&gt;&lt;input formControlName="username"&gt;
+    &lt;div *ngIf="usernameCtrl.dirty &amp;&amp; usernameCtrl.hasError('required')"&gt;Username is required&lt;/div&gt;
+    &lt;div *ngIf="usernameCtrl.dirty &amp;&amp; usernameCtrl.hasError('minlength')"&gt;Username should be 3 characters min&lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div&gt;
+    &lt;label&gt;Password&lt;/label&gt;&lt;input type="password" formControlName="password"&gt;
+    &lt;div *ngIf="passwordCtrl.dirty &amp;&amp; passwordCtrl.hasError('required')"&gt;Password is required&lt;/div&gt;
+  &lt;/div&gt;
+  &lt;button type="submit" [disabled]="userForm.invalid"&gt;Register&lt;/button&gt; <i class="conum" data-value="1"></i><b>(1)</b>
+&lt;/form&gt;</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>On peut désactiver le bouton de soumission si le formulaire n&#8217;est pas valide, en liant <code>disabled</code> à la propriété <code>invalid</code> du <code>userForm</code>.</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+TODO : Il faudrait rectifier ce code en suivant les principes du "clean code".
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="trueerreurs-et-soumission-pilotage-par-le-template"><a class="anchor" href="#trueerreurs-et-soumission-pilotage-par-le-template"></a>16.8. Erreurs et soumission (pilotage par le template)</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-html" data-lang="html">&lt;h2&gt;Sign up&lt;/h2&gt;
+&lt;form (ngSubmit)="register(userForm.value)" #userForm="ngForm"&gt;
+  &lt;div&gt;
+    &lt;label&gt;Username&lt;/label&gt;
+    &lt;input name="username" ngModel required #username="ngModel"&gt;
+    &lt;div *ngIf="username.dirty &amp;&amp; username.hasError('required')"&gt;Username is required&lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div&gt;
+    &lt;label&gt;Password&lt;/label&gt;
+    &lt;input type="password" name="password" ngModel required #password="ngModel"&gt;
+    &lt;div *ngIf="password.dirty &amp;&amp; password.hasError('required')"&gt;Password is required&lt;/div&gt;
+  &lt;/div&gt;
+  &lt;button type="submit" [disabled]="userForm.invalid"&gt;Register&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="truestyle-css"><a class="anchor" href="#truestyle-css"></a>16.9. Style &amp; CSS</h3>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Angular ajoute et enlève automatiquement certaines classes CSS sur chaque champ et le formulaire. Ex : <code>ng-invalid</code>, <code>ng-valid</code>, <code>ng-dirty</code>, <code>ng-pristine</code>, <code>ng-touched</code>, <code>ng-untouched</code>, <code>ng-pending</code>, &#8230;&#8203;
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="truecr-er-un-validateur-sp-cifique-synchrone-ou-asynchrone-pilotage-par-le-code"><a class="anchor" href="#truecr-er-un-validateur-sp-cifique-synchrone-ou-asynchrone-pilotage-par-le-code"></a>16.10. Créer un validateur spécifique synchrone ou asynchrone (pilotage par le code)</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">import { Component } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+
+@Component({
+  selector: 'ns-register',
+  templateUrl: 'register-form.component.html'
+})
+export class RegisterFormComponent {
+  usernameCtrl: FormControl;
+  passwordCtrl: FormControl;
+  birthdateCtrl: FormControl;
+  userForm: FormGroup;
+
+  static isOldEnough(control: FormControl) { <i class="conum" data-value="1"></i><b>(1)</b>
+    const birthDatePlus18 = new Date(control.value); <i class="conum" data-value="2"></i><b>(2)</b>
+    birthDatePlus18.setFullYear(birthDatePlus18.getFullYear() + 18);
+    return birthDatePlus18 &lt; new Date() ? null : { tooYoung: true }; <i class="conum" data-value="3"></i><b>(3)</b>
+  }
+
+  isUsernameAvailable(control: AbstractControl) { <i class="conum" data-value="4"></i><b>(4)</b>
+    const username = control.value;
+    return this.userService.isUsernameAvailable(username).pipe( <i class="conum" data-value="5"></i><b>(5)</b>
+      map(available =&gt; available ? null : { alreadyUsed: true })
+    );
+  }
+
+  constructor(fb: FormBuilder) {
+    this.usernameCtrl = fb.control('',
+      Validators.required,
+      control =&gt; this.isUsernameAvailable(control)); <i class="conum" data-value="6"></i><b>(6)</b>
+
+    this.passwordCtrl = fb.control('', Validators.required);
+
+    this.birthdateCtrl = fb.control('', [
+      Validators.required,
+      RegisterFormComponent.isOldEnough <i class="conum" data-value="7"></i><b>(7)</b>
+    ]);
+
+    this.userForm = fb.group({
+      username: this.usernameCtrl,
+      password: this.passwordCtrl,
+      birthdate: this.birthdateCtrl
+    });
+  }
+
+  register() {
+    console.log(this.userForm.value);
+  }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>On crée une méthode static qui accepte un <code>FormControl</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>On va tester la propriété <code>value</code> du <code>FormControl</code> transmis.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>On retourne un objet avec les erreurs, ou <code>null</code> si la valeur est valide.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Le validateur asynchrone accède au service du composant <code>userService</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>La méthode <code>isUsernameAvailable</code> du service renvoie un <code>Observable</code>: si le <code>username</code> est disponible, il émet <code>null</code>, sinon il émet un objet d&#8217;erreur avec la clé <code>alreadyUsed</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="6"></i><b>6</b></td>
+<td>On applique le validateur asynchrone <code>this.isUsernameAvailable()</code> sur le champ <code>usernameCtrl</code> (la classe <code>ng-pending</code> est ajoutée dynamiquement au champ tant que le validateur n&#8217;a pas terminé son travail).</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="7"></i><b>7</b></td>
+<td>On applique le validateur synchrone <code>RegisterFormComponent.isOldEnough()</code> sur le champ <code>birthdateCtrl</code>.</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-html" data-lang="html">&lt;h2&gt;Sign up&lt;/h2&gt;
+&lt;form (ngSubmit)="register()" [formGroup]="userForm"&gt;
+  &lt;!-- ... --&gt;
+  &lt;div&gt;
+    &lt;label&gt;Birth date&lt;/label&gt;
+    &lt;input type="date" formControlName="birthdate"&gt; <i class="conum" data-value="1"></i><b>(1)</b>
+    &lt;div *ngIf="birthdateCtrl.dirty"&gt;
+      &lt;div *ngIf="birthdateCtrl.hasError('required')"&gt;Birth date is required&lt;/div&gt;
+      &lt;div *ngIf="birthdateCtrl.hasError('tooYoung')"&gt;You're way too young to be betting on pony races&lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+  &lt;button type="submit" [disabled]="userForm.invalid"&gt;Register&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>On insère le champ <code>birthdate</code>.</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="truecr-er-un-validateur-sp-cifique-synchrone-ou-asynchrone-pilotage-par-le-template"><a class="anchor" href="#truecr-er-un-validateur-sp-cifique-synchrone-ou-asynchrone-pilotage-par-le-template"></a>16.11. Créer un validateur spécifique synchrone ou asynchrone (pilotage par le template)</h3>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Dans ce cas, le pilotage par le code est beaucoup plus simple&#8230;&#8203;
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="trueregrouper-des-champs"><a class="anchor" href="#trueregrouper-des-champs"></a>16.12. Regrouper des champs</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">import { Component } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+
+@Component({
+  selector: 'ns-register',
+  templateUrl: 'register-form.component.html'
+})
+export class RegisterFormComponent {
+  passwordForm: FormGroup;
+  userForm: FormGroup;
+  usernameCtrl: FormControl;
+  passwordCtrl: FormControl;
+  confirmCtrl: FormControl;
+
+  static passwordMatch(group: FormGroup) { <i class="conum" data-value="1"></i><b>(1)</b>
+    const password = group.get('password').value;
+    const confirm = group.get('confirm').value;
+    return password === confirm ? null : { matchingError: true };
+  }
+
+  constructor(fb: FormBuilder) {
+    this.usernameCtrl = fb.control('', Validators.required);
+    this.passwordCtrl = fb.control('', Validators.required);
+    this.confirmCtrl = fb.control('', Validators.required);
+
+    this.passwordForm = fb.group(
+      { password: this.passwordCtrl, confirm: this.confirmCtrl }, <i class="conum" data-value="2"></i><b>(2)</b>
+      { validator: RegisterFormComponent.passwordMatch } <i class="conum" data-value="3"></i><b>(3)</b>
+    );
+
+    this.userForm = fb.group({
+      username: this.usernameCtrl,
+      passwordForm: this.passwordForm <i class="conum" data-value="4"></i><b>(4)</b>
+    });
+  }
+
+  register() {
+    console.log(this.userForm.value);
+  }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>On crée la méthode statique <code>passwordMatch</code> qui accepte un <code>formGroup</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>On crée un nouveau groupe <code>passwordForm</code>, avec les deux champs.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>On ajoute le validateur <code>passwordMatch</code> au groupe <code>passwordForm</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Le groupe <code>passwordForm</code> est ajouté au groupe <code>userForm</code>.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>On met à jour le template :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-html" data-lang="html">&lt;h2&gt;Sign up&lt;/h2&gt;
+&lt;form (ngSubmit)="register()" [formGroup]="userForm"&gt;
+  &lt;!-- ... --&gt;
+  &lt;div formGroupName="passwordForm"&gt; <i class="conum" data-value="1"></i><b>(1)</b>
+    &lt;div&gt;
+      &lt;label&gt;Password&lt;/label&gt;
+      &lt;input type="password" formControlName="password"&gt;
+      &lt;div *ngIf="passwordCtrl.dirty &amp;&amp; passwordCtrl.hasError('required')"&gt;
+        Password is required
+      &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div&gt;
+      &lt;label&gt;Confirm password&lt;/label&gt;
+      &lt;input type="password" formControlName="confirm"&gt;
+      &lt;div *ngIf="confirmCtrl.dirty &amp;&amp; confirmCtrl.hasError('required')"&gt;
+        Confirm your password
+      &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div *ngIf="passwordForm.dirty &amp;&amp; passwordForm.hasError('matchingError')"&gt;
+      Your password does not match
+    &lt;/div&gt;
+  &lt;/div&gt;
+  &lt;button type="submit" [disabled]="userForm.invalid"&gt;Register&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>On rattache le template au formulaire grâce à la directive <code>formGroupName</code>.</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="truer-agir-au-modification"><a class="anchor" href="#truer-agir-au-modification"></a>16.13. Réagir au modification</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">import { Component } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators'; <i class="conum" data-value="1"></i><b>(1)</b>
+
+@Component({
+  selector: 'ns-register',
+  templateUrl: 'register-form.component.html'
+})
+export class RegisterFormComponent {
+  userForm: FormGroup;
+  usernameCtrl: FormControl;
+  passwordCtrl: FormControl;
+  passwordStrength = 0; <i class="conum" data-value="2"></i><b>(2)</b>
+
+  constructor(fb: FormBuilder) {
+    this.usernameCtrl = fb.control('', Validators.required);
+    this.passwordCtrl = fb.control('', Validators.required);
+
+    this.userForm = fb.group({
+      username: this.usernameCtrl,
+      password: this.passwordCtrl
+    });
+
+    // we subscribe to every password change
+    this.passwordCtrl.valueChanges.pipe( <i class="conum" data-value="3"></i><b>(3)</b>
+      debounceTime(400), <i class="conum" data-value="4"></i><b>(4)</b>
+      distinctUntilChanged() <i class="conum" data-value="5"></i><b>(5)</b>
+    ).subscribe(newValue =&gt; this.passwordStrength = newValue.length); <i class="conum" data-value="6"></i><b>(6)</b>
+  }
+
+  register() {
+    console.log(this.userForm.value);
+  }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>On importe bien <code>debounceTime</code> et <code>distinctUntilChanged</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>On crée un attribut <code>passwordStrength</code> dans notre instance de composant.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>On peut réagir aux modifications du contrôle <code>passwordCtrl</code> grâce à l'<em>observable</em> <code>valueChanges</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td><code>debounceTime(400)</code> émettra des valeurs quand l&#8217;utilisateur aura arrêté de taper plus de 400ms.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td><code>distinctUntilChanged()</code> émettra des valeurs si la nouvelle valeur est différente de l&#8217;ancienne.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="6"></i><b>6</b></td>
+<td>On attribut à <code>passwordStrength</code> la nouvelle valeur.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>On met à jour le template :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-html" data-lang="html">&lt;h2&gt;Sign up&lt;/h2&gt;
+&lt;form (ngSubmit)="register()" [formGroup]="userForm"&gt;
+  &lt;!-- ... --&gt;
+  &lt;div&gt;
+    &lt;label&gt;Password&lt;/label&gt;
+    &lt;input type="password" formControlName="password"&gt;
+    &lt;div&gt;Strength: {{ passwordStrength }}&lt;/div&gt; <i class="conum" data-value="1"></i><b>(1)</b>
+    &lt;div *ngIf="passwordCtrl.dirty &amp;&amp; passwordCtrl.hasError('required')"&gt;
+      Password is required
+    &lt;/div&gt;
+  &lt;/div&gt;
+  &lt;button type="submit" [disabled]="userForm.invalid"&gt;Register&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>On insère la valeur de <code>passwordStrength</code>.</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="truemettre-jour-seulement-la-perte-de-focus-ou-la-soumission"><a class="anchor" href="#truemettre-jour-seulement-la-perte-de-focus-ou-la-soumission"></a>16.14. Mettre à jour seulement à la perte de focus ou à la soumission</h3>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Depuis Angular 5.0, on peut mettre à jour la valeur ou la validité d&#8217;un champ à la perte de focus (<code>blur</code>) ou à la soumission du formulaire (<code>submit</code>).
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Pour cela, le constructeur de <code>FormControl</code> accepte un objet <code>options</code> en second paramètre ( qui permet de définir les validateurs synchrones et asynchrones). Voici les options de <code>updateOn</code> :</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>change</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">(Valeur par défaut). Valeur et validité mises à jour à chaque changement.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>blur</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Valeur et validité mises à jour uniquement quand le champ perd le focus.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>submit</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Valeur et validité mises à jour uniquement quand le formulaire parent est soumis.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Exemples :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">this.usernameCtrl = new FormControl('', Validators.required);
+this.passwordCtrl = new FormControl('', {
+  validators: Validators.required,
+  updateOn: 'blur' <i class="conum" data-value="1"></i><b>(1)</b>
+});</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Dans de cas, le contrôle <code>passwordCtrl</code> mettra à jour la valeur et la validité quand le champ perdra le focus.</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">this.userForm = new FormGroup({
+  username: this.usernameCtrl,
+  password: this.passwordCtrl
+}, {
+  updateOn: 'blur' <i class="conum" data-value="1"></i><b>(1)</b>
+});</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Dans ce cas, la configuration s&#8217;applique à tous les champs du groupe <code>userForm</code>.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
 <p><a href="#top-of-page">⬆ Back to top</a></p>
+</div>
 </div>
 </div>
 </div>
@@ -6081,7 +7237,7 @@ export class AdminModule { }</code></pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-09-24 15:45:12 PM
+Last updated 2018-09-25 12:32:07 PM
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.9.1/styles/github.min.css">

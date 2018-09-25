@@ -94,6 +94,9 @@ include::_angular/angular-routeur.adoc[]
 
 == Formulaires
 
+include::_angular/angular-formulaires.adoc[]
+
+
 {BACK_TO_TOP}
 
 == Zones
