@@ -1,0 +1,233 @@
+:MAIN_TITLE: PHP
+
+include::_partials/adoc-config.adoc[]
+
+== Les namespaces
+
+=== Présentation
+
+Les namespaces permettent de séparer constantes, fonctions et classes dans différents espaces afin d'éviter tout conflit.
+
+Il est ainsi possible d'avoir plusieurs constantes, fonctions ou classes du même nom dans la même application !
+
+IMPORTANT: les *namespaces* ne sont disponibles que depuis *PHP 5.3*
+
+=== Déclarer un namespace
+
+Il faut utiliser la commande namespace suivi du nom du namespace à créer. Rien ne doit être placé avant, que ce soit du HTML ou un simple retour à la ligne.
+
+[source,php]
+----
+namespace MyNamespace;
+
+function strlen()
+{
+    return 'Hello!';
+}
+
+echo strlen();          // Hello!
+
+echo \strlen('Hello!')  // 6
+----
+
+TIP: utiliser le backslash `\` pour appeler une fonction de manière globale
+
+Dans le cas précédent, le premier `strlen()` fait appel à la fonction déclarée dans le namespace MyNamespace. Le deuxième `\strlen()` fait appel à la fonction fournie par PHP.
+
+=== Déclarer plusieurs namespaces
+
+WARNING: Il est possible de déclarer plusieurs namespaces dans un fichier. C'est possible mais déconseillé.
+
+==== Méthode 1 : sans accolades
+
+[source,php]
+----
+namespace MyNamespaceA;
+
+function printMyNamespace()
+{
+    echo 'A';
+}
+
+printMyNamespace(); // A
+
+namespace MyNamespaceB;
+
+function printMyNamespace()
+{
+    echo 'B';
+}
+
+printMyNamespace(); // B
+----
+
+==== Méthode 2 : avec accolades
+
+[source,php]
+----
+namespace MyNamespaceA
+{
+    function printMyNamespace()
+    {
+        echo 'A';
+    }
+    
+    printMyNamespace();     // A
+}
+
+namespace MyNamespaceB
+{
+    function printMyNamespace()
+    {
+        echo 'B';
+    }
+    
+    printMyNamespace();     // B
+}
+
+namespace                   // namespace global
+{
+    echo strlen('Hello!');  // 6
+}
+----
+
+=== La constante magique \\__NAMESPACE__
+
+TIP: La constante magique \\__NAMESPACE__ permet d'afficher le nom du namespace en cours.
+
+[source,php]
+----
+namespace A
+{
+    echo __NAMESPACE__; // A
+}
+
+namespace B
+{
+    echo __NAMESPACE__; // B
+}
+
+namespace
+{
+    echo __NAMESPACE__; //
+}
+
+----
+
+=== Les sous-namespaces
+
+[source,php]
+----
+namespace A\B;
+
+echo __NAMESPACE__; // A\B
+----
+
+=== Accéder à un namespace différent
+
+[source,php]
+----
+namespace A\B;
+
+function printNamespace()
+{
+    echo __NAMESPACE__;
+}
+
+namespace A;
+
+B\printNamespace();     // Appel de façon relative
+\A\B\printNamespace();  // Appel de façon absolue
+----
+
+NOTE: le nom de l'élément appelé est *qualifié* quand on spécifie le namespace, ou *non qualifié* si l'on ne spécifie rien.
+
+=== Utiliser mot clé namespace comme un "self"
+
+[source,php]
+----
+namespace A;
+
+echo strlen('Hello!');      // Appel la fonction globale
+echo namespace\strlen();    // Fatal error: Call to undefined function A\strlen()
+----
+
+=== Utiliser les alias
+
+.helper.php
+[source,]
+----
+namespace A\B\C\D\E\F;
+
+function printHello()
+{
+    echo 'Hello!';
+}
+----
+
+Dans le fichier suivant nous importons et utilisons les fonctions du fichier `helper.php`.
+
+[source,php]
+----
+require 'helper.php';
+
+use A\B\C\D\E\F as myAlias;
+
+myAlias\printHello();
+----
+
+Dans le cas suivant, l'alias n'est pas indiqué. Le nom de l'alias sera le nom du dernier namespace.
+
+[source,php]
+----
+require 'helper.php';
+
+use A\B\C\D\E\F; // Alias = 'F'
+
+F\printHello();
+----
+
+=== L'importation de classes
+
+TIP: le mot clé `use` permet d'importer des classes, et uniquement des classes (cela ne fonctionne pas pour des constantes ou des fonctions).
+
+.ImHappy.php
+[source,php]
+----
+namespace A\B\C\D\E\F;
+
+class ImHappy
+{
+    public function sayHello()
+    {
+        echo 'Hello!';
+    }
+}
+----
+
+[source,php]
+----
+require 'ImHappy.php'
+
+use A\B\C\D\E\F\ImHappy;
+
+$I = new ImHappy;   // $I = new A\B\C\D\E\F\ImHappy
+$I->sayHello();     // Hello!
+----
+
+[source,php]
+----
+require 'ImHappy.php'
+
+use A\B\C\D\E\F\ImHappy as Me;
+
+$I = new Me;        // $I = new A\B\C\D\E\F\ImHappy
+$I->sayHello();     // Hello!
+----
+
+== Ressources
+
+- https://openclassrooms.com/fr/courses/1217456-les-espaces-de-noms-en-php
+
+
+{BACK_TO_TOP}
