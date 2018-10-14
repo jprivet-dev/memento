@@ -1,0 +1,403 @@
+NOTE: Pour *définir une vue*, il est possible de définir un *template inline* (directement dans le composant), ou dans un *fichier séparé*.
+
+=== Interpolation
+
+[source,javascript]
+----
+@Component({
+  selector: 'ns-root', <1>
+  template: `
+    <h1>PonyRacer</h1>
+    <h2>{{ numberOfUsers }} users</h2> <2>
+    <p>Welcome {{ user.name }}</p> <3>
+    <p>My pony is {{ pony?.color }}</p> <4>
+  `
+})
+export class AppComponent {
+  numberOfUsers = 146;
+  user: any = { name: 'Cédric' };
+}
+----
+<1> A chaque fois que Angular trouve un élément `ns-root` dans le HTML, il créé une nouvelle instance de `AppComponent`.
+<2> `{{ numberOfUsers }}` doit être remplacé par sa valeur (par interpolation), avec la propriété `numberOfUsers` de `AppComponent`.
+<3> Il est possible d'interpoler des expressions plus complexes, y compris accéder à des propriétés dans des objets.
+<4> L'opérateur `?` permet de ne pas avoir d'erreur si une propriété n'existe pas dans la classe.
+
+
+IMPORTANT: Si on essaye d'afficher une variable qui n'existe pas, Angular affichera une chaîne vide (et non `undefined`)
+
+=== Créer et intégrer un nouveau composant
+
+==== Création du composant `RacesComponent`
+.races.component.ts
+[source,javascript]
+----
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'ns-races',
+  template: `<h2>Races</h2>`
+})
+export class RacesComponent { <1>
+
+}
+----
+<1> Bien indiquer, avec le mot clé `export`, que la classe `RacesComponent` est exportable.
+
+==== Déclaration du composant `RacesComponent` dans `AppModule`
+
+[source,javascript]
+----
+import { NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+
+import { AppComponent } from './app.component';
+import { RacesComponent } from './races.component'; <1>
+
+@NgModule({
+  imports: [BrowserModule],
+  declarations: [AppComponent, RacesComponent], <2>
+  bootstrap: [AppComponent]
+})
+export class AppModule {
+}
+----
+<1> Le composant `RacesComponent` est importé.
+<2> Le composant `RacesComponent` est ensuite déclaré.
+
+==== Utilisation du composant `RacesComponent` dans `AppComponent`
+
+[source,javascript]
+----
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'ns-root',
+  // added the RacesComponent component
+  template: `
+    <h1>PonyRacer</h1>
+    <ns-races></ns-races> <1>
+  `
+})
+export class AppComponent {
+
+}
+----
+<1> On insert `<ns-races>` dans le template de `AppComponent` pour utiliser `RacesComponent`.
+
+=== _Binding_ de propriété
+
+Les syntaxes suivantes sont équivalentes :
+
+[source,html]
+----
+<p>{{ user.name }}</p>
+<p [textContent]="user.name"></p>
+----
+
+TIP: Avec Angular, on peut écrire dans toutes les propriétés du DOM via des attributs spéciaux sur les éléments HTML, entourés de crochets `[]`. C'est du HTML valide !
+
+NOTE: Un nom d'attribut HTML peut commencer par n'importe quoi, à l'exception de quelques caratères comme `"`, `/`, `=`, espace, ...
+
+IMPORTANT: l'analyseur est sensible à la casse.
+
+==== Exemple : URL dynamique pour une image
+
+[source,html]
+----
+<img src="{{ image.url }}">
+----
+
+==== Exemple : Utilisation d'un Web Component externe
+
+[source,html]
+----
+<ns-pony name="Joe"></ns-pony> <1>
+<ns-pony [name]="pony.name"></ns-pony> <2>
+----
+<1> On passe une valeur *statique* à la propriété `name` du Web Component `Pony`
+<1> On passe une valeur *dynamique* à la propriété `name` du Web Component `Pony`
+
+D'autres couples de syntaxes équivalentes :
+
+[source,html]
+----
+<ns-pony name="Pony {{ pony.name }}"></ns-pony>
+<ns-pony [name]="'Pony ' + pony.name"></ns-pony>
+----
+
+[source,html]
+----
+<ns-pony name="{{ pony.fullName() }}"></ns-pony>
+<ns-pony [name]="pony.fullName()"></ns-pony>
+----
+
+==== Exemple : Utilisation de propriétés standards
+
+[source,html]
+----
+<div [hidden]="isHidden">My text</div> <1>
+<p [style.color]="foreground">Other text</p> <2>
+----
+<1> La `<div>` est cachée quand `isHidden` vaut `true`.
+<2> On accède ici à l'attribut `color` de la propriété `style`, qui prendra la valeur de `foreground`.
+
+=== Evénements
+
+Exemple de syntaxe :
+
+[source,html]
+----
+<button (click)="refreshRaces()">Refresh the race list</button>
+----
+
+Intégration de l'exemple précédent de le composant `RacesComponent` suivant :
+
+[source,javascript]
+----
+@Component({
+  selector: 'ns-races',
+  template: `
+    <h2>Races</h2>
+    <button (click)="refreshRaces()">Refresh the races list</button> <1>
+    <p>{{ races.length }} races</p> <2>
+  `
+})
+export class RacesComponent {
+  races: any = [];
+
+  refreshRaces() { <1>
+    this.races = [{ name: 'London' }, { name: 'Lyon' }]; <2>
+  }
+}
+----
+<1> L'événement `click` exécutera la fonction `refreshRaces()`.
+<2> `races.length` sera mise à jour quand la valeur de `this.races` sera modifée.
+
+==== Bubbling up : la propagation des événements
+
+NOTE: Bubbling up : les événements se propagent vers le haut depuis le fond des composants enfants
+
+[source,html]
+----
+<div (click)="onButtonClick()">
+    <button>Click me!</button> <1>
+</div>
+----
+
+<1> Si je clique sur `<button>`, l'événement se propagera vers le haut et sera capté par le parent `<div>`, qui exécutera la méthode `onButtonClick()`.
+
+Il est possible d'accéder à l'événement depuis la méthode `onButtonClick` appelée :
+
+[source,html]
+----
+<div (click)="onButtonClick($event)"> <1>
+    <button>Click me!</button>
+</div>
+----
+<1> L'événement `$event` est passé à la méthode `onButtonClick`
+
+[source,javascript]
+----
+onButtonClick(event) {
+    console.log(event); 
+}
+----
+
+WARNING: Par défaut, les événement vont continuer à "bouilloner" et remonter, pouvant déclencher d'autres `handlers` plus haut dans la hiérarchies de composants.
+
+Il est possible de bloquer les événements :
+
+[source,javascript]
+----
+onButtonClick(event) {
+    event.preventDefault(); <1>
+    event.stopPropagation(); <2>
+}
+----
+<1> On bloque ici le comportement par défaut.
+<2> On stoppe ici la propagation de l'événement.
+
+Gestion des événements du clavier :
+
+[source,html]
+----
+<textarea (keydown.space)="onSpacePress()">Press space!</textarea> <1>
+----
+<1> La méthode `onSpacePress()` sera appelée à chaque appui sur la touche kbd:[Space]
+
+=== Variables locales
+
+Création d'une variable locale :
+
+[source,html]
+----
+<input type="text" #name> <1>
+{{ name.value }} <2>
+----
+<1> Création d'une variable locale `name` avec la notation `#`
+<2> Utilisation de la variable locale `name`
+
+Focus sur un élément :
+
+[source,html]
+----
+<input type="text" #name>
+<button (click)="name.focus()">Focus the input</button> <1>
+----
+<1> La méthode `focus()` est standard dans l'API DOM, et donne ici le focus à l'élément `<input>` au clic sur l'élément `<button>`
+
+Utilisation locale d'une méthode d'un Web Component importé :
+
+[source,html]
+----
+<google-youtube #player></google-youtube>
+<button (click)="player.play()">Play!</button>
+----
+
+=== Directives structurelles
+
+NOTE: Les directives structurelles s'appuient sur la balise standard `<ng-template>`, inspirée de la balise standard `template` de la spécification HTML.
+
+==== NgIf
+
+Ici on instancie le template seulement lorsqu'une condition est réalisée :
+
+[source,html]
+----
+<ng-template [ngIf]="races.length > 0"> <1>
+    <div>
+        <h1>Races</h1>
+    </div>
+</ng-template>
+----
+<1> Le template ne sera instancié que si `races` a au moins un élément.
+
+On privilégiera la synthaxe plus courte avec la version raccourcie suivante :
+
+[source,html]
+----
+<div *ngIf="races.length > 0">
+    <h1>Races!</h1>
+</div>
+----
+
+TIP: La notation `*` indique que c'est une instantiation de template. Ce type de directives est déjà pré-chargé par le framework : il n'est pas nécessaire d'importer et de déclarer `NgIf`
+
+Utilisation de `else` :
+
+[source,html]
+----
+<div *ngIf="races.length > 0; else empty">
+    <h1>Races!</h1>
+</div>
+<ng-template #empty>
+    <h2>No races.</h2>
+</ng-template>
+----
+
+==== NgFor
+
+[source,html]
+----
+<div *ngIf="races.length > 0">
+    <ul>
+        <li *ngFor="let race of races"> <1>
+            {{ race.name }}
+        </li>
+    </ul>
+</div>
+----
+<1> `ngFor` permet d'instancier un template par élément de la collection `races`
+
+`NgFor` utilise la "microsyntaxe". Ainsi les codes suivants sont équivalents :
+
+[source,html]
+----
+<ul>
+  <li *ngFor="let race of races">{{ race.name }}</li>
+</ul>
+----
+
+[source,html]
+----
+<ul>
+    <ng-template ngFor let-race [ngForOf]="races">
+        <li>{{ race.name }}</li>
+    </ng-template>
+</ul>
+----
+
+Utilisation d'une variable exposée :
+
+[source,html]
+----
+<ul>
+    <li *ngFor="let race of races; index as i"> <1>
+        {{ i }} - {{ race.name }}
+    </li>
+</ul>
+----
+<1> La variable `i` recevra l'indice `index` de l'élément en courant, en commançant à zéro.
+
+Il existe d'autres variables exposées : 
+
+|===
+| even  | booléen qui sera à `true` si l'élément a un index *pair*
+| odd   | booléen qui sera à `true` si l'élément a un index *impair*
+| first | booléen qui sera à `true` si l'élément est le *premier* de la liste
+| last  | booléen qui sera à `true` si l'élément est le *dernier* de la liste
+|===
+
+==== NgSwitch
+
+[source,html]
+----
+<div [ngSwitch]="messageCount">
+    <p *ngSwitchCase="0">You have no message</p>
+    <p *ngSwitchCase="1">You have a message</p>
+    <p *ngSwitchDefault>You have some message</p>
+</div>
+----
+
+=== Directives standards
+
+==== NgStyle
+
+[source,html]
+----
+<p [style.color]="foreground">Other text</p> <1>
+
+<div [ngStyle]="{ fontWeight: fontWeight, color: color }"> <2>
+    I've got style
+</div>
+----
+<1> On accède ici à l'attribut `color` de la propriété `style`, qui prendra la valeur de `foreground`.
+<2> On peut changer ici plusieurs styles en même temps.
+
+TIP: les clés peuvent être écrite en *camelCase* (`fontWeight`fontWeight) ou en *dash-case* (`font-weight`).
+
+==== NgClass
+
+[source,html]
+----
+<div [class.awesome-div]="isAnAwesomeDiv()"> <1>
+    I've got style
+</div>
+
+<div [ngClass]="{ 'awesome-div': isAnAwesomeDiv(), 'colored-dev': isAColoredDiv() }"> <2>
+    I've got style
+</div>
+----
+<1> On définie une seule classe avec le _binding_ de propriété.
+<2> On définie plusieurs classes avec `ngClass`.
+
+=== Résumé
+
+|===
+| {{ }}     | interpolation
+| []        | _binding_ de propriétés & directives standards
+| ()        | _binding_ d'événements
+| #         | déclaration de variables
+| *         | directives structurelles
+|===

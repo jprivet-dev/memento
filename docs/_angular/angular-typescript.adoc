@@ -1,0 +1,126 @@
+=== Présentation
+
+NOTE: TypeScript est un sur-ensembre de JavaScript, créé par Microsoft en 2012.
+
+=== Installation
+
+[source,bash]
+----
+npm install -b typescript
+----
+
+=== Les types
+
+[source,javascript]
+----
+// Typage simple
+const response: number = 42;
+const name: string = "Joe";
+
+// Typage générique
+const cars: Array<Car> = [new Car()];
+
+// Typage `any`
+let changeMe: any = 2;
+changeMe = "Joe";
+
+// Union de types
+let changeMe: number|boolean = 2;
+changeMe = true;
+----
+
+TIP: Les types peuvent être falcutatifs : le compilateur TS peut deviner leur valeur avec l'inférence de type.
+
+=== Les valeurs énumérées
+
+[source,javascript]
+----
+enum Issue {
+    Up,
+    Down,
+    Left,
+    Right,
+}
+
+enum Response {
+    No = 0,
+    Yes = 1,
+}
+----
+
+=== Return types
+
+[source,javascript]
+----
+function startRace(race: Race): Race {
+    race.status = RaceStatus.Started;
+    return race;
+}
+
+function respond(message: Response): void {
+    // ...
+}
+
+respond(Response.Yes);
+----
+
+=== Interfaces
+
+[source,javascript]
+----
+function addPoinsToScore(player: { score: number }, points: number): void { <1>
+    player.score += points;
+}
+----
+<1> Le paramètre `player` doit avoir une propriété nommée `score` de type `number`
+
+Exemple en créant une interface :
+
+[source,javascript]
+----
+interface HasScore {
+    score: number;
+}
+
+function addPoinsToScore(player: HasScore, points: number): void {
+    player.score += points;
+}
+----
+
+=== Paramètres optionnel
+
+TIP: Ajouter `?` juste après le nom d'un paramètre pour le rendre optionel
+
+[source,javascript]
+----
+function addPointsToScore(player: HasScore, points?: number): void {
+    points = points || 0;
+    player.score += points;
+}
+----
+
+=== Classes & Interfaces
+
+[source,javascript]
+----
+interface ClockInterface {
+    currentTime: Date;
+    setTime(d: Date);
+}
+
+class Clock implements ClockInterface {
+    currentTime: Date;
+    setTime(d: Date) {
+        this.currentTime = d;
+    }
+    constructor(h: number, m: number) { }
+}
+----
+
+=== Bibliothèques d'interfaces
+
+NOTE: les fichiers contenant des interfaces ont l'extension `.d.ts`
+
+=== Décorateurs
+
+NOTE: Un décorateur permet de faire de la méta-programmation. Ces annotations sont préfixées par `@`

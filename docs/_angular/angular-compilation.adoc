@@ -1,0 +1,32 @@
+=== Génération de code _Just in Time_ (_JiT_)
+
+NOTE: Angular a une caractéristique que l'on ne retrouve pas dans d'autres frameworks : au démarrage de l'application, Angular va compiler les templates et générer du code dynamique pour chaque composant.
+
+Le HTML n'est jamais lu directement par le navigateur. A la place, Angular génère une classe pour chaque composant, qui représente exactement ce qui est écrit dans le template.
+
+Cette classe est générée dans un fichier _factory_ avec l'extension `ngfactory.js`.
+
+Durant la phase d'analyse syntaxique de la compilation, Angular parse les templates pour générer un AST (_Abstract Syntax Tree_), qui représente la structure du template. Cet AST sera ensuite utilisé pour générer le code JS dynamique, une "définition de vue" par composant.
+
+Une "définition de vue" contient les noeuds du template, qui peuvent être de plusieurs types (`elementDef(figure)`, `elementDef(img)`, `elementDef(figcaption)`, `textDef()`, ...). Avec cette représentation, Angular génère le DOM correspondant.
+
+A cette "définition de vue", Angular ajoute en paramètre une fonction de détection de changement. Elle est invoquée par le framework à chaque fois qu'il a besoin de vérifier si un changement s'est produit.
+
+Ce code généré est très rapide, mais sa génération prend du temps au démarrage de l'application. Cette technique constitue la compilation _Just in Time_ (_JiT_)
+
+=== Compilation _Ahead of Time_ (_AoT_)
+
+NOTE: Le compilateur _AoT_ permet de générer ce code avant le démarrage de l'application.
+
+Commande CLI :
+
+[source,bash]
+----
+ng build --aot
+----
+
+Avec ce mode, Angular va compiler les templates en fichiers TypeScript, ce qui va permettre de vérifier  qu'il n'y ait pas d'erreur de syntaxe dans les templates.
+
+Ainsi le compilateur peut lever une erreur alors que le code semblerait fonctionner en mode _JiT_.
+
+WARNING: L'inconvénient sera la taille des modules JavaScript à envoyer aux utilisateurs : le code généré est plus large que les templates non compilés. Cela est partiellement compensé par le fait de ne plus envoyer le compilateur Angular aux utilisateurs.

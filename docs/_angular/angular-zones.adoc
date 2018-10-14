@@ -1,0 +1,20 @@
+NOTE: la librairie `zone.js` patche toutes les méthodes asynchrones (`setTimeout()`, `setTinterval()`, `XMLHttpRequest`, `WebSocket`, `FileReader`, `GeoLocation`, ...).
+
+Une zone offre plusieurs _hooks_ :
+
+|===
+| `onInvoke`        | Sera appelé avant l'exécution du code.
+| `onHasTask`       | Sera appelé après l'éxécution du code.
+| `onHandleError`   | Sera appelé dès que l'exécution du code lance une erreur.
+| `onFork`          | Sera appelé à la création de la zone.
+|===
+
+NOTE: L'implémentation de `zone.js` embarque des informations pour WTF (Web Tracing Framework). Cela permet de profiler l'application en mode développement, et de connaître le temps passé dans chaque partie de l'application et du framework.
+
+=== La détection de changement
+
+Lorsque la détection de changement se lance, le framework va parcourir l'arbre de ses composants pour voir ceux qui ont subi des changements et qui impactent leurs templates.
+
+La détection de changement ne change pas le modèle de l'application : ce parcours d'arbre se fait de la racine vers les enfants, et ne se fait qu'une seule fois.
+
+IMPORTANT: Il n'y a pas de changement de modèle en cascade : un composant ne peut modifier que le modèle de ses composants enfants et pas de son parent.

@@ -1,0 +1,573 @@
+NOTE: ECMASCRIPT 6 = ECMASCRIPT 2015
+
+=== Transpileur
+
+- https://github.com/google/traceur-compiler de Google
+- https://babeljs.io/ de Sebastian McKenzie
+
+=== TypeScript
+
+TypeScript est un sur-ensemble typé de JavaScript qui compile vers du JavaScript standard.
+
+=== Let
+
+L'instruction `let` permet de déclarer une variable dont la portée est celle du bloc courant (elle n'est pas _remontée_ / _hoisted_) :
+
+[source,javascript]
+----
+let x = 1;
+
+if (x === 1) {
+    let x = 2;
+    console.log(x); // 2
+}
+
+console.log(x); // 1
+----
+
+=== Constantes
+
+La déclaration `const` premet de créer une constante nommée accessible uniquement en lecture. Une constante ne peut pas être déclarée à nouveau, et la valeur d'une constante ne peut pas être modifiée par des réaffectations ultérieures.
+
+Tout comme l'instruction `let`, sa portée est celle du bloc courant.
+
+[source,javascript]
+----
+const NUMBER = 42;
+
+try {
+    NUMBER = 99;
+} catch(err) {
+    console.log(err); // TypeError: invalid assignment to const `NUMBER`
+}
+
+console.log(NUMBER); // 42
+----
+
+TIP: Il est possible d'initaliser une constante avec un objet et modifier par la suite le contenu de l'objet
+
+[source,javascript]
+----
+const QUESTION = {univers: 0};
+
+try {
+    QUESTION = {intergalatic: 99};
+} catch(err) {
+    console.log(err); // TypeError: invalid assignment to const `QUESTION`
+}
+
+QUESTION.univers = 42;
+
+console.log(QUESTION.univers); // 42
+----
+
+=== Raccourci pour la création d'objets
+
+[source,javascript]
+----
+function myObjet() {
+    const name = "Myname";
+    const color = "pink";
+    return { name, color } // équivaut à { name: name, color: color }
+}
+----
+
+=== Affectations déstructurées
+
+En ES6, il est possible d'affecter des valeurs à des variables à partir d'objets ou de tableaux.
+
+[source,javascript]
+----
+let options = { name: "Myname", color: "pink" };
+let { name: userName, color: userColor } = options;
+
+console.log(userName); // Myname
+console.log(userColor); // pink
+----
+
+[source,javascript]
+----
+const milliseconds = [100, 800];
+const [fast, slow] = milliseconds;
+
+console.log(fast); // 100
+console.log(slow); // 800
+----
+
+Dans le cas où les variables ont le même nom que les propriétés de l'objet à lire, il est possible d'écrire :
+
+[source,javascript]
+----
+// ...
+
+let { name, color } = options;
+
+console.log(name); // Myname
+console.log(color); // pin;
+----
+
+=== Paramètres optionnels et valeurs par défaut
+
+Anciennement :
+
+[source,javascript]
+----
+function setUser(name, color) {
+    const name = name || "Nemo";
+    const color = color || "pink";
+    // ...
+}
+
+setUser("Brad","yellow");   // name = Brad, color = yellow
+setUser();                  // name = Nemo, color = pink
+----
+
+L'opérateur `OR` (`||`) va retourner l'opérande de droite si celui de gauche est `undefined` (`falsy`)
+
+NOTE: Les valeurs fausses (`falsy`) sont des valeurs évaluées comme fausses dans un contexte booléen : `false`, `null`, `undefined`, `0`, `NaN`, `' '`, `""`
+
+Aujourd'hui :
+
+[source,javascript]
+----
+function setUser(name = "Nemo", color = "pink") {
+    // ...
+}
+
+setUser("Brad","yellow");   // name = Brad, color = yellow
+setUser();                  // name = Nemo, color = pink
+----
+
+=== Rest opérator
+
+Anciennement :
+
+[source,javascript]
+----
+function addUsers() {
+    for (var i = 0; i < arguments.length; i++) {
+        // ...
+    }
+}
+
+addUsers("Armstrong", "Aldrin", "Collins");
+----
+
+Aujourd'hui :
+
+[source,javascript]
+----
+function addUsers(...users) {
+    for (let user of users) {
+        // ...
+    }
+}
+
+addUsers("Armstrong", "Aldrin", "Collins");
+----
+
+=== Classes
+
+[source,javascript]
+----
+class User {
+    constructor(name) {
+        this.name = name;
+    }
+    
+    toString() {
+        return `My name is ${this.name}.`;
+    }
+}
+
+const user = new User("Joe");
+console.log(user.toString()); // My name is Joe
+----
+
+Une classe peut avoir des attributs et des méthodes statiques. Ces méthodes statiques ne peuvent être appelées qu'à partir de la classe directement :
+
+[source,javascript]
+----
+class Human {
+    static getType() {
+        return "mammalian"
+    }
+}
+
+const type = Human.getType();
+----
+
+Il est possible d'utiliser les accesseurs `getters` et `setters` pour implémenter du code sur ces opérations :
+
+[source,javascript]
+----
+class User {
+    get name() {
+        console.log("get name");
+        return this.name;
+    }
+    
+    set name(name) {
+        console.log("set name");
+        this.name = name;
+    }
+}
+
+const me = new User();
+me.name = "Joe";
+// set name
+
+console.log(me.name);
+// get name
+// Joe
+----
+
+Avec les classes, il est possible d'exploiter l'héritage :
+
+[source,]
+----
+class Car {
+    getSpeedMax() {
+        return 90;
+    }
+}
+
+class F1 extends Car {
+    getSpeedMax() {
+        return super.getSpeedMax() * 3;
+    }
+}
+
+const twingo = new Car();
+console.log(twingo.getSpeedMax()); // 90
+
+const redbull = new F1();
+console.log(redbull.getSpeedMax()); // 270
+----
+
+NOTE: le mot clé `super` permet d'invoquer la méthode de la classe de base.
+
+[source,javascript]
+----
+class Car {
+    constructor(speedMax) {
+        this.speedMax = speedMax;
+    }
+}
+
+class F1 extends Car {
+    getSpeedMax(speedMax, color) {
+        super(speedMax);
+        this.color = color;
+    }
+}
+
+const twingo = new Car(90);
+console.log(twingo.speedMax); // 90
+
+const ferrari = new F1(270, "red");
+console.log(ferrari.speedMax); // 270
+----
+
+=== `Promises`
+
+Une `promise` a trois états :
+
+|===
+| pending       | "en cour"     |
+| fulfilled     | "réalisée"    | réalise le callback de succès 
+| rejected      | "rejetée"     | réalise le callback d'erreur
+|===
+
+Exemple :
+
+[source,javascript]
+----
+const getUser = function(login) {
+    return new Promise(function(resolve, reject){
+        if(response.status === 200) {
+            const user = response.data;
+            resolve(user);
+        } else {
+            reject("No user");
+        }
+    });
+};
+
+getUser(login)
+    .then(function(user) {
+        console.log(user);
+    });
+----
+
+Si les `promises` retournent elles mêmes des `promises`, il sera possible de les écrire à plat. Ainsi :
+
+[source,javascript]
+----
+getUser(login)
+    .then(function(user) {
+        return getRights(user)
+            .then(function(rights) {
+                return updateMenu(rights);
+            });
+    });
+----
+
+Equivaut à :
+
+[source,javascript]
+----
+getUser(login)
+    .then(function(user) {
+        return getRights(user);
+    })
+    .then(function(rights) {
+        return updateMenu(rights);
+    });
+----
+
+Il est possible d'avoir une gestion des erreurs par `promises`, ou de façon globale à toute la chaîne :
+
+[source,javascript]
+----
+getUser(login)
+    .then(function(user) {
+        return getRights(user);
+    }, function(error) {
+        return Promise.reject(error); // if getUser fails
+    })
+    .then(function(rights) {
+        return updateMenu(rights);
+    }, function(error) {
+        return Promise.reject(error); // if updateMenu fails
+    });
+----
+
+[source,javascript]
+----
+getUser(login)
+    .then(function(user) {
+        return getRights(user);
+    })
+    .then(function(rights) {
+        return updateMenu(rights);
+    })
+    .catch(function(error) {
+        console.log(error); // if getRights or updateMenu fails
+    });
+----
+
+=== Arrow functions
+
+Une **arrow function** permet d'avoir une syntaxe plus courte que les expressions de fonction. Elle est idéale pour les fonctions anonymes en `callback`.
+
+IMPORTANT: Une **arrow function** partagent les mêmes valeurs lexicales (`this`, `arguments`, `super` ou `new.target`) que leur scope parent. 
+
+En ES5, le code suivant ne fonctionne pas :
+
+[source,javascript]
+----
+var maxFinder = {
+    max: 0,
+    find: function(numbers) {
+        numbers.forEach(
+            function(number) {
+                if(number > this.max) { <1>
+                    this.max = number;
+                }
+            });
+    }
+};
+
+maxFinder.find([1, 2, 3, 5, 8, 13]);
+console.log(maxFinder.max);
+----
+<1> Ce `this` n'est lié à aucun objet, ce n'est donc pas le `max` de l'objet `maxFinder` qui est utilisé.
+
+Dans ce cas il faudrait utilisé un alias :
+
+[source,javascript]
+----
+// ...
+        var self = this;
+        numbers.forEach(
+            function(number) {
+                if(number > self.max) {
+                    self.max = number;
+                }
+            });
+// ...
+----
+
+Ou alors `binder` le `this` à la fonction anonyme :
+
+[source,javascript]
+----
+// ...
+        numbers.forEach(
+            function(number) {
+                // ...
+            }.bind(this));
+// ...
+----
+
+Ou bien passer le `this` en second paramètre de la fonction `forEach` :
+
+[source,javascript]
+----
+// ...
+        numbers.forEach(
+            function(number) {
+                // ...
+            }, this);
+// ...
+----
+
+Avec les `arrow functions` nous aurons la solution élégante suivante :
+
+[source,javascript]
+----
+var maxFinder = {
+    max: 0,
+    find: function(numbers) {
+        numbers.forEach(number => {
+            if(number > this.max) {
+                this.max = number;
+            }
+        });
+    }
+};
+----
+
+=== `Map` et `Set`
+
+NOTE: ES6 permet d'exploiter les collections
+
+Exemple avec `Map` :
+
+[source,javascript]
+----
+const users = new Map();
+const me = { id: 1, name: "Joe" };
+
+users.set(me.id, me);           // add user "me"
+
+console.log(users.has(me.id));  // true
+console.log(users.size);        // 1
+
+users.delete(me.id);            // delete user "me"
+----
+
+Exemple avec `Set` :
+
+[source,javascript]
+----
+const users = new Set();
+const me = { id: 1, name: "Joe" };
+
+users.add(me);                  // add user "me"
+
+console.log(users.has(me));     // true
+console.log(users.size);        // 1
+
+users.delete(me);               // delete user "me"
+----
+
+On peut itérer sur une collection avec `for ... of` :
+
+[source,javascript]
+----
+for (let user of users) {
+    // ...
+}
+----
+
+=== Template de string
+
+NOTE: On peut utiliser des templates de string avec le `backticks ``
+
+[source,javascript]
+----
+const fullname = `My name is ${firstname} ${lastname}`;
+----
+
+Il est aussi possible d'écrire des morceaux de HTML :
+
+[source,javascript]
+----
+const template = `<div>
+    <h1>Title</h1>
+</div>`;
+----
+
+=== Modules
+
+NOTE: utiliser le mot clé `export` pour exposer ses fonctions
+
+.my_modules.js
+[source,javascript]
+----
+export function myFunctionA() {
+    // ...
+}
+
+export function myFunctionB() {
+    // ...
+}
+----
+
+Exemple de _named export_ :
+
+[source,javascript]
+----
+import { myFunctionA, myFunctionB } from "./my_modules.js";
+
+myFunctionA("hello", 42);
+const result = myFunctionB();
+----
+
+Exemple avec un alias
+
+[source,javascript]
+----
+import { myFunctionA as module } from "./my_modules.js";
+
+module("hello", 42); // uses myFunctionA()
+----
+
+Exemple d'import de tous les modules
+
+[source,javascript]
+----
+import * as myModules from "./my_modules.js";
+
+myModules.myFunctionA("hello", 42);
+const result = myModules.myFunctionB();
+----
+
+Importation d'une classe :
+
+.my_class.js
+[source,javascript]
+----
+export default class MyClass {
+}
+----
+
+.script.js
+[source,javascript]
+----
+import MyClass fromt "./my_class.js";
+----
+
+=== Types dynamiques, statiques et optionnels
+
+WARNING: JavaScript est dynamiquement typé !
+
+Il est donc possible de faire cela :
+
+[source,javascript]
+----
+let user = "Joe";
+user = 42;
+----

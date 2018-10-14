@@ -1,0 +1,238 @@
+NOTE: Angular fournit le module `HttpClientModule`, codé par l'équipe interne.
+
+TIP: Il est tout à fait possible d'utiliser un autre module, comme l'API Fetch par exemple.
+
+=== Importer `HttpClientModule`
+
+[source,javascript]
+----
+import { NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+import { HttpClientModule } from '@angular/common/http';
+
+@NgModule({
+  imports: [BrowserModule, HttpClientModule], <1>
+  declarations: [AppComponent],
+  bootstrap: [AppComponent]
+})
+export class AppModule {
+}
+----
+<1> Il faut importer le module `HttpClientModule` dans le module racine `AppModule`. On le rend ainsi disponible à tous les composants et services.
+
+[source,javascript]
+----
+import { HttpClient } from '@angular/common/http'; <1>
+
+@Component({
+  selector: 'ns-races',
+  template: `<h1>Races</h1>`
+})
+export class RacesComponent {
+  constructor(private http: HttpClient) { <2>
+  }
+}
+----
+<1> Bien importer `HttpClient`.
+<2> On peut maintenant injecter le service `HttpClient` dans son composant `RacesComponent` par exemple.
+
+Le service `HttpClient` réalise des requêtes AJAX avec `XMLHttpRequest`. Il propose plusieurs méthodes : `get`, `post`, `put`, `delete`, `patch`, `head`, `jsonp`, ...
+
+NOTE: Toutes ces méthodes retournent un objet `Observable`, ce qui donne la possibilité d'annuler une requête, de la retenter, d'en composer facilement plusieurs, etc.
+
+=== Utiliser `HttpClientModule`
+
+==== get()
+
+[source,javascript]
+----
+return this.http.get<Array<RaceModel>>('http://myapi.com/', { params });
+----
+
+[source,javascript]
+----
+http.get(`${baseUrl}/api/races`)
+  .subscribe((response: Array<RaceModel>) => {
+    console.log(response);
+  });
+----
+
+Il est possible de s'abonner à la réponse HTTP complète :
+
+[source,javascript]
+----
+http.get(`${baseUrl}/api/races`, { observe: 'response' })
+  .subscribe((response: HttpResponse<Array<RaceModel>>) => {
+    console.log(response.status); // logs 200
+    console.log(response.headers.keys()); // logs []
+  });
+----
+
+TIP: Si la réponse a un statut différent de 2xx ou 3xx, alors l'observable retourne un objet `HttpErrorResponse`.
+
+==== post()
+
+[source,javascript]
+----
+http.post(`${baseUrl}/api/races`, newRace)
+----
+
+=== Quelques options avancées
+
+==== params
+
+[source,javascript]
+----
+const params = {
+  'sort': 'ascending',
+  'page': '1'
+};
+
+http.get(`${baseUrl}/api/races`, { params }) <1>
+  .subscribe(response => {
+    this.races = response;
+  });
+----
+<1> Avec les `params`, l'URL finale sera `${baseUrl}/api/races?sort=ascending&page=1`.
+
+==== headers
+
+[source,javascript]
+----
+const headers = { 'Authorization': `Bearer ${token}` };
+
+http.get(`${baseUrl}/api/races`, { headers }) <1>
+  .subscribe(response => {
+    this.races = response;
+  });
+----
+<1> On transmet le token dans le `header`.
+
+=== JSONP (JSON with Padding)
+
+`XMLHttpRequest` et `l'API Fetch` respectent la règle d'origine unique (`Same-origin policy`) : une application web peut uniquement émettre des requêtes vers la même origine que celle à partir de laquelle l'application à été chargée, sauf si des en-têtes `CORS (Cross-origin resource sharing)` sont utilisés.
+
+TIP: `HttpClient` offre une méthode `jsonp`, qui emballera la réponse `JSON` dans une fonction passée en _callback_. La réponse arrive alors sous forme de script, qui n'est pas soumis à la `Same-origin policy`.
+
+Exemple :
+
+[source,javascript]
+----
+http.jsonp('https://api.github.com/orgs/Ninja-Squad/repos', 'callback').pipe( <1>
+  map((res: { data: Array<any> }) => res.data)
+).subscribe(response => {
+  this.repos = response;
+});
+----
+<1> On récupère les dépôts publics de l'organisation Github via `JSONP`.
+
+=== Intercepteurs
+
+NOTE: Les intercepteurs permettent d'intercepter des requêtes ou des réponses dans l'application.
+
+Exemple :
+
+[source,javascript]
+----
+@Injectable()
+export class GithubAPIInterceptor implements HttpInterceptor {
+    intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+        if (req.url.includes('api.github.com')) { <1>
+          let params = { setHeaders: { 'Authorization': `token ${OAUTH_TOKEN}` } }; <2>
+          const clone = req.clone(params); <3> 
+          return next.handle(clone); <4>
+        }
+        return next.handle(req);
+    }
+}
+----
+<1> Si c'est une requête vers l'API de GitHub...
+<2> On insert le `OAUTH token` dans le `header`.
+<3> On clone la requête, car les requêtes sont immuables.
+<4> On transmet le clone de la requête au _handler_ suivant.
+
+On ajoute bien l'intercepteur au tableau `HTTP_INTERCEPTORS`, avec l'injection de dépendances :
+
+[source,javascript]
+----
+providers: [
+  { provide: HTTP_INTERCEPTORS, useClass: GithubAPIInterceptor, multi: true }
+]
+----
+
+Il est possible d'intercepter la réponse pour gérer les erreurs de façon générique :
+
+[source,javascript]
+----
+@Injectable()
+export class ErrorHandlerInterceptor implements HttpInterceptor {
+  constructor(private router: Router, private errorHandler: ErrorHandler) {}
+
+  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+    return next.handle(req).pipe(
+      catchError((errorResponse: HttpErrorResponse) => { <1>
+        if (errorResponse.status === 401) { <2>
+          this.router.navigateByUrl('/login'); <3>
+        } else {
+          this.errorHandler.handle(errorResponse); <4>
+        }
+        return throwError(errorResponse);
+      })
+    );
+  }
+}
+----
+<1> On `catch` l'erreur.
+<2> Si l'accès n'est pas autorisé...
+<3> ... On redirige l'utilisateur vers la page de `login`.
+<4> ... Sinon on renvoie l'erreur à l'utilisateur.
+
+=== Tests unitaires
+
+TIP: Il faut remplacer la dépendance au service `HttpClient` par une implémentation bouchonnée de `HttpClientTestingModule`. Il sera ensuite possible de simuler les réponses `HTTP` avec `HttpTestingController`.
+
+[source,javascript]
+----
+import { async, TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+
+describe('RaceService', () => {
+  let raceService: RaceService;
+  let http: HttpTestingController;
+
+  beforeEach(() => TestBed.configureTestingModule({ <1>
+    imports: [HttpClientTestingModule]
+  }));
+
+  beforeEach(() => { <2>
+    raceService = TestBed.get(RaceService);
+    http = TestBed.get(HttpTestingController);
+  });
+
+  afterEach(() => {
+    http.verify();
+  });
+
+  it('should return an Observable of 2 races', async(() => {
+    const hardcodedRaces = [{ name: 'London' }, { name: 'Lyon' }]; <3>
+
+    let actualRaces = [];
+    raceService.list().subscribe(races => actualRaces = races); <4>
+
+    http
+      .expectOne('/api/races') <5>
+      .flush(hardcodedRaces); <6>
+
+    expect(actualRaces.length).toBe(2); <7>
+  }));
+});
+----
+<1> Avec la méthode `configureTestingModule()`, on importe le module factice `HttpClientTestingModule` qui remplacera le module d’origine `HttpClient`.
+<2> TestBed.get() permet d’utiliser le système d’injection de dépendances dans le test, et de charger ici `RaceService` et `HttpTestingController`.
+<3> On crée une fausse réponse `json`.
+<4> On appelle le service instancié `raceService` et on y souscrit.
+<5> On vérifie que la requête HTTP sous-jacente est correcte.
+<6> On renvoie la réponse `json` `hardcodedRaces` dès la requête reçue.
+<7> On vérifie que le `json` a bien été désérialisé.
+
+

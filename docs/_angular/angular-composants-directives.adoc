@@ -1,0 +1,226 @@
+=== Directives
+
+NOTE: Une directive est semblable à un composant, sauf qu'elle n'a pas de template. Elle sera annotée du décorateur `@Directive`.
+
+TIP: La classe `Component` hérite de la classe `Directive`.
+
+==== Sélecteurs
+
+Une directive doit avoir un sélecteur CSS qui indiquera au framework où l'activer dans un template.
+
+La directive suivante :
+
+[source,javascript]
+----
+@Directive({
+  selector: '[doNothing]' <1>
+})
+export class DoNothingDirective {
+  constructor() {
+    console.log('Do nothing directive');
+  }
+}
+----
+<1> On défini ici le sélecteur `[doNothing]`.
+
+Peut-être utilisé dans le composant suivant :
+
+[source,javascript]
+----
+@Component({
+  selector: 'ns-test',
+  template: '<div doNothing>Click me</div>' <1>
+})
+export class TestComponent {
+}
+----
+<1> On pointe avec `doNothing` la directive `DoNothingDirective`.
+
+==== Entrées : le binding de données
+
+Le binding de donnée se fait avec l'attribut `inputs` du décorateur `@Directive` sous la forme suivante :
+
+[source,javascript]
+----
+@Directive({
+    selector: '[mySelector]',
+    inputs: ['propertyComponent: propertyDOM']
+})
+export class MyDirective {
+}
+----
+
+[source,html]
+----
+<div mySelector propertyDOM="Some text">Hello</div>
+----
+
+- `propertyComponent` désigne la propriété de l'instance du composant.
+- `propertyDOM` désigne la propriété du DOM qui contiendra l'expression.
+
+Dans le code suivant, le _setter_ sur `propertyComponent` sera appelé lors de chaque modification de la propriété `propertyDOM` :
+
+[source,javascript]
+----
+@Directive({
+    selector: '[mySelector]',
+    inputs: ['propertyComponent: propertyDOM']
+})
+export class MyDirective {
+    set propertyComponent(value) {
+        console.log(value);
+    }
+}
+----
+
+NOTE: Si la propriété `propertyComponent` n'existe pas dans la directive `MyDirective`, elle est créée.
+
+Si la propriété du DOM porte le même nom que la propriété du composant, on peut écrire la version raccourcie suivante :
+
+[source,javascript]
+----
+@Directive({
+    selector: '[mySelector]',
+    inputs: ['propertyComponent']
+})
+export class MyDirective {
+}
+----
+
+[source,html]
+----
+<div mySelector propertyComponent="Some text">Hello</div>
+----
+
+TIP: Il est possible de déclarer une entrée dans la directive avec le décorateur `@Input` (méthode recommandée dans le guide de style officiel).
+
+En utilisant le décorateur `@Input`, on peut réécrire les exemples précédents comme cela :
+
+[source,javascript]
+----
+@Directive({
+    selector: '[mySelector]'
+})
+export class MyDirective {
+    @Input('propertyDOM') propertyComponent: string;
+}
+----
+
+Et si les propriétés du DOM et du composant ont le même nom :
+
+[source,javascript]
+----
+@Directive({
+    selector: '[mySelector]'
+})
+export class MyDirective {
+    @Input() propertyComponent: string;
+}
+----
+
+==== Sorties, via les événements
+
+NOTE: En angular, les données entre dans un composant via des *propriétés*, et en sortent via des *événements*.
+
+Exemple :
+
+[source,javascript]
+----
+@Component({
+  selector: 'ns-pony',
+  template: `<div (click)="selectPony()">{{ pony.name }}</div>` <1>
+})
+export class SelectablePonyComponent {
+  @Input() pony: Pony; <2>
+  @Output() ponySelected = new EventEmitter<Pony>(); <3>
+  
+  selectPony() {
+    this.ponySelected.emit(this.pony); <4>
+  }
+}
+----
+<1> Au clic sur la `div`, la méthode `selectPony()` du composant `SelectablePonyComponent` sera exécutée.
+<2> Le composant reçoit en entrée un objet `Pony`.
+<3> On déclare un événement `ponySelected` qui émettra plus tard un objet `Pony`.
+<4> Au clic sur la `div`, l'événement `ponySelected` sera émis.
+
+Un composant parent peut utiliser `ns-pony` ainsi :
+
+[source,html]
+----
+<ns-pony [pony]="pony" (ponySelected)="betOnPony($event)"></ns-pony>
+----
+
+- Au clic sur le poney, l'événement `ponySelected` est émis, avec le poney en paramètre.
+- Le composant parent qui écoute cet événement appelera sa méthode `betOnPony()`.
+- `$event` correspondra au poney transmis en paramètre de l'événement.
+
+==== Cycle de vie
+
+IMPORTANT: Les entrées d'un composant ne sont pas encore évaluées dans son constructeur.
+
+Quelques phases accessibles :
+
+|===
+| ngOnIni()     | Est appelée une seule fois, après le premier changement.
+| ngOnChanges() | Est appelée à chaque fois que la valeur d'une propriété bindée est modifiée.
+| ngOnDestroy() | Est appelée à la destruction du composant. Utile pour faire du nettoyage.
+|===
+
+[source,javascript]
+----
+@Directive({
+  selector: '[initDirective]'
+})
+export class OnInitDirective implements OnInit {
+  @Input() pony: string;
+  ngOnInit() {
+    console.log(`inputs are ${this.pony}`); <1>
+  }
+}
+----
+<1> A l'initialisation, `this.pony` retourne bien un poney, au lieu de `undefined` s'il était dans le constructeur.
+
+=== Composant
+
+==== Template
+
+[source,javascript]
+----
+@Component({
+  selector: 'ns-templated-pony',
+  templateUrl: 'components/pony/templated-pony.html' <1>
+})
+export class TemplatedPonyComponent {
+}
+----
+<1> On indique ici une URL relative pour charger le template. L'URL finale sera résolue en utilisant l'URL de la base de l'application.
+
+TIP: Avec Angular CLI et sa configuration de Webpack, on peut utiliser un chemin relatif au composant :
+
+[source,javascript]
+----
+@Component({
+  selector: 'ns-templated-pony',
+  templateUrl: 'templated-pony.html'
+})
+export class TemplatedPonyComponent {
+}
+----
+
+==== Styles
+
+NOTE: Il est possible de spécifier des styles au composant avec `styles` ou `styleUrls`.
+
+[source,javascript]
+----
+@Component({
+  selector: 'ns-styled-pony',
+  template: '<div class="pony">{{ pony.name }}</div>',
+  styles: ['.pony{ color: red; }'] <1>
+})
+export class StyledPonyComponent {
+  @Input() pony: any;
+}
+----
+<1> L'attribut `styles` reçoit un tableau de règles CSS sous forme de chaînes de caractères.
