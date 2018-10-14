@@ -6480,7 +6480,7 @@ export class RegisterFormComponent {
   userForm: FormGroup; <i class="conum" data-value="1"></i><b>(1)</b>
 
   constructor(fb: FormBuilder) { <i class="conum" data-value="2"></i><b>(2)</b>
-    this.userForm = this.fb.group({ <i class="conum" data-value="3"></i><b>(3)</b>
+    this.userForm = fb.group({ <i class="conum" data-value="3"></i><b>(3)</b>
       username: '',
       password: ''
     });
@@ -6552,6 +6552,43 @@ Comme c&#8217;est une valeur qui est transmise et non une expression, on n&#8217
 </tr>
 </table>
 </div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Attention à la subtilité entre <code>constructor(fb: FormBuilder)</code> et <code>constructor(private fb: FormBuilder)</code>
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">import { Component } from '@angular/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
+
+@Component({
+  selector: 'ns-register',
+  templateUrl: 'register-form.component.html'
+})
+export class RegisterFormComponent {
+  userForm: FormGroup; <i class="conum" data-value="1"></i><b>(1)</b>
+
+  constructor(private fb: FormBuilder) { <i class="conum" data-value="2"></i><b>(2)</b>
+    this.userForm = this.fb.group({ <i class="conum" data-value="3"></i><b>(3)</b>
+      username: '',
+      password: ''
+    });
+  }
+
+  register() {
+    // ...
+  }
+}</code></pre>
+</div>
+</div>
 <div class="paragraph">
 <p>On peux mettre à jour la valeur d&#8217;un <code>FormControl</code> depuis le composant en utilisant la méthode <code>setValue()</code> :</p>
 </div>
@@ -6570,9 +6607,9 @@ export class RegisterFormComponent {
   userForm: FormGroup;
 
   constructor(fb: FormBuilder) {
-    this.usernameCtrl = this.fb.control('');
-    this.passwordCtrl = this.fb.control('');
-    this.userForm = this.fb.group({
+    this.usernameCtrl = fb.control('');
+    this.passwordCtrl = fb.control('');
+    this.userForm = fb.group({
       username: this.usernameCtrl,
       password: this.passwordCtrl
     });
@@ -6659,9 +6696,9 @@ export class RegisterFormComponent {
   userForm: FormGroup;
 
   constructor(fb: FormBuilder) {
-    this.userForm = this.fb.group({
-      username: this.fb.control('', [Validators.required, Validators.minLength(3)]), <i class="conum" data-value="1"></i><b>(1)</b> <i class="conum" data-value="2"></i><b>(2)</b>
-      password: this.fb.control('', Validators.required) <i class="conum" data-value="1"></i><b>(1)</b>
+    this.userForm = fb.group({
+      username: fb.control('', [Validators.required, Validators.minLength(3)]), <i class="conum" data-value="1"></i><b>(1)</b> <i class="conum" data-value="2"></i><b>(2)</b>
+      password: fb.control('', Validators.required) <i class="conum" data-value="1"></i><b>(1)</b>
     });
   }
 
@@ -6729,10 +6766,10 @@ export class RegisterFormComponent {
   passwordCtrl: FormControl;
 
   constructor(fb: FormBuilder) {
-    this.usernameCtrl = this.fb.control('', Validators.required);
-    this.passwordCtrl = this.fb.control('', Validators.required);
+    this.usernameCtrl = fb.control('', Validators.required);
+    this.passwordCtrl = fb.control('', Validators.required);
 
-    this.userForm = this.fb.group({
+    this.userForm = fb.group({
       username: this.usernameCtrl,
       password: this.passwordCtrl
     });
@@ -6849,18 +6886,18 @@ export class RegisterFormComponent {
   }
 
   constructor(fb: FormBuilder) {
-    this.usernameCtrl = this.fb.control('',
+    this.usernameCtrl = fb.control('',
       Validators.required,
       control =&gt; this.isUsernameAvailable(control)); <i class="conum" data-value="6"></i><b>(6)</b>
 
-    this.passwordCtrl = this.fb.control('', Validators.required);
+    this.passwordCtrl = fb.control('', Validators.required);
 
-    this.birthdateCtrl = this.fb.control('', [
+    this.birthdateCtrl = fb.control('', [
       Validators.required,
       RegisterFormComponent.isOldEnough <i class="conum" data-value="7"></i><b>(7)</b>
     ]);
 
-    this.userForm = this.fb.group({
+    this.userForm = fb.group({
       username: this.usernameCtrl,
       password: this.passwordCtrl,
       birthdate: this.birthdateCtrl
@@ -6971,16 +7008,16 @@ export class RegisterFormComponent {
   }
 
   constructor(fb: FormBuilder) {
-    this.usernameCtrl = this.fb.control('', Validators.required);
-    this.passwordCtrl = this.fb.control('', Validators.required);
-    this.confirmCtrl = this.fb.control('', Validators.required);
+    this.usernameCtrl = fb.control('', Validators.required);
+    this.passwordCtrl = fb.control('', Validators.required);
+    this.confirmCtrl = fb.control('', Validators.required);
 
-    this.passwordForm = this.fb.group(
+    this.passwordForm = fb.group(
       { password: this.passwordCtrl, confirm: this.confirmCtrl }, <i class="conum" data-value="2"></i><b>(2)</b>
       { validator: RegisterFormComponent.passwordMatch } <i class="conum" data-value="3"></i><b>(3)</b>
     );
 
-    this.userForm = this.fb.group({
+    this.userForm = fb.group({
       username: this.usernameCtrl,
       passwordForm: this.passwordForm <i class="conum" data-value="4"></i><b>(4)</b>
     });
@@ -7071,10 +7108,10 @@ export class RegisterFormComponent {
   passwordStrength = 0; <i class="conum" data-value="2"></i><b>(2)</b>
 
   constructor(fb: FormBuilder) {
-    this.usernameCtrl = this.fb.control('', Validators.required);
-    this.passwordCtrl = this.fb.control('', Validators.required);
+    this.usernameCtrl = fb.control('', Validators.required);
+    this.passwordCtrl = fb.control('', Validators.required);
 
-    this.userForm = this.fb.group({
+    this.userForm = fb.group({
       username: this.usernameCtrl,
       password: this.passwordCtrl
     });
@@ -8006,7 +8043,7 @@ export class RaceComponent implements AfterViewInit {
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-09-27 23:09:09 PM
+Last updated 2018-10-14 22:06:22 PM
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.9.1/styles/github.min.css">
