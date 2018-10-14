@@ -1839,6 +1839,26 @@ ng --version # vérifier la version</code></pre>
 <pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">ng new ponyracer --prefix ns</code></pre>
 </div>
 </div>
+<div class="paragraph">
+<p>Créer un nouveau projet à la racine d&#8217;un dossier déjà existant :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">ng new ponyracer --prefix ns --directory ./</code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Le dossier cible doit au préalable être bien vide (pas de README.txt, de .gitignore, &#8230;&#8203;)
+</td>
+</tr>
+</table>
+</div>
 </div>
 <div class="sect2">
 <h3 id="truelancement-du-serveur"><a class="anchor" href="#truelancement-du-serveur"></a>5.4. Lancement du serveur</h3>
@@ -4768,12 +4788,14 @@ export class AppModule {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">@Component({
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">import { HttpClient } from '@angular/common/http'; <i class="conum" data-value="1"></i><b>(1)</b>
+
+@Component({
   selector: 'ns-races',
   template: `&lt;h1&gt;Races&lt;/h1&gt;`
 })
 export class RacesComponent {
-  constructor(private http: HttpClient) { <i class="conum" data-value="1"></i><b>(1)</b>
+  constructor(private http: HttpClient) { <i class="conum" data-value="2"></i><b>(2)</b>
   }
 }</code></pre>
 </div>
@@ -4782,6 +4804,10 @@ export class RacesComponent {
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Bien importer <code>HttpClient</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
 <td>On peut maintenant injecter le service <code>HttpClient</code> dans son composant <code>RacesComponent</code> par exemple.</td>
 </tr>
 </table>
@@ -4806,6 +4832,11 @@ Toutes ces méthodes retournent un objet <code>Observable</code>, ce qui donne l
 <h3 id="trueutiliser-code-httpclientmodule-code"><a class="anchor" href="#trueutiliser-code-httpclientmodule-code"></a>14.2. Utiliser <code>HttpClientModule</code></h3>
 <div class="sect3">
 <h4 id="trueget"><a class="anchor" href="#trueget"></a>14.2.1. get()</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">return this.http.get&lt;Array&lt;RaceModel&gt;&gt;('http://myapi.com/', { params });</code></pre>
+</div>
+</div>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">http.get(`${baseUrl}/api/races`)
@@ -5173,10 +5204,10 @@ describe('RaceService', () =&gt; {
 import { HomeComponent } from './home/home.component';
 import { RacesComponent } from './races/races.component';
 
-export const ROUTES: Routes = {
+export const ROUTES: Routes = [
     { path: '', component: HomeComponent },
     { path: 'races', component: RacesComponent }
-};</code></pre>
+];</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -5357,11 +5388,11 @@ le <em>slash</em> <code>/</code> de début dans le chemin construit une URL abso
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">// ...
 
-export const ROUTES: Routes = {
+export const ROUTES: Routes = [
     { path: '', component: HomeComponent },
     { path: 'races', component: RacesComponent },
     { path: 'races/:raceId/ponies/:PonyId', component: PonyComponent }
-};</code></pre>
+];</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -6449,7 +6480,7 @@ export class RegisterFormComponent {
   userForm: FormGroup; <i class="conum" data-value="1"></i><b>(1)</b>
 
   constructor(fb: FormBuilder) { <i class="conum" data-value="2"></i><b>(2)</b>
-    this.userForm = fb.group({ <i class="conum" data-value="3"></i><b>(3)</b>
+    this.userForm = this.fb.group({ <i class="conum" data-value="3"></i><b>(3)</b>
       username: '',
       password: ''
     });
@@ -6539,9 +6570,9 @@ export class RegisterFormComponent {
   userForm: FormGroup;
 
   constructor(fb: FormBuilder) {
-    this.usernameCtrl = fb.control('');
-    this.passwordCtrl = fb.control('');
-    this.userForm = fb.group({
+    this.usernameCtrl = this.fb.control('');
+    this.passwordCtrl = this.fb.control('');
+    this.userForm = this.fb.group({
       username: this.usernameCtrl,
       password: this.passwordCtrl
     });
@@ -6628,9 +6659,9 @@ export class RegisterFormComponent {
   userForm: FormGroup;
 
   constructor(fb: FormBuilder) {
-    this.userForm = fb.group({
-      username: fb.control('', [Validators.required, Validators.minLength(3)]), <i class="conum" data-value="1"></i><b>(1)</b> <i class="conum" data-value="2"></i><b>(2)</b>
-      password: fb.control('', Validators.required) <i class="conum" data-value="1"></i><b>(1)</b>
+    this.userForm = this.fb.group({
+      username: this.fb.control('', [Validators.required, Validators.minLength(3)]), <i class="conum" data-value="1"></i><b>(1)</b> <i class="conum" data-value="2"></i><b>(2)</b>
+      password: this.fb.control('', Validators.required) <i class="conum" data-value="1"></i><b>(1)</b>
     });
   }
 
@@ -6698,10 +6729,10 @@ export class RegisterFormComponent {
   passwordCtrl: FormControl;
 
   constructor(fb: FormBuilder) {
-    this.usernameCtrl = fb.control('', Validators.required);
-    this.passwordCtrl = fb.control('', Validators.required);
+    this.usernameCtrl = this.fb.control('', Validators.required);
+    this.passwordCtrl = this.fb.control('', Validators.required);
 
-    this.userForm = fb.group({
+    this.userForm = this.fb.group({
       username: this.usernameCtrl,
       password: this.passwordCtrl
     });
@@ -6818,18 +6849,18 @@ export class RegisterFormComponent {
   }
 
   constructor(fb: FormBuilder) {
-    this.usernameCtrl = fb.control('',
+    this.usernameCtrl = this.fb.control('',
       Validators.required,
       control =&gt; this.isUsernameAvailable(control)); <i class="conum" data-value="6"></i><b>(6)</b>
 
-    this.passwordCtrl = fb.control('', Validators.required);
+    this.passwordCtrl = this.fb.control('', Validators.required);
 
-    this.birthdateCtrl = fb.control('', [
+    this.birthdateCtrl = this.fb.control('', [
       Validators.required,
       RegisterFormComponent.isOldEnough <i class="conum" data-value="7"></i><b>(7)</b>
     ]);
 
-    this.userForm = fb.group({
+    this.userForm = this.fb.group({
       username: this.usernameCtrl,
       password: this.passwordCtrl,
       birthdate: this.birthdateCtrl
@@ -6940,16 +6971,16 @@ export class RegisterFormComponent {
   }
 
   constructor(fb: FormBuilder) {
-    this.usernameCtrl = fb.control('', Validators.required);
-    this.passwordCtrl = fb.control('', Validators.required);
-    this.confirmCtrl = fb.control('', Validators.required);
+    this.usernameCtrl = this.fb.control('', Validators.required);
+    this.passwordCtrl = this.fb.control('', Validators.required);
+    this.confirmCtrl = this.fb.control('', Validators.required);
 
-    this.passwordForm = fb.group(
+    this.passwordForm = this.fb.group(
       { password: this.passwordCtrl, confirm: this.confirmCtrl }, <i class="conum" data-value="2"></i><b>(2)</b>
       { validator: RegisterFormComponent.passwordMatch } <i class="conum" data-value="3"></i><b>(3)</b>
     );
 
-    this.userForm = fb.group({
+    this.userForm = this.fb.group({
       username: this.usernameCtrl,
       passwordForm: this.passwordForm <i class="conum" data-value="4"></i><b>(4)</b>
     });
@@ -7040,10 +7071,10 @@ export class RegisterFormComponent {
   passwordStrength = 0; <i class="conum" data-value="2"></i><b>(2)</b>
 
   constructor(fb: FormBuilder) {
-    this.usernameCtrl = fb.control('', Validators.required);
-    this.passwordCtrl = fb.control('', Validators.required);
+    this.usernameCtrl = this.fb.control('', Validators.required);
+    this.passwordCtrl = this.fb.control('', Validators.required);
 
-    this.userForm = fb.group({
+    this.userForm = this.fb.group({
       username: this.usernameCtrl,
       password: this.passwordCtrl
     });
@@ -7686,8 +7717,29 @@ export class HelloService {
 </tr>
 </table>
 </div>
+<div class="sect3">
+<h4 id="true-code-of-code-vs-code-from-code"><a class="anchor" href="#true-code-of-code-vs-code-from-code"></a>19.3.1. <code>of</code> vs <code>from</code></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-javascript" data-lang="javascript">Observable.of([1, 2, 3, 4, 5]); <i class="conum" data-value="1"></i><b>(1)</b>
+Observable.from([1, 2, 3, 4, 5]); <i class="conum" data-value="2"></i><b>(2)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td><code>of</code> va émettre un seul événement qui contiendra le tableau complet.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td><code>from</code> va émettre un événement par item du tableau.</td>
+</tr>
+</table>
+</div>
 <div class="paragraph">
 <p><a href="#top-of-page">⬆ Back to top</a></p>
+</div>
 </div>
 </div>
 </div>
@@ -7954,7 +8006,7 @@ export class RaceComponent implements AfterViewInit {
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-09-25 17:56:43 PM
+Last updated 2018-09-27 23:09:09 PM
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.9.1/styles/github.min.css">

@@ -17,10 +17,10 @@ import { Routes } from '@angular/router';
 import { HomeComponent } from './home/home.component';
 import { RacesComponent } from './races/races.component';
 
-export const ROUTES: Routes = {
+export const ROUTES: Routes = [
     { path: '', component: HomeComponent },
     { path: 'races', component: RacesComponent }
-};
+];
 ----
 
 On doit ensuite importer le module `RouterModule` dans le module racine `AppModule` :
@@ -119,11 +119,11 @@ On peut définir des routes avec des paramètres :
 ----
 // ...
 
-export const ROUTES: Routes = {
+export const ROUTES: Routes = [
     { path: '', component: HomeComponent },
     { path: 'races', component: RacesComponent },
     { path: 'races/:raceId/ponies/:PonyId', component: PonyComponent }
-};
+];
 ----
 
 Et définir des liens dynamiques avec `routerLink` :

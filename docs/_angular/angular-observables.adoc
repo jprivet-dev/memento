@@ -175,3 +175,13 @@ export class HelloService {
 ----
 <1> Ce premier paramètre créera `interval` à l'abonnement de l'observable de `HelloService.get()`.
 <2> Ce deuxième paramètre stoppera le `setInterval` au désabonnement de l'observable.
+
+==== `of` vs `from`
+
+[source,javascript]
+----
+Observable.of([1, 2, 3, 4, 5]); <1>
+Observable.from([1, 2, 3, 4, 5]); <2>
+----
+<1> `of` va émettre un seul événement qui contiendra le tableau complet.
+<2> `from` va émettre un événement par item du tableau.

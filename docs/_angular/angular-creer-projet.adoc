@@ -17,6 +17,15 @@ ng --version # vérifier la version
 ng new ponyracer --prefix ns
 ----
 
+Créer un nouveau projet à la racine d'un dossier déjà existant :
+
+[source,bash]
+----
+ng new ponyracer --prefix ns --directory ./
+----
+
+TIP: Le dossier cible doit au préalable être bien vide (pas de README.txt, de .gitignore, ...)
+
 === Lancement du serveur
 
 [source,bash]

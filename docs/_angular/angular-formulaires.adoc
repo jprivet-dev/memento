@@ -240,6 +240,34 @@ export class RegisterFormComponent {
 
 IMPORTANT: Comme c'est une valeur qui est transmise et non une expression, on n'utilise pas les `[]` autour de `formControlName`.
 
+TIP: Attention à la subtilité entre `constructor(fb: FormBuilder)` et `constructor(private fb: FormBuilder)`
+
+[source,javascript]
+----
+import { Component } from '@angular/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
+
+@Component({
+  selector: 'ns-register',
+  templateUrl: 'register-form.component.html'
+})
+export class RegisterFormComponent {
+  userForm: FormGroup; <1>
+
+  constructor(private fb: FormBuilder) { <2>
+    this.userForm = this.fb.group({ <3>
+      username: '',
+      password: ''
+    });
+  }
+
+  register() {
+    // ...
+  }
+}
+----
+
+
 On peux mettre à jour la valeur d'un `FormControl` depuis le composant en utilisant la méthode `setValue()` :
 
 [source,javascript]

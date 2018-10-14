@@ -22,16 +22,19 @@ export class AppModule {
 
 [source,javascript]
 ----
+import { HttpClient } from '@angular/common/http'; <1>
+
 @Component({
   selector: 'ns-races',
   template: `<h1>Races</h1>`
 })
 export class RacesComponent {
-  constructor(private http: HttpClient) { <1>
+  constructor(private http: HttpClient) { <2>
   }
 }
 ----
-<1> On peut maintenant injecter le service `HttpClient` dans son composant `RacesComponent` par exemple.
+<1> Bien importer `HttpClient`.
+<2> On peut maintenant injecter le service `HttpClient` dans son composant `RacesComponent` par exemple.
 
 Le service `HttpClient` réalise des requêtes AJAX avec `XMLHttpRequest`. Il propose plusieurs méthodes : `get`, `post`, `put`, `delete`, `patch`, `head`, `jsonp`, ...
 
@@ -40,6 +43,11 @@ NOTE: Toutes ces méthodes retournent un objet `Observable`, ce qui donne la pos
 === Utiliser `HttpClientModule`
 
 ==== get()
+
+[source,javascript]
+----
+return this.http.get<Array<RaceModel>>('http://myapi.com/', { params });
+----
 
 [source,javascript]
 ----
